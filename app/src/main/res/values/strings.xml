@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">ChargeGuide</string>
-    <string name="title_activity_map_main">Map</string>
+    <string name="title_activity_map_main">Charge Guide</string>
 </resources>
