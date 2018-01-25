@@ -36,22 +36,32 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/search_query"
-            android:layout_width="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:layout_weight="1.5"
-            android:ems="10"
-            android:background="#FFFFFF"
-            android:layout_height="32dp"
-            android:hint="Dublin"
-            android:inputType="textCapSentences" />
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@null"
+                android:id="@+id/hamburger"
+                android:src="@drawable/hamburger"
+                android:scaleType="fitXY"
+                android:layout_margin="10dp"/>
 
-            <Button
+            <EditText
+                android:id="@+id/search_query"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Search"
-                android:onClick="showLocation"/>
+                android:layout_marginLeft="3dp"
+                android:layout_weight="1.5"
+                android:ems="10"
+                android:background="#FFFFFF"
+                android:layout_marginTop="2dp"
+                android:layout_height="32dp"
+                android:hint="Dublin"
+                android:inputType="textCapSentences" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Search"
+                    android:onClick="showLocation"/>
         </LinearLayout>
 
     </fragment>

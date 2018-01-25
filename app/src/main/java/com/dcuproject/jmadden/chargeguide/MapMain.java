@@ -11,10 +11,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 public class MapMain extends FragmentActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
     private GoogleMap mMap;
+    private ImageButton hamburger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        hamburger = (ImageButton) (findViewById(R.id.hamburger));
+        hamburger.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DrawerLayout drawer = (DrawerLayout) (findViewById(R.id.drawer_layout));
+                drawer.openDrawer(Gravity.START);
+            }
+        });
     }
 
     /**
