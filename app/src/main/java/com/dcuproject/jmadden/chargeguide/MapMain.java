@@ -19,6 +19,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,6 +36,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
     private GoogleMap mMap;
     private ImageButton hamburger;
+    private PlaceAutocompleteFragment autocompleteFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +63,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 drawer.openDrawer(Gravity.START);
             }
         });
+
+        autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+
+            }
+
+            @Override
+            public void onError(Status status) {
+                Log.i("MAP PROBLEM", "An error occurred: " + status);
+            }
+        });
     }
 
     /**
@@ -78,32 +96,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         LatLng ireland = new LatLng(53.433333, -7.95);
         //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f));
-    }
-
-    public void showLocation(View view) {
-        EditText edit = (EditText)findViewById(R.id.search_query);
-        String location = edit.getText().toString();
-        location += " Ireland";
-        Boolean found = false;
-        Geocoder coder = new Geocoder(this);
-        try {
-            ArrayList<Address> locations = (ArrayList<Address>) coder.getFromLocationName(location, 100);
-            Log.i("LENGTH OF ADDRESSES", location.toString());
-            for (Address add : locations) {
-                Log.i("COUNTRYNAME", add.getCountryName());
-                if (add.getCountryName().equals("Ireland")) {
-                    Log.i("COUNTRYNAME2", add.getCountryName());
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locations.get(0).getLatitude(), locations.get(0).getLongitude()), 8.0f));
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                Toast.makeText(this, location + " is not found in Ireland please try again.", Toast.LENGTH_SHORT);
-            }
-        } catch (Exception E) {
-            E.printStackTrace();
-        }
     }
 
     @Override

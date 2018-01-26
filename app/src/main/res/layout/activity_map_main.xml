@@ -7,11 +7,6 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <include
-        layout="@layout/app_bar_nav_bar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
@@ -45,24 +40,14 @@
                 android:scaleType="fitXY"
                 android:layout_margin="10dp"/>
 
-            <EditText
-                android:id="@+id/search_query"
-                android:layout_width="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:layout_weight="1.5"
-                android:ems="10"
-                android:background="#FFFFFF"
-                android:layout_marginTop="2dp"
-                android:layout_height="32dp"
-                android:hint="Dublin"
-                android:inputType="textCapSentences" />
+            <fragment
+                android:id="@+id/place_autocomplete_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"/>
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Search"
-                    android:onClick="showLocation"/>
         </LinearLayout>
 
     </fragment>
+
 </android.support.v4.widget.DrawerLayout>
