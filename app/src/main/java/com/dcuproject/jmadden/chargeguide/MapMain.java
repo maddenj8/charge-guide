@@ -68,7 +68,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-
+                Log.i("PLACE TEST", place.getName().toString());
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 8.0f));
+                mMap.addMarker(new MarkerOptions().title(place.getName().toString()).position(place.getLatLng()));
             }
 
             @Override
