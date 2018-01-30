@@ -39,6 +39,8 @@ public class first_launch extends AppCompatActivity {
         currentLocAsHome = (Button) findViewById(R.id.currentLocAsHome);
         fin = (Button) findViewById(R.id.enterApp);
 
+        getLocationPermission();
+
         GeoDataClient nGeoDataClient = Places.getGeoDataClient(this, null);
         PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
         FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -115,7 +117,6 @@ public class first_launch extends AppCompatActivity {
 
 
         });
-        //getLocationPermission();
     }
 
     private void getLocationPermission() {
@@ -123,13 +124,14 @@ public class first_launch extends AppCompatActivity {
      * Request location permission, so that we can get the location of the
      * device. The result of the permission request is handled by a callback,
      * onRequestPermissionsResult.
-     */
+    */
+        Log.d("CHECK", String.valueOf(mLocationPermissionGranted));
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
-
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+        else {
+            Log.d("ELSE", "It landed here even though it has the permission");
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
 
