@@ -1,10 +1,53 @@
 <resources>
     <string name="app_name">ChargeGuide</string>
     <string name="title_activity_map_main">Charge Guide</string>
+    <string name="title_activity_car_setup">car_setup</string>
+    <string name="google_maps_key">AIzaSyCfcIfxZ2LyrriWXHl6m8IuCueHibpqOUs</string>
+    <string name ="welcome_text">Welcome to charge guide enter your car in the drop down below</string>
+    <string name ="make">Make</string>
+
+    <string-array name="makes">
+        <item>BMW</item>
+        <item>Nissan</item>
+        <item>VW</item>
+        <item>Renault</item>
+        <item>Hyundai</item>
+    </string-array>
+
+    <string-array name="BMW">
+        <item>i3 94 Ah (34KWh)</item>
+        <item>"i3 60 Ah (22KWh)</item>
+    </string-array>
+
+    <string-array name="Nissan">
+        <item>"Leaf 24 KWh</item>
+        <item>Leaf 30 KWh</item>
+        <item>Leaf 40 KWh</item>
+    </string-array>
+
+    <string-array name="VW">
+        <item>e Golf 24KWh</item>
+        <item>e GOlf 35KWh</item>
+    </string-array>
+
+    <string-array name="Renault">
+        <item>Zoe 22 KWh</item>
+        <item>Zoe 40 KWh</item>
+    </string-array>
+
+    <string-array name="Hyundai">
+        <item>IONIQ 28 KWh</item>
+    </string-array>
+
+    <string name="finishSetup">Finish setup </string>
+
+
     <string name="title_activity_nav_bar">NavBar</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+
 </resources>
