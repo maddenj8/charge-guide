@@ -3,7 +3,7 @@
     <string name="title_activity_map_main">Charge Guide</string>
     <string name="title_activity_car_setup">car_setup</string>
     <string name="google_maps_key">AIzaSyCfcIfxZ2LyrriWXHl6m8IuCueHibpqOUs</string>
-    <string name ="welcome_text">Welcome to charge guide enter your car in the drop down below</string>
+    <string name ="welcome_text">Enter your car and car type in the drop down below</string>
     <string name ="make">Make</string>
 
     <string-array name="makes">

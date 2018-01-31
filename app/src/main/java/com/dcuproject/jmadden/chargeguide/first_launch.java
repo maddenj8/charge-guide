@@ -99,15 +99,16 @@ public class first_launch extends AppCompatActivity {
                 //SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
                 //SharedPreferences.Editor editor = sharedPref.edit();
                 home = currentLocAsHome.isActivated(); //check if the checkbox is ticked
+
             }
         });
 
         fin.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                if (home) { // if the user wants the current location as home
+                //if (home) { // if the user wants the current location as home
                     //get the users current location
-                }
+                //}
                 startActivity(new Intent(first_launch.this, MapMain.class));
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
