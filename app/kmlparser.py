@@ -1,7 +1,7 @@
 all_chargers = open("charging-locations (4).kml" , "r") 
-ac43 = open("ac43.xml" , "r+")
-chademo = open("chademo.xml" , "r+")
-ccs = open("ccs.xml" , "r+" ) 
+ac43 = open("ac43.kml" , "r+")
+chademo = open("chademo.kml" , "r+")
+ccs = open("ccs.kml" , "r+" ) 
 
 acpart = False
 ccspart = False
@@ -35,3 +35,33 @@ for line in text:
        
     if chademopart == True:
         chademo.write(line)         
+
+ac43.close()
+
+
+def getname(file_name ):
+
+    namelist = []
+    name = ""
+    charger_file = open( file_name , "r")
+
+    text = charger_file.readlines()
+
+    text = text[1:]
+    for line in text:
+        word = line.split(">")
+        if len(word) >=9:
+            name = word[2]
+            name = name[:-6]
+            if len(name) != 0:
+
+                namelist.append(name)
+
+    charger_file.close()
+
+    return namelist
+
+
+a = getname("ac43.kml")
+
+print(a)
