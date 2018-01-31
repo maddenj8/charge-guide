@@ -62,6 +62,4 @@ def getname(file_name ):
     return namelist
 
 
-a = getname("ac43.kml")
 
-print(a)
