@@ -106,7 +106,11 @@ public class first_launch extends AppCompatActivity {
 
         }
         });
+
  */
+
+
+
 
 
         fin.setOnClickListener(new View.OnClickListener() {
