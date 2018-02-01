@@ -19,6 +19,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 
 
 public class first_launch extends AppCompatActivity {
@@ -27,6 +28,7 @@ public class first_launch extends AppCompatActivity {
     private Button currentLocAsHome;
     private Button fin;
     private Boolean home;
+    private PlaceAutocompleteFragment searchbar;
     boolean mLocationPermissionGranted;
 
     @Override
