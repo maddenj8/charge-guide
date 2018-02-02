@@ -11,7 +11,6 @@
     <uses-feature android:name="android.hardware.location.gps" />
     <uses-permission android:name="android.permission.INTERNET"/>
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -34,12 +33,15 @@
 
         <activity
             android:name=".MapMain"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_map_main">
 
 
         </activity>
 
-        <activity android:name=".first_launch">
+        <activity
+            android:name=".first_launch"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
