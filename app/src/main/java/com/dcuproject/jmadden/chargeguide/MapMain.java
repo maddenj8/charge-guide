@@ -1,5 +1,7 @@
 package com.dcuproject.jmadden.chargeguide;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
@@ -37,6 +39,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private GoogleMap mMap;
     private ImageButton hamburger;
     private PlaceAutocompleteFragment autocompleteFragment;
+    private SharedPreferences user_info;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,11 +96,15 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        user_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
+        Float user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
+        Float user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a coordinate)
         // Add a marker in Sydney and move the camera
         LatLng ireland = new LatLng(53.433333, -7.95);
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f));
+        LatLng userLocation = new LatLng(user_lat, user_long);
+        Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
+        mMap.addMarker(new MarkerOptions().position(userLocation).title("something")); // set a marker for user location
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
     }
 
     @Override
