@@ -153,11 +153,12 @@ public class first_launch extends AppCompatActivity implements LocationListener{
                 //if (home) { // if the user wants the current location as home
                     //get the users current location
                 //}
-                startActivity(new Intent(first_launch.this, MapMain.class));
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString("Setup_complete", "true");
                 editor.apply();
+                startActivity(new Intent(first_launch.this, MapMain.class));
+
             }
 
 
