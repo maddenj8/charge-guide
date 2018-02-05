@@ -31,7 +31,7 @@
                 android:id="@+id/hamburger"
                 android:src="@drawable/hamburger"
                 android:scaleType="fitXY"
-                android:layout_margin="10dp"/>
+                android:layout_margin="5dp"/>
 
 
 
