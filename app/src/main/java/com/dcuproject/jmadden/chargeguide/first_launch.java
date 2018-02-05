@@ -77,16 +77,18 @@ public class first_launch extends AppCompatActivity implements LocationListener{
 
         address = (TextView) (findViewById(R.id.address_section));
 
+
         searchBar.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) { //when a place is selected
                 Log.d("PLACE SELECTED", place.toString());
-                //SharedPreferences location_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE); //save the lat/lng of the user
-                //SharedPreferences.Editor e = location_info.edit();
-                //LatLng location = place.getLatLng();
-                //e.putFloat("latitude", (Float) location.latitude());
-                //e.putFloat("longitude", location.longitude());
-                //e.commit();
+
+               SharedPreferences location_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE); //save the lat/lng of the user
+               SharedPreferences.Editor e = location_info.edit();
+               LatLng location = place.getLatLng();
+               e.putFloat("latitude",  (float ) location.longitude);
+               e.putFloat("longitude",(float) location.latitude);
+               e.commit();
             }
             @Override
             public void onError(Status status) {
