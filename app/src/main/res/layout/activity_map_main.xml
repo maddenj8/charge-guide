@@ -7,14 +7,7 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_nav_bar"
-        app:menu="@menu/activity_nav_bar_drawer" />
+
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -40,14 +33,27 @@
                 android:scaleType="fitXY"
                 android:layout_margin="5dp"/>
 
+
+
             <fragment
                 android:id="@+id/place_autocomplete_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"/>
 
+
+
         </LinearLayout>
 
     </fragment>
 
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_nav_bar"
+        app:menu="@menu/activity_nav_bar_drawer" />
 </android.support.v4.widget.DrawerLayout>
+
