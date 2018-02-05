@@ -46,10 +46,7 @@
         <activity
             android:name=".first_launch"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".help"
-            android:label="@string/title_activity_help"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".help"></activity>
     </application>
 
 </manifest>

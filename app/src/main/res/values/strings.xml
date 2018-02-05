@@ -53,14 +53,14 @@
     <string name="ev_help_welcome">"Welcome to ChargeGuide here you will find a few tips and terms explaned to make ev simplify ev ownership"
     </string>
 
-    <string name="terms">Regen: Using the moter as a generator to slow the car down \n
-        Kwh: Unit of energy battery capacty is mesured in Kwh\'s
-        kWh per 100km: Messure of efficiency of a car typical values of 20 Kwh per 100km
+    <string name="terms">Regen: Using the motor as a generator to slow the car down\n\nKwh: Unit of energy battery capacity is measured in Kwh\'s
+        \n\n
+        kWh per 100km: Measure of efficiency of a car typical values are around 20 Kwh per 100km
+  </string>
+
+        <string name = "conector">There are three main types of connectors ccs and chademo </string>
 
 
 
-
-
-    </string>
 
 </resources>

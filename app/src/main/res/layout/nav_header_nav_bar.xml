@@ -13,10 +13,12 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:adjustViewBounds="false"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:visibility="visible"
         app:srcCompat="@mipmap/ic_launcher_round" />
 
     <TextView
@@ -24,7 +26,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="Charge Guide"
-        android:textSize="15dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="15dp" />
 
 </LinearLayout>
