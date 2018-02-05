@@ -3,40 +3,12 @@ ac43 = open("ac43.kml" , "r+")
 chademo = open("chademo.kml" , "r+")
 ccs = open("ccs.kml" , "r+" ) 
 
-acpart = False
-ccspart = False
-chademopart = False
-text= all_chargers.readlines()
-for line in text: 
+ccs_json = open("ccs.json" , "r+" ) 
+chademo_json = open("chademo.json" , "r+")
+ac43_json = open("ac43.json" , "r+")
 
 
-    if  "<!-- ======== AC43 ======= -->" in line :
-        acpart= True
-   
-    if "<!-- ======== ComboCCS ======= -->" in line:
-        ccspart = True
-        acpart = False
-        chademopart = False
 
-    if "<!-- ======== CHAdeMO ======= -->" in line :
-        chademopart = True
-        ccspart = False
-        acpart = False
-        
-    if ccspart == True:
-        ccs.write(line)         
-       
-
-    elif acpart == True:
-        ac43.write(line)         
-        
-    
-    elif chademopart == True:
-        chademo.write(line)         
-
-ac43.close()
-ccs.close()
-chademo.close()
 
 def getname(file_name ):
 
@@ -57,9 +29,11 @@ def getname(file_name ):
                 namelist.append(name)
 
     charger_file.close()
-
     return namelist
 
+ccs_names = getname("ccs.kml")
+ac43_names = getname("ac43.kml")
+chademo_names = getname("chademo.kml")
 
 
 def getlatlon( file_name):
@@ -76,7 +50,6 @@ def getlatlon( file_name):
         if len(word) >=9:
             name = word[2]
             if len(word) > 9:
-               # print(word[8]  )
                 name = word[8]
                 end = (name[len(name) - 3:] )
                 if end == "tes":
@@ -149,7 +122,7 @@ def getStateCcs():
 
     text = charger_file.readlines()
     nextlineget = False
-    text = text[1:]
+    text = text[2:]
     for line in text:
         if nextlineget == True:
             line = line.split("<")
@@ -168,3 +141,5 @@ def getStateCcs():
     
     return namelist
 
+
+print(getStateCcs())
