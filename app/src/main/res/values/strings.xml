@@ -3,8 +3,8 @@
     <string name="title_activity_map_main">Charge Guide</string>
     <string name="title_activity_car_setup">car_setup</string>
     <string name="google_maps_key">AIzaSyCfcIfxZ2LyrriWXHl6m8IuCueHibpqOUs</string>
-    <string name ="welcome_text">Welcome to charge guide enter your car in the drop down below</string>
-    <string name ="make">Make</string>
+    <string name="welcome_text">Enter your car and car type in the drop down below</string>
+    <string name="make">Make</string>
 
     <string-array name="makes">
         <item>BMW</item>
@@ -48,6 +48,19 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="title_activity_help">help</string>
 
+    <string name="ev_help_welcome">"Welcome to ChargeGuide here you will find a few tips and terms explaned to make ev simplify ev ownership"
+    </string>
+
+    <string name="terms">Regen: Using the moter as a generator to slow the car down \n
+        Kwh: Unit of energy battery capacty is mesured in Kwh\'s
+        kWh per 100km: Messure of efficiency of a car typical values of 20 Kwh per 100km
+
+
+
+
+
+    </string>
 
 </resources>
