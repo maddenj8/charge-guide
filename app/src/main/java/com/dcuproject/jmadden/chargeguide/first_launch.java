@@ -188,19 +188,10 @@ public class first_launch extends AppCompatActivity implements LocationListener{
 
     public void finishSetup() {
         startActivity(new Intent(first_launch.this, MapMain.class));
-
-        // save the fact that the user went through the setup process
-        SharedPreferences sharedPref = this.getSharedPreferences("userPref", MODE_PRIVATE);
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("Setup_complete", "true");
         editor.apply();
-
-        // save what car they selected (home is saved already at this point)
-        SharedPreferences carPref = getApplicationContext().getSharedPreferences("userCar", MODE_PRIVATE);
-        SharedPreferences.Editor carEditor = carPref.edit();
-        carEditor.putString("make", makes.getSelectedItem().toString());
-        carEditor.putString("model", model.getSelectedItem().toString());
-        carEditor.commit();
     }
 
     public void onCheckboxClicked(View v) throws IOException {
