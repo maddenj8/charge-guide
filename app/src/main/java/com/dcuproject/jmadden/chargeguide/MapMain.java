@@ -56,6 +56,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        //testing access to the users car details
+        SharedPreferences car = getApplicationContext().getSharedPreferences("userCar", MODE_PRIVATE);
+        String make = car.getString("makes", null);
+        String model = car.getString("model", null);
+        Log.i("USERS CAR", "Make " + make + " Model " + model);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         hamburger = (ImageButton) (findViewById(R.id.hamburger));
