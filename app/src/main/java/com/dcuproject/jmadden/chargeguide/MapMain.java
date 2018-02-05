@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
@@ -31,7 +32,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -40,8 +43,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
     private GoogleMap mMap;
     private ImageButton hamburger;
-    private PlaceAutocompleteFragment autocompleteFragment;
-    private SharedPreferences user_info;
+    private PlaceAutocompleteFragment autocompleteFragment; // the searchbar at the top
+    private SharedPreferences user_info; // user info that was obtained by the setup process
+    private MarkerOptions markerOptions;
+    private Marker destination; // the marker that has to be updated
+    private Boolean destinationUpdated = false; // check if app has to draw a new marker or update an existing one
+    private AutocompleteFilter autocompleteFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,13 +89,21 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             }
         });
 
+        autocompleteFilter = new AutocompleteFilter.Builder().setCountry("UK").setCountry("Irl").build(); // make a filter for the searchbar (uk and ireland only)
         autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        autocompleteFragment.setFilter(autocompleteFilter); // apply the filter
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 Log.i("PLACE TEST", place.getName().toString());
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 8.0f));
-                mMap.addMarker(new MarkerOptions().title(place.getName().toString()).position(place.getLatLng()));
+                if (destinationUpdated) {
+                    destination.setPosition(place.getLatLng()); // if there is a marker just update the position
+                }
+                else { // else make the new marker
+                    destinationUpdated = true; // tells the program that a marker is made so just update the position in future
+                    markerOptions = new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()).icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1);
+                    destination = mMap.addMarker(markerOptions); // add the newly made marker to the map
+                }
             }
 
             @Override
@@ -98,10 +113,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         });
     }
 
-
-
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -109,8 +120,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         Float user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
         Float user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a coordinate)
         // Add a marker in Sydney and move the camera
-        LatLng ireland = new LatLng(53.433333, -7.95);
-        LatLng userLocation = new LatLng(user_lat, user_long);
+        LatLng ireland = new LatLng(53.433333, -7.95); // position for the camera
+        LatLng userLocation = new LatLng(user_lat, user_long); // LatLng of the users positions
         Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
         mMap.addMarker(new MarkerOptions().position(userLocation).title("Home")); // set a marker for user location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
@@ -156,10 +167,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         item.setChecked(true);
         int id = item.getItemId();
 
-
-
-
-
         if (id == R.id.nav_manage) {
 
             Intent intent = new Intent(getApplicationContext() , first_launch.class);
@@ -174,12 +181,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         } else if (id == R.id.nav_share) {
         }
 
-
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-            return true;
-
-
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
         }
     }
 

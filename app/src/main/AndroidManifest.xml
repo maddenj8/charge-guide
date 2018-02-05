@@ -46,7 +46,8 @@
         <activity
             android:name=".first_launch"
             android:screenOrientation="portrait" />
-        <activity android:name=".help"></activity>
+        <activity android:name=".help"
+            android:parentActivityName=".MapMain"></activity>
     </application>
 
 </manifest>
