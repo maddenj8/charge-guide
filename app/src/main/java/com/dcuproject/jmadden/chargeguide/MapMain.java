@@ -1,6 +1,7 @@
 package com.dcuproject.jmadden.chargeguide;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,22 +47,28 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
+
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        String config = sharedPref.getString("Setup_complete", "false");
+
+        if (!config.equals("true")) {
+            startActivity(new Intent(getApplicationContext(), first_launch.class));
+        }
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
+
         toggle.syncState();
 
-        //testing access to the users car details
-        SharedPreferences car = getApplicationContext().getSharedPreferences("userCar", MODE_PRIVATE);
-        String make = car.getString("makes", null);
-        String model = car.getString("model", null);
-        Log.i("USERS CAR", "Make " + make + " Model " + model);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -69,6 +77,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             @Override
             public void onClick(View view) {
                 DrawerLayout drawer = (DrawerLayout) (findViewById(R.id.drawer_layout));
+
                 drawer.openDrawer(Gravity.START);
             }
         });
@@ -89,15 +98,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         });
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -105,10 +108,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         user_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
         Float user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
         Float user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a coordinate)
+        // Add a marker in Sydney and move the camera
         LatLng ireland = new LatLng(53.433333, -7.95);
         LatLng userLocation = new LatLng(user_lat, user_long);
         Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
-        mMap.addMarker(new MarkerOptions().position(userLocation).title("something")); // set a marker for user location
+        mMap.addMarker(new MarkerOptions().position(userLocation).title("Home")); // set a marker for user location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
     }
 
@@ -144,28 +148,38 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
+  @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        item.setChecked(true);
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
+
+
+        if (id == R.id.nav_manage) {
+
+            Intent intent = new Intent(getApplicationContext() , first_launch.class);
+            startActivity(intent);
+
+
+
+        } else if (id == R.id.nav_help) {
+            Intent intent = new Intent(getApplicationContext() , help.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            return true;
+
+
+        }
     }
-}
+
