@@ -1,0 +1,7 @@
+#!/bin/bash
+
+while true
+do
+	wget -O - q http://esb.ie/electric-cars/kml/charging-locations.kml > charging-location.kml
+	sleep 1800
+done
