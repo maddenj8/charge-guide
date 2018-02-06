@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceDetectionClient;
@@ -54,6 +55,7 @@ public class first_launch extends AppCompatActivity implements LocationListener{
     private Place placeSelected;
     private PlaceAutocompleteFragment searchBar;
     boolean mLocationPermissionGranted;
+    private AutocompleteFilter autocompleteFilter;
     TextView address;
     AppCompatEditText placeEditText;
     LocationManager locationManager;
@@ -80,6 +82,10 @@ public class first_launch extends AppCompatActivity implements LocationListener{
         searchBar.setHint("Enter Home Address");
         placeEditText = searchBar.getView().findViewById(R.id.place_autocomplete_search_input); //Edit the text of the PlaceAutocomplete
         placeEditText.setTextSize(18.0f);
+
+        autocompleteFilter = new AutocompleteFilter.Builder().setCountry("UK").setCountry("Irl").build(); // make a filter for the searchbar (uk and ireland only)
+        searchBar = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        searchBar.setFilter(autocompleteFilter); // apply the filter
 
         address = (TextView) (findViewById(R.id.address_section));
 
