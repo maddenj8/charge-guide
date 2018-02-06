@@ -10,7 +10,6 @@
         android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -31,7 +30,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.106"
+                app:layout_constraintVertical_bias="0.039"
                 tools:text="@string/ev_help_welcome" />
 
             <TextView
@@ -48,7 +47,7 @@
                 tools:text="@string/terms" />
 
             <TextView
-                android:id="@+id/ccsPlug"
+                android:id="@+id/ccsPlug2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -61,11 +60,12 @@
                 tools:text="Ccs Plug" />
 
             <ImageView
+                android:id="@+id/ccsPlugImage"
                 android:layout_width="285dp"
                 android:layout_height="756dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="16dp"
-                android:paddingTop="40dp"
+                android:paddingTop="120dp"
                 android:src="@drawable/ccs"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -73,6 +73,37 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/chademoPlug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginLeft="72dp"
+                android:layout_marginTop="284dp"
+                android:text="Chademo Plug"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ccsPlug2"
+                tools:text="Chademo Plug" />
+
+
+            <ImageView
+                android:id="@+id/chademoPlugImage"
+                android:layout_width="285dp"
+                android:layout_height="1300dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:paddingTop="120dp"
+                android:src="@drawable/chademo"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+
         </android.support.constraint.ConstraintLayout>
 
     </ScrollView>
