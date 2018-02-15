@@ -37,6 +37,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class MapMain extends FragmentActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
@@ -125,6 +131,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
         mMap.addMarker(new MarkerOptions().position(userLocation).title("Home")); // set a marker for user location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
+        pinDrop("Chademo");
+
+
     }
 
     @Override
@@ -185,5 +194,43 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         drawer.closeDrawer(GravityCompat.START);
         return true;
         }
+
+
+  // /src/chademo_output.txt
+    public void pinDrop (String plug) {
+       // mMap.addMarker(new MarkerOptions().position(userLocation).title("Home")); // set a marker for user location
+        FileInputStream is;
+        BufferedReader reader;
+        ArrayList chargers = new ArrayList();
+        if (plug.equals("Chademo")){
+
+            final File file = new File("/src/chademo_output.txt");
+            try {
+                is = new FileInputStream(file);
+                reader = new BufferedReader(new InputStreamReader(is));
+                String line = reader.readLine();
+
+                while(line != null){
+                    Log.d("StackOverflow", line);
+                    line = reader.readLine();
+
+                }
+
+
+            }
+            catch (IOException e)
+            {
+                Toast.makeText(getApplicationContext(),"Somthing bad happended" , Toast.LENGTH_LONG).show();
+
+            }
+
+
+
+            }
+        }
+
+
     }
+
+
 
