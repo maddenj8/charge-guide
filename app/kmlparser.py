@@ -1,14 +1,4 @@
 all_chargers = open("charging-locations.kml" , "r") 
-ac43 = open("ac43.kml" , "r+")
-chademo = open("chademo.kml" , "r+")
-ccs = open("ccs.kml" , "r+" ) 
-
-ccs_json = open("ccs.json" , "r+" ) 
-chademo_json = open("chademo.json" , "r+")
-ac43_json = open("ac43.json" , "r+")
-
-
-
 
 def getname(file_name ):
 
