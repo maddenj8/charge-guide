@@ -140,7 +140,7 @@ def getStateCcs():
 
 def setupACFile():
     
-    ACoutput = open("ACoutput.txt" , "r+") 
+    ACoutput = open("ac_output.txt" , "r+") 
     names = getname("ac43.kml")
     latlon = getlatlon("ac43.kml")
     state = getStateAC()
@@ -154,7 +154,7 @@ def setupACFile():
 
 def setupCCSFile():
     
-    CCSOutput = open("CCSOutput.txt" , "r+") 
+    CCSOutput = open("ccs_output.txt" , "r+") 
     names = getname("ccs.kml")
     latlon = getlatlon("ccs.kml")
     state = getStateCcs()
@@ -168,7 +168,7 @@ def setupCCSFile():
 
 def setupChademoFile():
 
-    ChademoOutput = open("ChademoOutput.txt" , "r+") 
+    ChademoOutput = open("chademo_output.txt" , "r+") 
     names = getname("chademo.kml")
     latlon = getlatlon("chademo.kml")
     state = getStateChademo()
