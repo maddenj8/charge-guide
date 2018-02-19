@@ -152,10 +152,13 @@ public class first_launch extends AppCompatActivity implements LocationListener{
         model.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selected_model = model.getSelectedItem().toString();
+
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                String selected_make = model.getSelectedItem().toString();
+                String selected_make = makes.getSelectedItem().toString();
                 editor.putString("selectedMake", selected_make);
+                editor.putString("selectedModel" , selected_model);
                 editor.apply();
             }
 
