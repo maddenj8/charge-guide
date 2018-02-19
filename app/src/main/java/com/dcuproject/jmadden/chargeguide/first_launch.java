@@ -156,7 +156,7 @@ public class first_launch extends AppCompatActivity implements LocationListener{
 
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                String selected_make = model.getSelectedItem().toString();
+                String selected_make = makes.getSelectedItem().toString();
                 editor.putString("selectedMake", selected_make);
                 editor.putString("selectedModel" , selected_model);
                 editor.apply();

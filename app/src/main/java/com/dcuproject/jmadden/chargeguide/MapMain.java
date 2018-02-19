@@ -62,8 +62,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
-
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+
         String config = sharedPref.getString("Setup_complete", "false");
 
         if (!config.equals("true")) {
@@ -133,12 +133,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
         mMap.addMarker(new MarkerOptions().position(userLocation).title("Home")); // set a marker for user location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
-
-        String make  = user_info.getString("selectedMake" , "");
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        String make  = sharedPref.getString("selectedMake" , "");
+        String model  = sharedPref.getString("selectedModel" , "");
+        Toast.makeText(getApplicationContext()  , "You selected "+ make + " "+ model  , Toast.LENGTH_LONG).show();
         if( make.equals("Nissan")){
             pinDrop("chademo_output.txt");
         }
-        else if ( make.equals("Renualt")){
+        else if ( make.equals("Renault")){
             pinDrop(("ac_output.txt"));
         }
 
