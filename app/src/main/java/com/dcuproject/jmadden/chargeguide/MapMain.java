@@ -222,58 +222,58 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     public void pinDrop (String plug) {
 
 
-        if (plug.equals("Chademo")){
-            BufferedReader reader;
 
-            try{
-                final InputStream file = getAssets().open("chademo_output.txt");
-                reader = new BufferedReader(new InputStreamReader(file));
-                String line = reader.readLine();
-                while(line != null){
+        BufferedReader reader;
 
-                    String [] charger_Info = line.split("\\|"); //
-                    String charger_Name = charger_Info[0];
-                    String latlon = charger_Info[1];
-                    String state = charger_Info[2];
-                    String stateEnds = state.charAt(state.length() -2) + "";
-                    Log.d( state.charAt(state.length() -2) + "", "pinDrop: ");
+        try{
+            final InputStream file = getAssets().open(plug);
+            reader = new BufferedReader(new InputStreamReader(file));
+            String line = reader.readLine();
+            while(line != null){
 
-                    String [] split_Lat_Lon = latlon.split(",");
-                    double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
-                    double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
-                    LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
+                String [] charger_Info = line.split("\\|"); //
+                String charger_Name = charger_Info[0];
+                String latlon = charger_Info[1];
+                String state = charger_Info[2];
+                String stateEnds = state.charAt(state.length() -2) + "";
+                Log.d( state.charAt(state.length() -2) + "", "pinDrop: ");
 
-                    if("e".equals(stateEnds)){
-                        state = "Available";
-                        mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
+                String [] split_Lat_Lon = latlon.split(",");
+                double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
+                double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
+                LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
 
-
-                    }
-                    else if ("t".equals(stateEnds)){
-                        state = "Occupied";
-                        mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
+                if("e".equals(stateEnds)){
+                    state = "Available";
+                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
 
 
-                    }
-                    else{
-                        state = "Out of Contact";
-                        mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
-
-                    }
-
-
-                    //.icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1);
-
-
-                    line = reader.readLine();
                 }
-            } catch(IOException ioe){
-                ioe.printStackTrace();
-                Toast.makeText(getApplicationContext(),"Somthing bad happended" , Toast.LENGTH_LONG).show();
-            }
+                else if ("t".equals(stateEnds)){
+                    state = "Occupied";
+                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
 
 
+                }
+                else{
+                    state = "Out of Contact";
+                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
+
+                }
+
+
+                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1);
+
+
+                line = reader.readLine();
             }
+        } catch(IOException ioe){
+            ioe.printStackTrace();
+            Toast.makeText(getApplicationContext(),"Somthing bad happended" , Toast.LENGTH_LONG).show();
+        }
+
+
+
         }
 
 
