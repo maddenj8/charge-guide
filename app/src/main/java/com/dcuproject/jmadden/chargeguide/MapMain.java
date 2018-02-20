@@ -269,7 +269,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             }
         } catch(IOException ioe){
             ioe.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Somthing bad happended" , Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Charger File not Found" , Toast.LENGTH_LONG).show();
         }
 
 
