@@ -72,7 +72,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/helpWelcome"
-                app:layout_constraintVertical_bias="0.454"
+                app:layout_constraintVertical_bias="0.48000002"
                 app:srcCompat="@drawable/large_red_charger" />
 
             <ImageView
@@ -148,7 +148,7 @@
                 android:layout_marginTop="56dp"
                 android:padding="0dp"
                 android:paddingTop="0dp"
-                android:src="@drawable/ccs"
+                android:src="@drawable/ccs_small"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/chademoPlugImage" />
 

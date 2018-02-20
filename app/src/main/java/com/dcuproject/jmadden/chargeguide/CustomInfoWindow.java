@@ -6,6 +6,7 @@ import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.lang.Object;
@@ -37,9 +38,19 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
         try {
             view = context.getLayoutInflater().inflate(R.layout.info_window_layout, null);
             TextView title = view.findViewById(R.id.tv_title);
+            ImageView statusIcon = view.findViewById(R.id.status_icon);
             title.setText(marker.getTitle());
             TextView subText = view.findViewById(R.id.tv_subtitle);
             subText.setText(marker.getSnippet());
+            if (subText.getText().toString().contains("Available")) {
+                statusIcon.setBackgroundResource(R.drawable.green_charger);
+            }
+            else if (subText.getText().toString().contains("Occupied")) {
+                statusIcon.setBackgroundResource(R.drawable.red_charger);
+            }
+            else {
+                statusIcon.setBackgroundResource(R.drawable.gray_charger);
+            }
             return view;
         } catch(Exception e) {
             Log.d("inflator not working", "NO IT DIDN'T WORK");

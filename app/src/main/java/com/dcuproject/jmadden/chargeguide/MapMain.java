@@ -268,19 +268,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 if("e".equals(stateEnds)){
                     state = "Available";
-                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
+                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
 
 
                 }
                 else if ("d".equals(stateEnds)){
                     state = "Occupied";
-                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
+                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
 
 
                 }
                 else{
                     state = "Out of Contact";
-                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
+                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
 
                 }
 
