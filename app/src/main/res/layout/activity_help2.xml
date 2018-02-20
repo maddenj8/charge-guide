@@ -4,133 +4,194 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dcuproject.jmadden.chargeguide.help">
+    tools:context="com.dcuproject.jmadden.chargeguide.help"
+    tools:layout_editor_absoluteY="81dp">
 
     <ScrollView
         android:id="@+id/scroll"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="378dp"
+        android:layout_height="511dp"
+        android:layout_margin="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             tools:layout_editor_absoluteX="209dp"
             tools:layout_editor_absoluteY="7dp">
 
             <TextView
                 android:id="@+id/helpWelcome"
-                android:layout_width="334dp"
-                android:layout_height="64dp"
+                android:layout_width="272dp"
+                android:layout_height="54dp"
+                android:layout_marginBottom="708dp"
+                android:layout_marginTop="8dp"
                 android:text="@string/ev_help_welcome"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.039"
+                app:layout_constraintVertical_bias="0.06"
                 tools:text="@string/ev_help_welcome" />
 
             <TextView
                 android:id="@+id/terms"
-                android:layout_width="334dp"
-                android:layout_height="173dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="148dp"
+                android:layout_width="292dp"
+                android:layout_height="132dp"
+                android:layout_marginTop="32dp"
                 android:text="@string/terms"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/terms" />
-
-            <TextView
-                android:id="@+id/ccsPlug2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginLeft="72dp"
-                android:layout_marginTop="300dp"
-                android:text="Css Plug"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Ccs Plug" />
-
-            <ImageView
-                android:id="@+id/ccsPlugImage"
-                android:layout_width="285dp"
-                android:layout_height="756dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="16dp"
-                android:paddingTop="120dp"
-                android:src="@drawable/ccs"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.504"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toBottomOf="@+id/about_green"
+                tools:text="@string/terms" />
+
+            <ImageView
+                android:id="@+id/green_charger"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
+                android:layout_marginLeft="44dp"
+                android:layout_marginTop="68dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/helpWelcome"
+                app:srcCompat="@drawable/large_green_charger" />
+
+
+            <ImageView
+                android:id="@+id/red_charger"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/terms"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/helpWelcome"
+                app:layout_constraintVertical_bias="0.454"
+                app:srcCompat="@drawable/large_red_charger" />
+
+            <ImageView
+                android:id="@+id/gray_charger"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
+                android:layout_marginTop="68dp"
+                app:layout_constraintHorizontal_bias="0.843"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/helpWelcome"
+                app:srcCompat="@drawable/large_gray_charger" />
 
             <TextView
-                android:id="@+id/chademoPlug"
+                android:id="@+id/about_green"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:layout_marginLeft="72dp"
-                android:layout_marginTop="284dp"
-                android:text="Chademo Plug"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/ccsPlug2"
-                tools:text="Chademo Plug" />
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="16dp"
+                android:text="Available"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/green_charger" />
 
+
+            <TextView
+                android:id="@+id/about_gray"
+                android:layout_width="89dp"
+                android:layout_height="19dp"
+                android:layout_marginTop="16dp"
+                android:text="Out of contact"
+                app:layout_constraintHorizontal_bias="0.881"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/red_charger" />
+
+            <TextView
+                android:id="@+id/about_red"
+                android:layout_width="91dp"
+                android:layout_height="19dp"
+                android:layout_marginTop="16dp"
+                android:text="Out of Service"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/red_charger" />
 
             <ImageView
                 android:id="@+id/chademoPlugImage"
-                android:layout_width="285dp"
-                android:layout_height="1300dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="16dp"
-                android:paddingTop="120dp"
+                android:layout_width="87dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="44dp"
+                android:layout_marginTop="172dp"
+                android:paddingTop="0dp"
                 android:src="@drawable/chademo"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toTopOf="@+id/terms" />
 
             <TextView
-                android:id="@+id/ac43Plug"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginLeft="72dp"
-                android:layout_marginTop="588dp"
-                android:text=" Type 2  / Mennekes plug "
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/ccsPlug2"
-                tools:text=" Type 2  / Mennekes plug " />
+                android:id="@+id/chademoPlug"
+                android:layout_width="105dp"
+                android:layout_height="47dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="60dp"
+                android:text="Chademo Plug"
+                app:layout_constraintStart_toEndOf="@+id/chademoPlugImage"
+                app:layout_constraintTop_toBottomOf="@+id/terms"
+                tools:text="Chademo Plug" />
 
+            <ImageView
+                android:id="@+id/ccsPlugImage"
+                android:layout_width="86dp"
+                android:layout_height="84dp"
+                android:layout_marginStart="44dp"
+                android:layout_marginTop="56dp"
+                android:padding="0dp"
+                android:paddingTop="0dp"
+                android:src="@drawable/ccs"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/chademoPlugImage" />
 
             <ImageView
                 android:id="@+id/type2"
-                android:layout_width="285dp"
-                android:layout_height="2000dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="16dp"
-                android:paddingTop="120dp"
+                android:layout_width="84dp"
+                android:layout_height="85dp"
+                android:layout_marginStart="44dp"
+                android:layout_marginTop="56dp"
+                android:padding="0dp"
+                android:paddingTop="0dp"
                 android:src="@drawable/type2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toBottomOf="@+id/ccsPlugImage" />
+
+
+            <TextView
+                android:id="@+id/ac43Plug"
+                android:layout_width="228dp"
+                android:layout_height="33dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="200dp"
+                android:paddingLeft="0dp"
+                android:text="CCS / Type 2 cable "
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ccsPlugImage"
+                app:layout_constraintTop_toBottomOf="@+id/terms" />
+
+            <TextView
+                android:id="@+id/ac43Plug2"
+                android:layout_width="228dp"
+                android:layout_height="33dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="340dp"
+                android:paddingLeft="0dp"
+                android:text="Type 2 Cable"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/type2"
+                app:layout_constraintTop_toBottomOf="@+id/terms"
+                tools:text=" Type 2 Cable " />
+
 
         </android.support.constraint.ConstraintLayout>
 

@@ -67,8 +67,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
-        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
 
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String config = sharedPref.getString("Setup_complete", "false");
 
         if (!config.equals("true")) {
@@ -223,6 +223,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         return true;
         }
 
+
     public void pinDrop (String plug) {
         BufferedReader reader;
         try{
@@ -238,7 +239,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 String charger_Name = charger_Info[0];
                 String latlon = charger_Info[1];
                 String state = charger_Info[2];
-                char stateEnds = state.charAt(state.length() -2);
+                String stateEnds = state.charAt(state.length() -2) + "";
+                Log.d( state.charAt(state.length() -2) + "", "pinDrop: ");
 
                 //infoWindow information to show
                 String placeOutput = "";
@@ -258,27 +260,38 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
                 double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
                 LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
+                Log.d("line" , state);
+                Log.d("charger_state" ,stateEnds);
 
-                //getting the status of the charger
-                if("l".equals(stateEnds)){
+                //checks what state the chager is in by looking at the second last charter
+                // charter in the 3rd part of the line
+
+                if("e".equals(stateEnds)){
                     state = "Available";
-                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput).icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1));
+                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
+
+
                 }
-                else if ("c".equals(stateEnds)){
+                else if ("d".equals(stateEnds)){
                     state = "Occupied";
-                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput).icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1));
+                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
+
+
                 }
                 else{
                     state = "Out of Contact";
-                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput).icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1));
+                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
+
                 }
 
-                //read the next line of the file
+
+
+
                 line = reader.readLine();
             }
         } catch(IOException ioe){
             ioe.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Somthing bad happended" , Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Charger File not Found" , Toast.LENGTH_LONG).show();
         }
     }
 }
