@@ -212,12 +212,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         return true;
         }
 
-//Toast.makeText(getApplicationContext(),"Somthing bad happended" , Toast.LENGTH_LONG).show();
-
-//Toast.makeText(getApplicationContext(),"Somthing bad happended" , Toast.LENGTH_LONG).show();
-
-    // /app/src/chademo_output.txt");
-    // mMap.addMarker(new MarkerOptions().position(userLocation).title("Home"))
 
     public void pinDrop (String plug) {
 
@@ -242,6 +236,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
                 double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
                 LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
+                Log.d("line" , state);
+                Log.d("charger_state" ,stateEnds);
+
+                //checks what state the chager is in by looking at the second last charter
+                // charter in the 3rd part of the line
 
                 if("e".equals(stateEnds)){
                     state = "Available";
@@ -249,7 +248,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
 
                 }
-                else if ("t".equals(stateEnds)){
+                else if ("d".equals(stateEnds)){
                     state = "Occupied";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(charger_Name).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
 
@@ -262,7 +261,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 }
 
 
-                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1);
 
 
                 line = reader.readLine();
