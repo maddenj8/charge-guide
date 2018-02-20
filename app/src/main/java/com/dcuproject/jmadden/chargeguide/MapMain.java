@@ -1,5 +1,6 @@
 package com.dcuproject.jmadden.chargeguide;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,11 +17,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -57,6 +61,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Marker destination; // the marker that has to be updated
     private Boolean destinationUpdated = false; // check if app has to draw a new marker or update an existing one
     private AutocompleteFilter autocompleteFilter;
+    private CustomInfoWindow customInfoWindow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,13 +79,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
+
 
         toggle.syncState();
 
@@ -131,12 +136,22 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         LatLng ireland = new LatLng(53.433333, -7.95); // position for the camera
         LatLng userLocation = new LatLng(user_lat, user_long); // LatLng of the users positions
         Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
+
+        //Adapter to handle the infoWindow
+        customInfoWindow = new CustomInfoWindow(this);
+        mMap.setInfoWindowAdapter(customInfoWindow);
+
+        //add marker and adjust camera
         mMap.addMarker(new MarkerOptions().position(userLocation).title("Home")); // set a marker for user location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
+
+        //show the applicable chargers in Ireland
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String make  = sharedPref.getString("selectedMake" , "");
         String model  = sharedPref.getString("selectedModel" , "");
         Toast.makeText(getApplicationContext()  , "You selected "+ make + " "+ model  , Toast.LENGTH_LONG).show();
+
+        //select what chargers to show
         if( make.equals("Nissan")){
             pinDrop("chademo_output.txt");
         }
@@ -147,10 +162,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         else{
             pinDrop("ccs_output.txt");
         }
-
-
-
-
     }
 
     @Override
@@ -214,15 +225,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
 
     public void pinDrop (String plug) {
-
-
-
         BufferedReader reader;
-
         try{
+            //open up the file and accept input streams
             final InputStream file = getAssets().open(plug);
             reader = new BufferedReader(new InputStreamReader(file));
             String line = reader.readLine();
+
+            //while there are still chargers to show
             while(line != null){
 
                 String [] charger_Info = line.split("\\|"); //
@@ -232,6 +242,20 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 String stateEnds = state.charAt(state.length() -2) + "";
                 Log.d( state.charAt(state.length() -2) + "", "pinDrop: ");
 
+                //infoWindow information to show
+                String placeOutput = "";
+                String [] chargeSplit = charger_Name.split(", ");
+                String title = chargeSplit[0];
+                for (int i = 1; i < chargeSplit.length - 2; i++) {
+                    placeOutput = placeOutput + chargeSplit[i] + "\n";
+                }
+
+                placeOutput += chargeSplit[chargeSplit.length - 2];
+
+                Log.i("placeOutput", placeOutput);
+                //end of infoWindow
+
+                //parsing the latlng of each of the chargers
                 String [] split_Lat_Lon = latlon.split(",");
                 double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
                 double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
@@ -269,13 +293,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             ioe.printStackTrace();
             Toast.makeText(getApplicationContext(),"Charger File not Found" , Toast.LENGTH_LONG).show();
         }
-
-
-
-        }
-
-
     }
+}
 
 
 
