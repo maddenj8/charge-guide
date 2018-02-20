@@ -242,14 +242,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 char stateEnds = state.charAt(state.length() -2);
 
                 String [] split_Lat_Lon = latlon.split(",");
-                double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
-                double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
+                double charger_lon = Double.parseDouble(split_Lat_Lon[0]);
+                double charger_lat = Double.parseDouble(split_Lat_Lon[1]);
+
+                //Log.d("chargerLoc" , charger_lat  + " " +charger_lon +" " +user_lat + " " + user_long);
 
                 LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
 
-                //get distance form charger to current location
-
-                //double distanceFromHome = latLonToKm(user_lat, user_long ,charger_lat, charger_lon );
 
                 Location chargerLoc = new Location("Charger location");
                 Location userLoc = new Location(("User Location"));
@@ -260,14 +259,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 userLoc.setLongitude(user_long);
                 float [] results = new float[128];
                 Location.distanceBetween(charger_lon, charger_lat , user_long , user_lat , results );
-                for  ( int i= 0 ; i < 127 ;  i++){
-                    Log.d("results" , results[i] + "");
-                }
+                //Log.d("results" , results[3] + "");
+                double distance = results[1];
 
 
 
-               // String distanceString = "";
-                //Log.d("string", distanceString.valueOf(distanceFromHome));
 
                 if("l".equals(stateEnds)){
                     state = "Available";
@@ -301,26 +297,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
 
         }
-    /*
 
-    public double latLonToKm(Double lat1, Double lon1, Double lat2, Double lon2) {
-        final double RADIUS = 6371.01;
 
-        float pk = (float) (180.f/Math.PI);
 
-        double a1 = lat1 / pk;
-        double a2 = lon1 / pk;
-        double b1 = lat2 / pk;
-        double b2 = lon2 / pk;
-
-        double t1 = Math.cos(a1) * Math.cos(a2) * Math.cos(b1) * Math.cos(b2);
-        double t2 = Math.cos(a1) * Math.sin(a2) * Math.cos(b1) * Math.sin(b2);
-        double t3 = Math.sin(a1) * Math.sin(b1);
-        double tt = Math.acos(t1 + t2 + t3);
-
-        return 6366000 * tt;
-
-*/
     }
 
 
