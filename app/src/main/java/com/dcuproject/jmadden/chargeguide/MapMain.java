@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
@@ -62,6 +63,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Boolean destinationUpdated = false; // check if app has to draw a new marker or update an existing one
     private AutocompleteFilter autocompleteFilter;
     private CustomInfoWindow customInfoWindow;
+    private Float user_lat;
+    private Float user_long;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,10 +131,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
         user_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
-        Float user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
-        Float user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a coordinate)
+        user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
+        user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a coordinate)
         // Add a marker in Sydney and move the camera
         LatLng ireland = new LatLng(53.433333, -7.95); // position for the camera
         LatLng userLocation = new LatLng(user_lat, user_long); // LatLng of the users positions
@@ -263,9 +267,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 Log.d("line" , state);
                 Log.d("charger_state" ,stateEnds);
 
+                float [] results = new float[128];
+                Location.distanceBetween(charger_lon, charger_lat , user_long , user_lat , results );
+                double distance = results[1];
+
                 //checks what state the chager is in by looking at the second last charter
                 // charter in the 3rd part of the line
 
+                Log.d("chargerLoc" , charger_lat  + " " +charger_lon +" " +user_lat + " " + user_long);
                 if("e".equals(stateEnds)){
                     state = "Available";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
@@ -287,9 +296,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     state = "Out of Contact";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
                 }
-
-
-
 
                 line = reader.readLine();
             }

@@ -211,7 +211,7 @@ public class first_launch extends AppCompatActivity implements LocationListener{
             if (ContextCompat.checkSelfPermission(this.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 //commented out as we don't need updates we just need the initial location
-                //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) this); //check for changes
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) this); //check for changes
 
                 String bestProvider = locationManager.NETWORK_PROVIDER; //set the provider of the location (network is faster)
 
