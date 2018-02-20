@@ -46,10 +46,13 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
                 statusIcon.setBackgroundResource(R.drawable.green_charger);
             }
             else if (subText.getText().toString().contains("Occupied")) {
-                statusIcon.setBackgroundResource(R.drawable.red_charger);
+                statusIcon.setBackgroundResource(R.drawable.blue_charger);
+            }
+            else if (subText.getText().toString().contains("Out of Contact")){
+                statusIcon.setBackgroundResource(R.drawable.gray_charger);
             }
             else {
-                statusIcon.setBackgroundResource(R.drawable.gray_charger);
+                statusIcon.setBackgroundResource(R.drawable.red_charger);
             }
             return view;
         } catch(Exception e) {
