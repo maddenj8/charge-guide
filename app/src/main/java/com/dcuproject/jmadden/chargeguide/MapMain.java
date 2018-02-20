@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
@@ -61,7 +62,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Marker destination; // the marker that has to be updated
     private Boolean destinationUpdated = false; // check if app has to draw a new marker or update an existing one
     private AutocompleteFilter autocompleteFilter;
-    private CustomInfoWindow customInfoWindow;
+    private double user_lat;
+    private double user_long;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
         if (!config.equals("true")) {
             startActivity(new Intent(getApplicationContext(), first_launch.class));
+
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -130,8 +133,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         user_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
-        Float user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
-        Float user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a coordinate)
+         user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
+         user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a coordinate)
         // Add a marker in Sydney and move the camera
         LatLng ireland = new LatLng(53.433333, -7.95); // position for the camera
         LatLng userLocation = new LatLng(user_lat, user_long); // LatLng of the users positions
@@ -257,16 +260,32 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 //parsing the latlng of each of the chargers
                 String [] split_Lat_Lon = latlon.split(",");
-                double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
-                double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
+                double charger_lon = Double.parseDouble(split_Lat_Lon[0]);
+                double charger_lat = Double.parseDouble(split_Lat_Lon[1]);
+
+                //Log.d("chargerLoc" , charger_lat  + " " +charger_lon +" " +user_lat + " " + user_long);
+
                 LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
                 Log.d("line" , state);
                 Log.d("charger_state" ,stateEnds);
 
-                //checks what state the chager is in by looking at the second last charter
-                // charter in the 3rd part of the line
 
-                if("e".equals(stateEnds)){
+                Location chargerLoc = new Location("Charger location");
+                Location userLoc = new Location(("User Location"));
+
+                chargerLoc.setLatitude(charger_lat);
+                chargerLoc.setLatitude(charger_lon);
+                userLoc.setLatitude(user_lat);
+                userLoc.setLongitude(user_long);
+                float [] results = new float[128];
+                Location.distanceBetween(charger_lon, charger_lat , user_long , user_lat , results );
+                //Log.d("results" , results[3] + "");
+                double distance = results[1];
+
+
+
+
+                if("l".equals(stateEnds)){
                     state = "Available";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
 
@@ -299,6 +318,10 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         }
     }
 }
+
+
+
+
 
 
 
