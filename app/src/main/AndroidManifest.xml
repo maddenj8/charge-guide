@@ -8,8 +8,9 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.location.gps" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -47,8 +48,10 @@
         <activity
             android:name=".first_launch"
             android:screenOrientation="portrait" />
-        <activity android:name=".help"
-            android:parentActivityName=".MapMain"></activity>
+        <activity
+            android:name=".help"
+            android:parentActivityName=".MapMain" />
+        <activity android:name=".chargerInfo"></activity>
     </application>
 
 </manifest>

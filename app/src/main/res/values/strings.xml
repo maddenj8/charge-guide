@@ -58,9 +58,7 @@
         kWh per 100km: Measure of efficiency of a car typical values are around 20 Kwh per 100km
   </string>
 
-        <string name = "conector">There are three main types of connectors ccs and chademo </string>
-
-
+    <string name="conector">There are three main types of connectors ccs and chademo </string>
 
 
 </resources>
