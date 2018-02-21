@@ -323,8 +323,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                         intent.putExtras(bundle);
                         startActivity(intent);
                         //another comment
-
-
                     }
                 });
 
