@@ -207,39 +207,40 @@ public class first_launch extends AppCompatActivity implements LocationListener{
         home = ((CheckBox) v).isChecked();
         Log.i("SOMETHING", home.toString());
         if (home) {
-            searchBar.getView().setVisibility(View.GONE);
-            if (ContextCompat.checkSelfPermission(this.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                //commented out as we don't need updates we just need the initial location
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) this); //check for changes
+            try {
+                searchBar.getView().setVisibility(View.GONE);
+                if (ContextCompat.checkSelfPermission(this.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    //commented out as we don't need updates we just need the initial location
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) this); //check for changes
 
-                String bestProvider = locationManager.NETWORK_PROVIDER; //set the provider of the location (network is faster)
+                    String bestProvider = locationManager.NETWORK_PROVIDER; //set the provider of the location (network is faster)
 
-                Location location = locationManager.getLastKnownLocation(bestProvider); //get the last known location
+                    Location location = locationManager.getLastKnownLocation(bestProvider); //get the last known location
 
-                if (location != null) { // make sure that location is not null before operating on it
-                    //SAVE COORDINATES
-                    saveCoordinates((float) location.getLatitude(), (float) location.getLongitude());
+                    if (location != null) { // make sure that location is not null before operating on it
+                        //SAVE COORDINATES
+                        saveCoordinates((float) location.getLatitude(), (float) location.getLongitude());
 
-                    //GET GEOCODE LOCATION
-                    List<Address> addresses;
-                    Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                    addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        //GET GEOCODE LOCATION
+                        List<Address> addresses;
+                        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                        addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
-                    //FORMULATE ADDRESS
-                    String currentLocation = addresses.get(0).getAddressLine(0);
-                    currentLocation += "\n" + addresses.get(0).getLocality();
-                    currentLocation += "\n" + addresses.get(0).getCountryName();
-                    currentLocation += "\n\nIf this is incorrect untick the checkbox and search for location";
+                        //FORMULATE ADDRESS
+                        String currentLocation = addresses.get(0).getAddressLine(0);
+                        currentLocation += "\n" + addresses.get(0).getLocality();
+                        currentLocation += "\n" + addresses.get(0).getCountryName();
+                        currentLocation += "\n\nIf this is incorrect untick the checkbox and search for location";
 
-                    //SHOW ADDRESS
-                    address.setText(currentLocation);
-                    address.setVisibility(View.VISIBLE);
+                        //SHOW ADDRESS
+                        address.setText(currentLocation);
+                        address.setVisibility(View.VISIBLE);
+                    } else {
+                        Toast.makeText(this, "Issue finding your location please check your internet connection and try again.", Toast.LENGTH_LONG).show();
+                    }
                 }
-                else {
-                    // location was not found for some reason (network issues perhaps) notify the user
-                }
-            }
+            } catch(Exception e) {e.printStackTrace();}
         }
         else {
             searchBar.getView().setVisibility(View.VISIBLE);
