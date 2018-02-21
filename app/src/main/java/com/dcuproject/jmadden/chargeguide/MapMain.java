@@ -28,7 +28,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
@@ -52,6 +51,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import org.apache.commons.net.ftp.*;
+
+
 
 public class MapMain extends FragmentActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
@@ -160,6 +162,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         String make  = sharedPref.getString("selectedMake" , "");
         String model  = sharedPref.getString("selectedModel" , "");
         Toast.makeText(getApplicationContext()  , "You selected "+ make + " "+ model  , Toast.LENGTH_LONG).show();
+
+        FTPClient mFtpClient = new FTPClient();
+        mFtpClient.configure("");
+
+
+
+
+
 
         //select what chargers to show
         if( make.equals("Nissan")){
