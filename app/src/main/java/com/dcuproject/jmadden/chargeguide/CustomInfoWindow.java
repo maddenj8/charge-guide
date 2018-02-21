@@ -6,8 +6,10 @@ import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.Object;
 
@@ -24,14 +26,18 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
     private View view;
     private Activity context;
 
+
     public CustomInfoWindow(Activity context) {
         this.context = context;
+
     }
 
     @Override
     public View getInfoWindow(Marker marker) {
         return null;
     }
+
+
 
     @Override
     public View getInfoContents(Marker marker) {
@@ -51,8 +57,11 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
             else if (subText.getText().toString().contains("Out of Contact")){
                 statusIcon.setBackgroundResource(R.drawable.gray_charger);
             }
-            else {
+            else if (subText.getText().toString().contains("Out of Contact")){
                 statusIcon.setBackgroundResource(R.drawable.red_charger);
+            }
+            else{
+                statusIcon.setBackgroundResource(R.drawable.home);
             }
             return view;
         } catch(Exception e) {
@@ -60,5 +69,11 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
             e.printStackTrace();
         }
         return null;
+
+
     }
+
+
 }
+
+

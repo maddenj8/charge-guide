@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -111,7 +112,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                Log.i("PLACE TEST", place.getName().toString());
+               // Log.i("PLACE TEST", place.getName().toString());
                 if (destinationUpdated) {
                     destination.setPosition(place.getLatLng()); // if there is a marker just update the position
                 }
@@ -139,14 +140,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         // Add a marker in Sydney and move the camera
         LatLng ireland = new LatLng(53.433333, -7.95); // position for the camera
         LatLng userLocation = new LatLng(user_lat, user_long); // LatLng of the users positions
-        Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
+       // Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
 
         //Adapter to handle the infoWindow
         customInfoWindow = new CustomInfoWindow(this);
         mMap.setInfoWindowAdapter(customInfoWindow);
 
+
+
+
+
+
         //add marker and adjust camera
-        mMap.addMarker(new MarkerOptions().position(userLocation).title("Home")); // set a marker for user location
+        mMap.addMarker(new MarkerOptions().position(userLocation).title("Home").anchor(0.5f, 1)); // set a marker for user location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
 
         //show the applicable chargers in Ireland
@@ -238,18 +244,20 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
             //while there are still chargers to show
             while(line != null){
+                //used to get the state of the charger
 
-                String [] charger_Info = line.split("\\|"); //
+
+                final String [] charger_Info = line.split("\\|"); //
                 String charger_Name = charger_Info[0];
                 String latlon = charger_Info[1];
                 String state = charger_Info[2];
                 String stateEnds = state.charAt(state.length() -2) + "";
-                Log.d( state.charAt(state.length() -2) + "", "pinDrop: ");
-
+                //Log.d( state.charAt(state.length() -2) + "", "pinDrop: ");
                 //infoWindow information to show
                 String placeOutput = "";
-                String [] chargeSplit = charger_Name.split(", ");
+                final String [] chargeSplit = charger_Name.split(", ");
                 String title = chargeSplit[0];
+                title = title.replace("amp;" , ""); // because the python script brakes when this is done
                 for (int i = 1; i < chargeSplit.length - 2; i++) {
                     placeOutput = placeOutput + chargeSplit[i] + "\n";
                 }
@@ -261,18 +269,22 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 //parsing the latlng of each of the chargers
                 String [] split_Lat_Lon = latlon.split(",");
-                double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
-                double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
+                final double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
+                final double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
                 LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
-                Log.d("line" , state);
-                Log.d("charger_state" ,stateEnds);
 
-                float [] results = new float[128];
-                Location.distanceBetween(charger_lon, charger_lat , user_long , user_lat , results );
-                double distance = results[1];
 
-                //checks what state the chager is in by looking at the second last charter
-                // charter in the 3rd part of the line
+                Location chargerLoc = new Location("charger_Location");
+                Location userLocation = new Location("user_Location");
+                chargerLoc.setLatitude(charger_lon);
+                chargerLoc.setLongitude(charger_lat);
+
+                userLocation.setLatitude(user_lat);
+                userLocation.setLongitude(user_long);
+
+                float distance = userLocation.distanceTo( chargerLoc )/ 1000; // convert to km
+                //Log.d("dist" , distance + " " + charger_Name);
+
 
                 Log.d("chargerLoc" , charger_lat  + " " +charger_lon +" " +user_lat + " " + user_long);
                 if("e".equals(stateEnds)){
@@ -292,12 +304,30 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
                 }
 
-                else{
+                else if ("t".equals(stateEnds)){
                     state = "Out of Contact";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
                 }
 
+
                 line = reader.readLine();
+
+                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        Intent intent = new Intent(MapMain.this,chargerInfo.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putStringArray("chargerInfo" , chargeSplit );
+                        bundle.putDouble("lat",charger_lat );
+                        bundle.putDouble("Lon",charger_lon );
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+
+
+
+                    }
+                });
+
             }
         } catch(IOException ioe){
             ioe.printStackTrace();
