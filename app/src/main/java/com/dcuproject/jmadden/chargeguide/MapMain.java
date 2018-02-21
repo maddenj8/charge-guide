@@ -322,7 +322,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                         bundle.putDouble("Lon",charger_lon );
                         intent.putExtras(bundle);
                         startActivity(intent);
-                        //comment
+                        //another comment
 
 
                     }
