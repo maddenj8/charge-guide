@@ -163,9 +163,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         String model  = sharedPref.getString("selectedModel" , "");
         Toast.makeText(getApplicationContext()  , "You selected "+ make + " "+ model  , Toast.LENGTH_LONG).show();
 
-        FTPClient mFtpClient = new FTPClient();
-        mFtpClient.configure("");
-
+        //FTPClient mFtpClient = new FTPClient();
+        //mFtpClient.configure("");
 
 
 
