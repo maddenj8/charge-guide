@@ -253,6 +253,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         StrictMode.setThreadPolicy(policy); //android got upset because we are using networking in the main thread
 
 
+        File path = getApplicationContext().getFilesDir();
+        File file = new File(path , "plug.txt");
+
+        String pathStr = path.toString() + "/plug.txt";
+        Log.d("path ", pathStr);
+
         try {
             JSch ssh = new JSch();
             Session session = ssh.getSession("nugenc12", "student.computing.dcu.ie", 22);
@@ -267,15 +273,32 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             ChannelSftp sftp = (ChannelSftp) channel;
 
             sftp.cd("/users/case3/nugenc12/kml_parse/");
-            String path = sftp.pwd();
-            Log.d("path", path);
+            //String path = sftp.pwd();
+           // Log.d("path", path);
 
             // If you need to display the progress of the upload, read how to do it in the end of the article
 
             // use the get method , if you are using android remember to remove "file://" and use only the relative path
-            sftp.get("/users/case3/nugenc12/kml_parse/chademo_output.txt" , "");
+            sftp.get("/users/case3/nugenc12/kml_parse/chademo_output.txt" , pathStr);
+            String line = null;
+            FileInputStream fileInputStream = new FileInputStream (new File(pathStr));
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder stringBuilder = new StringBuilder();
 
-            Log.d("workie" ,"yes it workine");
+            while ( (line = bufferedReader.readLine()) != null )
+            {
+                stringBuilder.append(line + System.getProperty("line.separator"));
+            }
+            fileInputStream.close();
+            line = stringBuilder.toString();
+            Log.d("line", line);
+
+            bufferedReader.close();
+
+
+
+
 
             Boolean success = true;
 
@@ -291,11 +314,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
         }
 
+
+
+
         BufferedReader reader;
         try{
             //open up the file and accept input streams
-            final InputStream file = getAssets().open(plug);
-            reader = new BufferedReader(new InputStreamReader(file));
+            final InputStream file1 = getAssets().open(plug);
+            reader = new BufferedReader(new InputStreamReader(file1));
             String line = reader.readLine();
 
 
