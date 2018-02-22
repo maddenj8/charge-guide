@@ -42,12 +42,17 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
     @Override
     public View getInfoContents(Marker marker) {
         try {
+
             view = context.getLayoutInflater().inflate(R.layout.info_window_layout, null);
+
+            Button button = (Button) view.findViewById(R.id.moreInfo);
             TextView title = view.findViewById(R.id.tv_title);
             ImageView statusIcon = view.findViewById(R.id.status_icon);
+
             title.setText(marker.getTitle());
             TextView subText = view.findViewById(R.id.tv_subtitle);
             subText.setText(marker.getSnippet());
+
             if (subText.getText().toString().contains("Available")) {
                 statusIcon.setBackgroundResource(R.drawable.green_charger);
             }
@@ -63,6 +68,14 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
             else{
                 statusIcon.setBackgroundResource(R.drawable.home);
             }
+
+            if (!marker.getTitle().equals("Home")) {
+                button.setVisibility(View.VISIBLE);
+            }
+            else {
+                button.setVisibility(View.GONE);
+            }
+
             return view;
         } catch(Exception e) {
             Log.d("inflator not working", "NO IT DIDN'T WORK");
