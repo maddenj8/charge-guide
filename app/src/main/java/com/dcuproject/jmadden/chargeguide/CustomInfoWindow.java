@@ -61,7 +61,7 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
             else if (subText.getText().toString().contains("Out of Contact")){
                 statusIcon.setBackgroundResource(R.drawable.gray_charger);
             }
-            else if (subText.getText().toString().contains("Out of Contact")){
+            else if (subText.getText().toString().contains("Out of Service")){
                 statusIcon.setBackgroundResource(R.drawable.red_charger);
             }
             else{

@@ -341,12 +341,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 String charger_Name = charger_Info[0];
                 String latlon = charger_Info[1];
                 String state = charger_Info[2];
-                String stateEnds = state.charAt(state.length() -2) + "";
+                String stateEnds = state.charAt(state.length() -4) + "";
                 //Log.d( state.charAt(state.length() -2) + "", "pinDrop: ");
                 //infoWindow information to show
                 String placeOutput = "";
                 final String [] chargeSplit = charger_Name.split(", ");
                 String title = chargeSplit[0];
+
                 title = title.replace("amp;" , ""); // because the python script brakes when this is done
                 for (int i = 1; i < chargeSplit.length - 2; i++) {
                     placeOutput = placeOutput + chargeSplit[i] + "\n";
@@ -367,29 +368,32 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
 
                 //Log.d("chargerLoc" , charger_lat  + " " +charger_lon +" " +user_lat + " " + user_long);
-                if("e".equals(stateEnds)){
+                if(state.contains("Available")){
                     state = "Available";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
 
 
                 }
-                else if ("d".equals(stateEnds)){
+                else if (state.contains("Occupied")){
                     state = "Occupied";
+
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_charger)).anchor(0.5f, 1));
 
                 }
 
-                else if ("c".equals(stateEnds)){
+                else if (state.contains("Out-of-Service")){
                     state = "Out of Service";
+
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
                 }
 
-                else if ("t".equals(stateEnds)){
+                else {
                     state = "Out of Contact";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
                 }
 
 
+                Log.d("title", stateEnds + " " + state);
                 line = reader.readLine();
 
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
