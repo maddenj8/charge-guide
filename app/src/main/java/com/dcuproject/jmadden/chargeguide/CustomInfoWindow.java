@@ -42,7 +42,6 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
     @Override
     public View getInfoContents(Marker marker) {
         try {
-
             view = context.getLayoutInflater().inflate(R.layout.info_window_layout, null);
 
             Button button = (Button) view.findViewById(R.id.moreInfo);
@@ -78,7 +77,6 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
 
             return view;
         } catch(Exception e) {
-            Log.d("inflator not working", "NO IT DIDN'T WORK");
             e.printStackTrace();
         }
         return null;
