@@ -56,6 +56,8 @@ import java.net.InetAddress;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import org.apache.commons.net.ftp.*;
+import com.jcraft.jsch.*;
+
 
 
 
@@ -247,44 +249,47 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
 
     public void pinDrop (String plug) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy); //android got upset because we are using networking in the main thread
 
-        FTPSClient mFtpClient = null;
 
         try {
-             mFtpClient = new FTPSClient();
+            JSch ssh = new JSch();
+            Session session = ssh.getSession("nugenc12", "student.computing.dcu.ie", 22);
+            java.util.Properties config = new java.util.Properties();
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+            session.setPassword("5yv68ain");
+            session.connect();
+            Channel channel = session.openChannel("sftp");
+            channel.connect();
 
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy); //android got upset because we are using networking in the main thread
+            ChannelSftp sftp = (ChannelSftp) channel;
 
-            String host = "sftp://student.computing.dcu.ie";
-            //mFtpClient.setConnectTimeout(5 * 1000);
-            mFtpClient.connect("sftp://student.computing.dcu.ie" ,22);
-            Log.d("output", "output");
-            mFtpClient.login("nugenc12","5yv68ain"); // I have nothing to hide
+            sftp.cd("/users/case3/nugenc12/kml_parse/");
+            String path = sftp.pwd();
+            Log.d("path", path);
 
-            //mFtpClient.changeWorkingDirectory("/users/case3/nugenc12/kml_parse");
-            //mFtpClient.setFileType(FTP.ASCII_FILE_TYPE);
-            //String output = mFtpClient.listFiles().toString();
-            //BufferedInputStream buffIn = null;
-            //buffIn = new BufferedInputStream(new FileInputStream("chademo_output.kml"));
-            //String output = buffIn.toString();
-            mFtpClient.enterLocalPassiveMode();
+            // If you need to display the progress of the upload, read how to do it in the end of the article
 
+            // use the get method , if you are using android remember to remove "file://" and use only the relative path
+            sftp.get("/users/case3/nugenc12/kml_parse/chademo_output.txt" , "");
 
+            Log.d("workie" ,"yes it workine");
 
-            //buffIn.close();
-            mFtpClient.logout();
-            mFtpClient.disconnect();
+            Boolean success = true;
+
+            if(success){
+                // The file has been succesfully downloaded
+            }
+
+            channel.disconnect();
+            session.disconnect();
+        } catch ( Exception e) {
+            System.out.println(e.getMessage().toString());
+            e.printStackTrace();
+
         }
-
-        catch (IOException e){
-            Log.d("ftp" ," couldn't connect to ftp server ");
-        }
-
-        catch (NoSuchAlgorithmException f){
-            Log.d("ftp" ," No such algorothm  ");
-        }
-
 
         BufferedReader reader;
         try{
