@@ -77,11 +77,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Float user_long;
     private ViewGroup infoWindow;
     private Button infoButton;
+    private String line = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
+
 
 
 
@@ -280,21 +282,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
             // use the get method , if you are using android remember to remove "file://" and use only the relative path
             sftp.get("/users/case3/nugenc12/kml_parse/chademo_output.txt" , pathStr);
-            String line = null;
-            FileInputStream fileInputStream = new FileInputStream (new File(pathStr));
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            StringBuilder stringBuilder = new StringBuilder();
-
-            while ( (line = bufferedReader.readLine()) != null )
-            {
-                stringBuilder.append(line + System.getProperty("line.separator"));
-            }
-            fileInputStream.close();
-            line = stringBuilder.toString();
-            Log.d("line", line);
-
-            bufferedReader.close();
 
 
 
@@ -320,9 +307,27 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         BufferedReader reader;
         try{
             //open up the file and accept input streams
-            final InputStream file1 = getAssets().open(plug);
-            reader = new BufferedReader(new InputStreamReader(file1));
-            String line = reader.readLine();
+            //final InputStream file1 = getAssets().open(plug);
+            //reader = new BufferedReader(new InputStreamReader(file1));
+            //String line = reader.readLine();
+
+            FileInputStream fileInputStream = new FileInputStream (new File(pathStr));
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            reader = new BufferedReader(inputStreamReader);
+            line = reader.readLine();
+            //StringBuilder stringBuilder = new StringBuilder();
+
+            // while ( (line = bufferedReader.readLine()) != null )
+            // {
+           // stringBuilder.append(line + System.getProperty("line.separator"));
+            //}
+            //fileInputStream.close();
+            //line = stringBuilder.toString();
+
+            // Log.d("line", line);
+
+            //reader.close();
+
 
 
 
