@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
@@ -42,6 +43,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,6 +52,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import org.apache.commons.net.ftp.*;
 
@@ -73,6 +77,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
+
+
 
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String config = sharedPref.getString("Setup_complete", "false");
@@ -163,9 +169,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         String model  = sharedPref.getString("selectedModel" , "");
         Toast.makeText(getApplicationContext()  , "You selected "+ make + " "+ model  , Toast.LENGTH_LONG).show();
 
-        //FTPClient mFtpClient = new FTPClient();
-        //mFtpClient.configure("");
-
 
 
 
@@ -244,12 +247,54 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
 
     public void pinDrop (String plug) {
+
+        FTPSClient mFtpClient = null;
+
+        try {
+             mFtpClient = new FTPSClient();
+
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy); //android got upset because we are using networking in the main thread
+
+            String host = "sftp://student.computing.dcu.ie";
+            //mFtpClient.setConnectTimeout(5 * 1000);
+            mFtpClient.connect("sftp://student.computing.dcu.ie" ,22);
+            Log.d("output", "output");
+            mFtpClient.login("nugenc12","5yv68ain"); // I have nothing to hide
+
+            //mFtpClient.changeWorkingDirectory("/users/case3/nugenc12/kml_parse");
+            //mFtpClient.setFileType(FTP.ASCII_FILE_TYPE);
+            //String output = mFtpClient.listFiles().toString();
+            //BufferedInputStream buffIn = null;
+            //buffIn = new BufferedInputStream(new FileInputStream("chademo_output.kml"));
+            //String output = buffIn.toString();
+            mFtpClient.enterLocalPassiveMode();
+
+
+
+            //buffIn.close();
+            mFtpClient.logout();
+            mFtpClient.disconnect();
+        }
+
+        catch (IOException e){
+            Log.d("ftp" ," couldn't connect to ftp server ");
+        }
+
+        catch (NoSuchAlgorithmException f){
+            Log.d("ftp" ," No such algorothm  ");
+        }
+
+
         BufferedReader reader;
         try{
             //open up the file and accept input streams
             final InputStream file = getAssets().open(plug);
             reader = new BufferedReader(new InputStreamReader(file));
             String line = reader.readLine();
+
+
+
 
             //while there are still chargers to show
             while(line != null){
@@ -273,7 +318,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 placeOutput += chargeSplit[chargeSplit.length - 2];
 
-                Log.i("placeOutput", placeOutput);
+                //Log.i("placeOutput", placeOutput);
                 //end of infoWindow
 
                 //parsing the latlng of each of the chargers
@@ -295,7 +340,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 //Log.d("dist" , distance + " " + charger_Name);
 
 
-                Log.d("chargerLoc" , charger_lat  + " " +charger_lon +" " +user_lat + " " + user_long);
+                //Log.d("chargerLoc" , charger_lat  + " " +charger_lon +" " +user_lat + " " + user_long);
                 if("e".equals(stateEnds)){
                     state = "Available";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
