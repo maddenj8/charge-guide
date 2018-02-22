@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -74,6 +75,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private CustomInfoWindow customInfoWindow;
     private Float user_lat;
     private Float user_long;
+    private ViewGroup infoWindow;
+    private Button infoButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +103,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
 
+        infoWindow = (ViewGroup) getLayoutInflater().inflate(R.layout.info_window_layout, null);
+        infoButton = (Button) infoWindow.findViewById(R.id.moreInfo);
 
         toggle.syncState();
 
@@ -155,11 +160,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         //Adapter to handle the infoWindow
         customInfoWindow = new CustomInfoWindow(this);
         mMap.setInfoWindowAdapter(customInfoWindow);
-
-
-
-
-
 
         //add marker and adjust camera
         mMap.addMarker(new MarkerOptions().position(userLocation).title("Home").anchor(0.5f, 1)); // set a marker for user location
@@ -332,16 +332,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 final double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
                 LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
 
-
-                Location chargerLoc = new Location("charger_Location");
-                Location userLocation = new Location("user_Location");
-                chargerLoc.setLatitude(charger_lon);
-                chargerLoc.setLongitude(charger_lat);
-
-                userLocation.setLatitude(user_lat);
-                userLocation.setLongitude(user_long);
-
-                float distance = userLocation.distanceTo( chargerLoc )/ 1000; // convert to km
                 //Log.d("dist" , distance + " " + charger_Name);
 
 
@@ -374,23 +364,36 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-                        Intent intent = new Intent(MapMain.this,chargerInfo.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putStringArray("chargerInfo" , chargeSplit );
-                        bundle.putDouble("lat",charger_lat );
-                        bundle.putDouble("Lon",charger_lon );
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                        //another comment
+                        if (!marker.getTitle().equals("Home")) {
+                            Location chargerLoc = new Location("charger_Location");
+                            Location userLocation = new Location("user_Location");
+                            chargerLoc.setLatitude(marker.getPosition().latitude);
+                            chargerLoc.setLongitude(marker.getPosition().longitude);
 
+                            userLocation.setLatitude(user_lat);
+                            userLocation.setLongitude(user_long);
 
+                            float distance = userLocation.distanceTo(chargerLoc) / 1000; // convert to km
+
+                            Intent intent = new Intent(MapMain.this, chargerInfo.class);
+                            Bundle bundle = new Bundle();
+                            //final Double dist = distance;
+                            bundle.putString("chargerTitle", marker.getTitle().toString());
+                            bundle.putString("chargerSnippet", marker.getSnippet().toString());
+                            bundle.putDouble("lat", marker.getPosition().latitude);
+                            bundle.putDouble("Lon", marker.getPosition().longitude);
+                            bundle.putDouble("distance", distance);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                            //another comment
+                        }
                     }
                 });
 
             }
         } catch(IOException ioe){
             ioe.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Charger File not Found" , Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Charger FiButtonle not Found" , Toast.LENGTH_LONG).show();
         }
     }
 }
