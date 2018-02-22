@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
@@ -29,7 +30,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
@@ -44,6 +44,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,7 +53,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import org.apache.commons.net.ftp.*;
+import com.jcraft.jsch.*;
+
+
+
 
 public class MapMain extends FragmentActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
@@ -74,6 +82,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
+
+
 
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String config = sharedPref.getString("Setup_complete", "false");
@@ -161,6 +171,10 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         String model  = sharedPref.getString("selectedModel" , "");
         Toast.makeText(getApplicationContext()  , "You selected "+ make + " "+ model  , Toast.LENGTH_LONG).show();
 
+
+
+
+
         //select what chargers to show
         if( make.equals("Nissan")){
             pinDrop("chademo_output.txt");
@@ -235,12 +249,57 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
 
     public void pinDrop (String plug) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy); //android got upset because we are using networking in the main thread
+
+
+        try {
+            JSch ssh = new JSch();
+            Session session = ssh.getSession("nugenc12", "student.computing.dcu.ie", 22);
+            java.util.Properties config = new java.util.Properties();
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+            session.setPassword("5yv68ain");
+            session.connect();
+            Channel channel = session.openChannel("sftp");
+            channel.connect();
+
+            ChannelSftp sftp = (ChannelSftp) channel;
+
+            sftp.cd("/users/case3/nugenc12/kml_parse/");
+            String path = sftp.pwd();
+            Log.d("path", path);
+
+            // If you need to display the progress of the upload, read how to do it in the end of the article
+
+            // use the get method , if you are using android remember to remove "file://" and use only the relative path
+            sftp.get("/users/case3/nugenc12/kml_parse/chademo_output.txt" , "");
+
+            Log.d("workie" ,"yes it workine");
+
+            Boolean success = true;
+
+            if(success){
+                // The file has been succesfully downloaded
+            }
+
+            channel.disconnect();
+            session.disconnect();
+        } catch ( Exception e) {
+            System.out.println(e.getMessage().toString());
+            e.printStackTrace();
+
+        }
+
         BufferedReader reader;
         try{
             //open up the file and accept input streams
             final InputStream file = getAssets().open(plug);
             reader = new BufferedReader(new InputStreamReader(file));
             String line = reader.readLine();
+
+
+
 
             //while there are still chargers to show
             while(line != null){
@@ -264,7 +323,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 placeOutput += chargeSplit[chargeSplit.length - 2];
 
-                Log.i("placeOutput", placeOutput);
+                //Log.i("placeOutput", placeOutput);
                 //end of infoWindow
 
                 //parsing the latlng of each of the chargers
@@ -276,7 +335,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 //Log.d("dist" , distance + " " + charger_Name);
 
 
-                Log.d("chargerLoc" , charger_lat  + " " +charger_lon +" " +user_lat + " " + user_long);
+                //Log.d("chargerLoc" , charger_lat  + " " +charger_lon +" " +user_lat + " " + user_long);
                 if("e".equals(stateEnds)){
                     state = "Available";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
