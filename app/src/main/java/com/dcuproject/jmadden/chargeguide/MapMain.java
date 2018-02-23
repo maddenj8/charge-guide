@@ -88,9 +88,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
 
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
-        String config = sharedPref.getString("Setup_complete", "false");
+        String setupComplete = sharedPref.getString("Setup_complete", "false");
 
-        if (!config.equals("true")) {
+        if (!setupComplete.equals("true")) {
             startActivity(new Intent(getApplicationContext(), first_launch.class));
         }
 
@@ -361,7 +361,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                             userLocation.setLatitude(user_lat);
                             userLocation.setLongitude(user_long);
 
-                            double distance = userLocation.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km
+                            double distance = userLocation.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km and add a fudge factor
 
                             Intent intent = new Intent(MapMain.this, chargerInfo.class);
                             Bundle bundle = new Bundle();

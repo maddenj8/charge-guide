@@ -61,7 +61,7 @@ public class chargerInfo extends AppCompatActivity {
             } else if (stats.equals("Out of Contact")) {
                 Toast.makeText(this, "Out of Contact", Toast.LENGTH_SHORT).show();
                 icon.setBackgroundResource(R.drawable.large_gray_charger);
-            } else if (stats.equals("Out-of-Service")) {
+            } else if (stats.equals("Out of Service")) {
                 Toast.makeText(this, "Out of Service", Toast.LENGTH_SHORT).show();
                 icon.setBackgroundResource(R.drawable.large_red_charger);
             }
