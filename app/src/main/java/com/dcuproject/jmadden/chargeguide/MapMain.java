@@ -77,6 +77,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Float user_long;
     private ViewGroup infoWindow;
     private Button infoButton;
+    private String line = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +86,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
 
 
-        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
-        String config = sharedPref.getString("Setup_complete", "false");
 
-        if (!config.equals("true")) {
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        String setupComplete = sharedPref.getString("Setup_complete", "false");
+
+        if (!setupComplete.equals("true")) {
             startActivity(new Intent(getApplicationContext(), first_launch.class));
         }
 
@@ -173,19 +175,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
 
 
+        pinDrop(make);
 
 
-        //select what chargers to show
-        if( make.equals("Nissan")){
-            pinDrop("chademo_output.txt");
-        }
-        else if ( make.equals("Renault")){
-            pinDrop(("ac_output.txt"));
-        }
-
-        else{
-            pinDrop("ccs_output.txt");
-        }
     }
 
     @Override
@@ -248,10 +240,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         }
 
 
-    public void pinDrop (String plug) {
+    public void pinDrop (String make) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy); //android got upset because we are using networking in the main thread
 
+        File path = getApplicationContext().getFilesDir();
+        String pathStr = path.toString() + "/plug.txt";
+        Log.d("path ", pathStr);
 
         try {
             JSch ssh = new JSch();
@@ -266,22 +261,20 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
             ChannelSftp sftp = (ChannelSftp) channel;
 
-            sftp.cd("/users/case3/nugenc12/kml_parse/");
-            String path = sftp.pwd();
-            Log.d("path", path);
+            //sftp.cd("/users/case3/nugenc12/kml_parse/");
 
-            // If you need to display the progress of the upload, read how to do it in the end of the article
-
-            // use the get method , if you are using android remember to remove "file://" and use only the relative path
-            sftp.get("/users/case3/nugenc12/kml_parse/chademo_output.txt" , "");
-
-            Log.d("workie" ,"yes it workine");
-
-            Boolean success = true;
-
-            if(success){
-                // The file has been succesfully downloaded
+            if( make.equals("Nissan")){
+                sftp.get("/users/case3/nugenc12/kml_parse/chademo_output.txt" , pathStr);
             }
+            else if ( make.equals("Renault")){
+                sftp.get("/users/case3/nugenc12/kml_parse/ac_output.txt" , pathStr);
+            }
+
+            else{
+                sftp.get("/users/case3/nugenc12/kml_parse/ccs_output.txt" , pathStr);
+            }
+
+
 
             channel.disconnect();
             session.disconnect();
@@ -291,31 +284,29 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
         }
 
+
         BufferedReader reader;
         try{
-            //open up the file and accept input streams
-            final InputStream file = getAssets().open(plug);
-            reader = new BufferedReader(new InputStreamReader(file));
-            String line = reader.readLine();
-
+            FileInputStream fileInputStream = new FileInputStream (new File(pathStr));
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            reader = new BufferedReader(inputStreamReader);
+            line = reader.readLine();
 
 
 
             //while there are still chargers to show
             while(line != null){
-                //used to get the state of the charger
 
 
                 final String [] charger_Info = line.split("\\|"); //
                 String charger_Name = charger_Info[0];
                 String latlon = charger_Info[1];
                 String state = charger_Info[2];
-                String stateEnds = state.charAt(state.length() -2) + "";
-                //Log.d( state.charAt(state.length() -2) + "", "pinDrop: ");
-                //infoWindow information to show
+                String stateEnds = state.charAt(state.length() -4) + "";
                 String placeOutput = "";
                 final String [] chargeSplit = charger_Name.split(", ");
                 String title = chargeSplit[0];
+
                 title = title.replace("amp;" , ""); // because the python script brakes when this is done
                 for (int i = 1; i < chargeSplit.length - 2; i++) {
                     placeOutput = placeOutput + chargeSplit[i] + "\n";
@@ -323,8 +314,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 placeOutput += chargeSplit[chargeSplit.length - 2];
 
-                //Log.i("placeOutput", placeOutput);
-                //end of infoWindow
 
                 //parsing the latlng of each of the chargers
                 String [] split_Lat_Lon = latlon.split(",");
@@ -332,31 +321,30 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 final double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
                 LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
 
-                //Log.d("dist" , distance + " " + charger_Name);
-
-
-                //Log.d("chargerLoc" , charger_lat  + " " +charger_lon +" " +user_lat + " " + user_long);
-                if("e".equals(stateEnds)){
+                if(state.contains("Available")){
                     state = "Available";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
                 }
-                else if ("d".equals(stateEnds)){
+                else if (state.contains("Occupied")){
                     state = "Occupied";
+
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_charger)).anchor(0.5f, 1));
 
                 }
 
-                else if ("c".equals(stateEnds)){
+                else if (state.contains("Out-of-Service")){
                     state = "Out of Service";
+
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
                 }
 
-                else if ("t".equals(stateEnds)){
+                else {
                     state = "Out of Contact";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
                 }
 
 
+                Log.d("title", stateEnds + " " + state);
                 line = reader.readLine();
 
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -371,7 +359,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                             userLocation.setLatitude(user_lat);
                             userLocation.setLongitude(user_long);
 
-                            float distance = userLocation.distanceTo(chargerLoc) / 1000; // convert to km
+                            double distance = userLocation.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km and add a fudge factor
 
                             Intent intent = new Intent(MapMain.this, chargerInfo.class);
                             Bundle bundle = new Bundle();
@@ -379,7 +367,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                             bundle.putString("chargerTitle", marker.getTitle().toString());
                             bundle.putString("chargerSnippet", marker.getSnippet().toString());
                             bundle.putDouble("lat", marker.getPosition().latitude);
-                            bundle.putDouble("Lon", marker.getPosition().longitude);
+                            bundle.putDouble("lon", marker.getPosition().longitude);
                             bundle.putDouble("distance", distance);
                             intent.putExtras(bundle);
                             startActivity(intent);
@@ -391,7 +379,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             }
         } catch(IOException ioe){
             ioe.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Charger FiButtonle not Found" , Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Charger not Found" , Toast.LENGTH_LONG).show();
         }
     }
 }
