@@ -2,6 +2,7 @@ package com.dcuproject.jmadden.chargeguide;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -69,7 +70,7 @@ public class chargerInfo extends AppCompatActivity {
         }
         catch(Exception e) {e.printStackTrace();}
 
-        Button openGoogle = (Button) findViewById(R.id.openMaps);
+        FloatingActionButton openGoogle = findViewById(R.id.openMaps);
         openGoogle.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
@@ -87,7 +88,12 @@ public class chargerInfo extends AppCompatActivity {
         });
     }
 
-   // https://www.google.com/maps/dir/'53.67807,-6.289287'/'52.67807,-6.289287'/@52.6743789,-6.2957667
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    // https://www.google.com/maps/dir/'53.67807,-6.289287'/'52.67807,-6.289287'/@52.6743789,-6.2957667
 
 
 }
