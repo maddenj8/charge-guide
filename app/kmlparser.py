@@ -1,3 +1,4 @@
+
 all_chargers = open("charging-locations.kml" , "r") 
 
 def getname(file_name ):
@@ -106,8 +107,6 @@ def getStateChademo():
     return namelist
 
 
-
-
 def getStateCcs():
     namelist = []
     name = ""
@@ -134,9 +133,6 @@ def getStateCcs():
     
     return namelist
 
-
-#needs to write to each file a easily read file 
-#get ac43 file written 
 
 def setupACFile():
     
@@ -183,5 +179,4 @@ def setupChademoFile():
 setupChademoFile()
 setupACFile()
 setupCCSFile()
-
 
