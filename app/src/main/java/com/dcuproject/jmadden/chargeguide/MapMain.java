@@ -253,8 +253,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         }
 
     public void downloadChargerInfo() {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy); //android got upset because we are using networking in the main thread
+
 
         //get the directory to store the downloaded charger info
         File path = getApplicationContext().getFilesDir();

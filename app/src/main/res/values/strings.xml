@@ -15,8 +15,8 @@
     </string-array>
 
     <string-array name="BMW">
-        <item>i3 94 Ah (34KWh)</item>
-        <item>"i3 60 Ah (22KWh)</item>
+        <item>i3 94 Ah / 34 KWh</item>
+        <item>"i3 60 Ah / 22 KWh</item>
     </string-array>
 
     <string-array name="Nissan">
