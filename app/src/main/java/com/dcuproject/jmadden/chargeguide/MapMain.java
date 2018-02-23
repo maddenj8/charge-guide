@@ -78,15 +78,16 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private ViewGroup infoWindow;
     private Button infoButton;
     private String line = null;
+    private String make;
+    private String model;
+    private String pathStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
 
-
-
-
+        //checks if the setup process if complete
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String setupComplete = sharedPref.getString("Setup_complete", "false");
 
@@ -100,19 +101,38 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         mapFragment.getMapAsync(this);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
+        //show the applicable chargers in Ireland
+        sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        make  = sharedPref.getString("selectedMake" , "");
+        model  = sharedPref.getString("selectedModel" , "");
+        Toast.makeText(getApplicationContext()  , "You selected "+ make + " "+ model  , Toast.LENGTH_LONG).show();
 
+        //download the charger info on a separate thread to the main thread
+        try {
+            Thread downloadThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    downloadChargerInfo();
+                }
+            });
+            downloadThread.start();
+        } catch (Exception e) {e.printStackTrace();}
+
+        //handlers for the navigation drawer
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
 
+        //inflating the layout that is used for the custom info window
         infoWindow = (ViewGroup) getLayoutInflater().inflate(R.layout.info_window_layout, null);
         infoButton = (Button) infoWindow.findViewById(R.id.moreInfo);
 
         toggle.syncState();
 
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //adds functionality to the hamburger button
         hamburger = (ImageButton) (findViewById(R.id.hamburger));
         hamburger.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +143,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             }
         });
 
+        //adds a filter to the search bar and handles a place selected
         autocompleteFilter = new AutocompleteFilter.Builder().setCountry("UK").setCountry("Irl").build(); // make a filter for the searchbar (uk and ireland only)
         autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         autocompleteFragment.setFilter(autocompleteFilter); // apply the filter
@@ -167,16 +188,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         mMap.addMarker(new MarkerOptions().position(userLocation).title("Home").anchor(0.5f, 1)); // set a marker for user location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
 
-        //show the applicable chargers in Ireland
-        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
-        String make  = sharedPref.getString("selectedMake" , "");
-        String model  = sharedPref.getString("selectedModel" , "");
-        Toast.makeText(getApplicationContext()  , "You selected "+ make + " "+ model  , Toast.LENGTH_LONG).show();
-
-
-
-        pinDrop(make);
-
+        //add the charger pins of the chargers that are applicable to the car the user drives
+        pinDrop();
 
     }
 
@@ -239,13 +252,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         return true;
         }
 
-
-    public void pinDrop (String make) {
+    public void downloadChargerInfo() {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy); //android got upset because we are using networking in the main thread
 
+        //get the directory to store the downloaded charger info
         File path = getApplicationContext().getFilesDir();
-        String pathStr = path.toString() + "/plug.txt";
+        pathStr = path.toString() + "/plug.txt";
         Log.d("path ", pathStr);
 
         try {
@@ -274,30 +287,28 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 sftp.get("/users/case3/nugenc12/kml_parse/ccs_output.txt" , pathStr);
             }
 
-
-
             channel.disconnect();
             session.disconnect();
         } catch ( Exception e) {
             System.out.println(e.getMessage().toString());
             e.printStackTrace();
-
         }
+    }
 
-
+    public void pinDrop () {
         BufferedReader reader;
         try{
+
+            //open an input stream for the downloaded charger info
             FileInputStream fileInputStream = new FileInputStream (new File(pathStr));
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
             reader = new BufferedReader(inputStreamReader);
             line = reader.readLine();
 
-
-
             //while there are still chargers to show
             while(line != null){
 
-
+                //parse the charger details into a more readable state
                 final String [] charger_Info = line.split("\\|"); //
                 String charger_Name = charger_Info[0];
                 String latlon = charger_Info[1];
@@ -314,7 +325,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 placeOutput += chargeSplit[chargeSplit.length - 2];
 
-
                 //parsing the latlng of each of the chargers
                 String [] split_Lat_Lon = latlon.split(",");
                 final double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
@@ -324,19 +334,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 if(state.contains("Available")){
                     state = "Available";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
-
-
                 }
                 else if (state.contains("Occupied")){
                     state = "Occupied";
-
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_charger)).anchor(0.5f, 1));
-
                 }
 
                 else if (state.contains("Out-of-Service")){
                     state = "Out of Service";
-
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
                 }
 
@@ -344,7 +349,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     state = "Out of Contact";
                     mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
                 }
-
 
                 Log.d("title", stateEnds + " " + state);
                 line = reader.readLine();
@@ -377,7 +381,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                         }
                     }
                 });
-
             }
         } catch(IOException ioe){
             ioe.printStackTrace();
@@ -385,8 +388,3 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         }
     }
 }
-
-
-
-
-
