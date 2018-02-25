@@ -1,6 +1,7 @@
 package com.dcuproject.jmadden.chargeguide;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,8 @@ public class chargerInfo extends AppCompatActivity {
 
     double lat;
     double lon;
+    //String make;
+    String model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +89,15 @@ public class chargerInfo extends AppCompatActivity {
                 startActivity(mapIntent);
             }
         });
+
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        //make  = sharedPref.getString("selectedMake" , "");
+        model  = sharedPref.getString("selectedModel" , "");
+
+        String battery = model.substring( model.length()-6, model.length()-4);
+        int battery_int = Integer.parseInt(battery);
+        //Log.d("bat" , battery_int +"");
     }
 
     @Override
