@@ -31,6 +31,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation files('libs/org.apache.commons.net_2.0.0.v200905272248.jar')
     implementation files('libs/jsch-0.1.54.jar')
 }

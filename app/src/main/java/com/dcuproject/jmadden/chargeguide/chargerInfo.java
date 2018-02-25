@@ -9,7 +9,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +22,7 @@ public class chargerInfo extends AppCompatActivity {
     double lon;
     //String make;
     String model;
+    Float battery_soc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,19 +36,18 @@ public class chargerInfo extends AppCompatActivity {
         TextView distance = (TextView) findViewById(R.id.distance);
 
 
-
         try {
             Intent receive = getIntent();
             Bundle bundle = receive.getExtras();
             title.setText(bundle.getString("chargerTitle"));
             String subText = bundle.getString("chargerSnippet");
             Double dist = bundle.getDouble("distance");
-             lat = bundle.getDouble("lat");
+            lat = bundle.getDouble("lat");
             lon = bundle.getDouble("lon");
             String distString = String.valueOf(dist);
             distString = distString.substring(0, distString.lastIndexOf(".") + 3); // two decimal points
 
-            String [] splitText = subText.split("\n");
+            String[] splitText = subText.split("\n");
             String stats = splitText[splitText.length - 1];
             status.setText(stats);
 
@@ -70,8 +73,9 @@ public class chargerInfo extends AppCompatActivity {
                 icon.setBackgroundResource(R.drawable.large_red_charger);
             }
             //just a test to get items from the main class to the about charger class
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        catch(Exception e) {e.printStackTrace();}
 
         FloatingActionButton openGoogle = findViewById(R.id.openMaps);
         openGoogle.setOnClickListener(new View.OnClickListener() {
@@ -90,14 +94,35 @@ public class chargerInfo extends AppCompatActivity {
             }
         });
 
-        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("usbattery_interPref", MODE_PRIVATE);
         sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         //make  = sharedPref.getString("selectedMake" , "");
-        model  = sharedPref.getString("selectedModel" , "");
+        model = sharedPref.getString("selectedModel", "");
 
-        String battery = model.substring( model.length()-6, model.length()-4);
-        int battery_int = Integer.parseInt(battery);
+        String battery = model.substring(model.length() - 6, model.length() - 4);
+        final int battery_int = Integer.parseInt(battery);
         //Log.d("bat" , battery_int +"");
+
+        final EditText soc = findViewById(R.id.socInt);
+        soc.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+                 String socStr =soc.getText().toString();
+
+                     Float socInt = Float.parseFloat(socStr);
+                     if (socInt >=0  && socInt <=100 ){
+                         socInt = socInt / 100;
+                         battery_soc = battery_int * socInt;
+                         Log.v("soc", battery_soc  +"");
+                     }
+
+                    else {
+                         Toast.makeText(getApplicationContext() , "Enter a number between 0 and 100", Toast.LENGTH_LONG).show();
+                     }
+
+                     
+            }
+        });
     }
 
     @Override
@@ -105,7 +130,7 @@ public class chargerInfo extends AppCompatActivity {
 
     }
 
-    // https://www.google.com/maps/dir/'53.67807,-6.289287'/'52.67807,-6.289287'/@52.6743789,-6.2957667
+
 
 
 }
