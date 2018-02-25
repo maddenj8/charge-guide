@@ -17,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -56,7 +57,11 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.net.ftp.*;
+
+import com.google.android.gms.maps.model.Polyline;
 import com.jcraft.jsch.*;
 
 
@@ -81,6 +86,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private String make;
     private String model;
     private String pathStr;
+    private Thread downloadThread;
+    private ArrayList<Marker> markers = new ArrayList<Marker>();
+    private List<Polyline> polylines;
+
+
+    // Key for Google directions API
+    private String directionsKey = "AIzaSyD0tlhhO3qg6QqbXESkGbiSO_j9ciDG0JU";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +103,22 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String setupComplete = sharedPref.getString("Setup_complete", "false");
 
+        //show the applicable chargers in Ireland
+        sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        make  = sharedPref.getString("selectedMake" , "");
+        model  = sharedPref.getString("selectedModel" , "");
+
+        //download the charger info on a separate thread to the main thread
+        try {
+            downloadThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    downloadChargerInfo();
+                }
+            });
+            downloadThread.start();
+        } catch (Exception e) {e.printStackTrace();}
+
         if (!setupComplete.equals("true")) {
             startActivity(new Intent(getApplicationContext(), first_launch.class));
         }
@@ -100,23 +128,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        //show the applicable chargers in Ireland
-        sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
-        make  = sharedPref.getString("selectedMake" , "");
-        model  = sharedPref.getString("selectedModel" , "");
-        Toast.makeText(getApplicationContext()  , "You selected "+ make + " "+ model  , Toast.LENGTH_LONG).show();
-
-        //download the charger info on a separate thread to the main thread
-        try {
-            Thread downloadThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    downloadChargerInfo();
-                }
-            });
-            downloadThread.start();
-        } catch (Exception e) {e.printStackTrace();}
 
         //handlers for the navigation drawer
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -159,6 +170,30 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     markerOptions = new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()).icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1);
                     destination = mMap.addMarker(markerOptions); // add the newly made marker to the map
                 }
+                try {
+                    for (Polyline polyline : polylines) {
+                        polyline.remove();
+                    }
+                } catch(Exception e) {e.printStackTrace();}
+
+                //when a place is selected draw the path between it and home
+                Object dataTransfer[];
+                dataTransfer = new Object[3];
+                String url = getDirectionsURL(new LatLng(user_lat, user_long), place.getLatLng());
+                GetDirectionsData getDirectionsData = new GetDirectionsData();
+                dataTransfer[0] = mMap;
+                dataTransfer[1] = url;
+                dataTransfer[2] = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+                getDirectionsData.execute(dataTransfer);
+                polylines = getDirectionsData.polylines;
+
+                //and only show the chargers that the user should stop at
+                for (Marker marker:markers) {
+                    double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
+                    if (!(distance > 100 && distance < 120)) {
+                         marker.remove();
+                    }
+                }
             }
 
             @Override
@@ -188,9 +223,22 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         mMap.addMarker(new MarkerOptions().position(userLocation).title("Home").anchor(0.5f, 1)); // set a marker for user location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
 
+        Toast.makeText(this, "Make is " + make + " and Model is " + model, Toast.LENGTH_SHORT).show();
         //add the charger pins of the chargers that are applicable to the car the user drives
         pinDrop();
 
+    }
+
+    public String getJSONResponse(String strUrl) {
+        return "";
+    }
+
+    public String getDirectionsURL(LatLng userPosition, LatLng destPosition) {
+        String url = "https://maps.googleapis.com/maps/api/directions/json?origin=";
+        url += userPosition.latitude + "," + userPosition.longitude;
+        url += "&destination=" + destPosition.latitude + "," + destPosition.longitude;
+        url += "&key=" + directionsKey;
+        return url;
     }
 
     @Override
@@ -217,7 +265,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        //noinspection SimplifiableIfStatement//compile 'com.github.ar-android:DrawRouteMaps:1.0.0'
         if (id == R.id.action_settings) {
             return true;
         }
@@ -294,7 +342,22 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         }
     }
 
+    public double getDistance(double charger_lat, double charger_long) {
+            Location chargerLoc = new Location("charger_Location");
+            Location userLocation = new Location("user_Location");
+            chargerLoc.setLatitude(charger_lat);
+            chargerLoc.setLongitude(charger_long);
+            userLocation.setLatitude(user_lat);
+            userLocation.setLongitude(user_long);
+            return userLocation.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km and add a fudge factor
+    }
+
     public void pinDrop () {
+        // wait for the download to complete before trying to add the markers
+        try {
+            downloadThread.join();
+        } catch(Exception e) {e.printStackTrace();}
+
         BufferedReader reader;
         try{
 
@@ -332,39 +395,30 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 if(state.contains("Available")){
                     state = "Available";
-                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
+                    markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1)));
                 }
                 else if (state.contains("Occupied")){
                     state = "Occupied";
-                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_charger)).anchor(0.5f, 1));
+                    markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_charger)).anchor(0.5f, 1)));
                 }
 
                 else if (state.contains("Out-of-Service")){
                     state = "Out of Service";
-                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
+                    markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1)));
                 }
 
                 else {
                     state = "Out of Contact";
-                    mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
+                    markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1)));
                 }
 
-                Log.d("title", stateEnds + " " + state);
                 line = reader.readLine();
 
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
                         if (!marker.getTitle().equals("Home")) {
-                            Location chargerLoc = new Location("charger_Location");
-                            Location userLocation = new Location("user_Location");
-                            chargerLoc.setLatitude(marker.getPosition().latitude);
-                            chargerLoc.setLongitude(marker.getPosition().longitude);
-
-                            userLocation.setLatitude(user_lat);
-                            userLocation.setLongitude(user_long);
-
-                            double distance = userLocation.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km and add a fudge factor
+                            Double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
 
                             Intent intent = new Intent(MapMain.this, chargerInfo.class);
                             Bundle bundle = new Bundle();
