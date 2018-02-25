@@ -14,6 +14,7 @@ import com.google.maps.android.PolyUtil;
 
 import java.io.IOException;
 import java.nio.DoubleBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class GetDirectionsData extends AsyncTask<Object,String,String> {
     String googleDirectionsData;
     String duration, distance;
     LatLng latLng;
+    List<Polyline> polylines = new ArrayList<Polyline>();
 
     @Override
     protected String doInBackground(Object... objects) {
@@ -65,7 +67,7 @@ public class GetDirectionsData extends AsyncTask<Object,String,String> {
             options.width(10);
             options.addAll(PolyUtil.decode(directionsList[i]));
 
-            mMap.addPolyline(options);
+            polylines.add(mMap.addPolyline(options));
         }
     }
 }

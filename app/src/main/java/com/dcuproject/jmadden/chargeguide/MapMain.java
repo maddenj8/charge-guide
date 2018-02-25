@@ -60,6 +60,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.net.ftp.*;
+
+import com.google.android.gms.maps.model.Polyline;
 import com.jcraft.jsch.*;
 
 
@@ -86,6 +88,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private String pathStr;
     private Thread downloadThread;
     private ArrayList<Marker> markers = new ArrayList<Marker>();
+    private List<Polyline> polylines;
+
 
     // Key for Google directions API
     private String directionsKey = "AIzaSyD0tlhhO3qg6QqbXESkGbiSO_j9ciDG0JU";
@@ -166,6 +170,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     markerOptions = new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()).icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1);
                     destination = mMap.addMarker(markerOptions); // add the newly made marker to the map
                 }
+                try {
+                    for (Polyline polyline : polylines) {
+                        polyline.remove();
+                    }
+                } catch(Exception e) {e.printStackTrace();}
                 Object dataTransfer[] = new Object[2];
                 dataTransfer = new Object[3];
                 String url = getDirectionsURL(new LatLng(user_lat, user_long), place.getLatLng());
@@ -174,6 +183,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 dataTransfer[1] = url;
                 dataTransfer[2] = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
                 getDirectionsData.execute(dataTransfer);
+                polylines = getDirectionsData.polylines;
             }
 
             @Override
