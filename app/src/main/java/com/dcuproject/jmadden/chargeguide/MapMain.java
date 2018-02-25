@@ -175,7 +175,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                         polyline.remove();
                     }
                 } catch(Exception e) {e.printStackTrace();}
-                Object dataTransfer[] = new Object[2];
+
+                //when a place is selected draw the path between it and home
+                Object dataTransfer[];
                 dataTransfer = new Object[3];
                 String url = getDirectionsURL(new LatLng(user_lat, user_long), place.getLatLng());
                 GetDirectionsData getDirectionsData = new GetDirectionsData();
@@ -184,6 +186,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 dataTransfer[2] = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
                 getDirectionsData.execute(dataTransfer);
                 polylines = getDirectionsData.polylines;
+
+                //and only show the chargers that the user should stop at
+                for (Marker marker:markers) {
+                    double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
+                    if (!(distance > 100 && distance < 120)) {
+                         marker.remove();
+                    }
+                }
             }
 
             @Override
@@ -332,6 +342,16 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         }
     }
 
+    public double getDistance(double charger_lat, double charger_long) {
+            Location chargerLoc = new Location("charger_Location");
+            Location userLocation = new Location("user_Location");
+            chargerLoc.setLatitude(charger_lat);
+            chargerLoc.setLongitude(charger_long);
+            userLocation.setLatitude(user_lat);
+            userLocation.setLongitude(user_long);
+            return userLocation.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km and add a fudge factor
+    }
+
     public void pinDrop () {
         // wait for the download to complete before trying to add the markers
         try {
@@ -398,15 +418,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     @Override
                     public void onInfoWindowClick(Marker marker) {
                         if (!marker.getTitle().equals("Home")) {
-                            Location chargerLoc = new Location("charger_Location");
-                            Location userLocation = new Location("user_Location");
-                            chargerLoc.setLatitude(marker.getPosition().latitude);
-                            chargerLoc.setLongitude(marker.getPosition().longitude);
-
-                            userLocation.setLatitude(user_lat);
-                            userLocation.setLongitude(user_long);
-
-                            double distance = userLocation.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km and add a fudge factor
+                            Double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
 
                             Intent intent = new Intent(MapMain.this, chargerInfo.class);
                             Bundle bundle = new Bundle();
