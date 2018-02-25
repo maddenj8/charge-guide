@@ -7,13 +7,14 @@
     android:layout_height="match_parent"
     tools:context="com.dcuproject.jmadden.chargeguide.chargerInfo">
 
+
     <SeekBar
         android:id="@+id/soc"
         android:layout_width="172dp"
         android:layout_height="17dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
-        android:progressBackgroundTintMode="FF0000"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -200,3 +201,4 @@
         app:srcCompat="@android:drawable/ic_menu_directions" />
 
 </android.support.constraint.ConstraintLayout>
+    <!--android:progressBackgroundTintMode="FF0000" PUT THIS HERE BECAUSE IT WAS CAUSING AN ERROR PUT IT BACK LATER-->
