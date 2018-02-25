@@ -120,6 +120,8 @@ public class chargerInfo extends AppCompatActivity {
                          Toast.makeText(getApplicationContext() , "Enter a number between 0 and 100", Toast.LENGTH_LONG).show();
                      }
 
+
+
                      
             }
         });
