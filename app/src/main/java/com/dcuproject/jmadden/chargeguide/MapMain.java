@@ -175,6 +175,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                         polyline.remove();
                     }
                 } catch(Exception e) {e.printStackTrace();}
+
+                //when a place is selected draw the path between it and home
                 Object dataTransfer[];
                 dataTransfer = new Object[3];
                 String url = getDirectionsURL(new LatLng(user_lat, user_long), place.getLatLng());
@@ -184,6 +186,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 dataTransfer[2] = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
                 getDirectionsData.execute(dataTransfer);
                 polylines = getDirectionsData.polylines;
+
+                //and only show the chargers that the user should stop at
                 for (Marker marker:markers) {
                     double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
                     if (!(distance > 100 && distance < 120)) {
