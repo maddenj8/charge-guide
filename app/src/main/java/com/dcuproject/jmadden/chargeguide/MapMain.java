@@ -159,6 +159,18 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         autocompleteFilter = new AutocompleteFilter.Builder().setCountry("UK").setCountry("Irl").build(); // make a filter for the searchbar (uk and ireland only)
         autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         autocompleteFragment.setFilter(autocompleteFilter); // apply the filter
+        autocompleteFragment.getView().findViewById(R.id.place_autocomplete_clear_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.clear();
+                markers.remove(markers.size() - 1);
+                autocompleteFragment.setText("");
+                view.setVisibility(View.GONE);
+                for (Marker marker:markers) {
+                    addMarker(marker);
+                }
+            }
+        });
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -168,8 +180,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 }
                 else { // else make the new marker
                     destinationUpdated = true; // tells the program that a marker is made so just update the position in future
-                    markerOptions = new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()).icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1);
-                    destination = mMap.addMarker(markerOptions); // add the newly made marker to the map
+                    markerOptions = new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()).snippet("Destination").icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1);
+                    destination = mMap.addMarker(markerOptions);
+                    markers.add(mMap.addMarker(markerOptions)); // add the newly made marker to the map
                 }
                 try {
                     for (Polyline polyline : polylines) {
@@ -178,22 +191,24 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 } catch(Exception e) {e.printStackTrace();}
 
                 //when a place is selected draw the path between it and home
-                Object dataTransfer[];
-                dataTransfer = new Object[3];
-                String url = getDirectionsURL(new LatLng(user_lat, user_long), place.getLatLng());
-                GetDirectionsData getDirectionsData = new GetDirectionsData();
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-                dataTransfer[2] = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
-                getDirectionsData.execute(dataTransfer);
-                polylines = getDirectionsData.polylines;
 
                 //and only show the chargers that the user should stop at
+                int count = 0;
+                mMap.clear();
                 for (Marker marker:markers) {
                     double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
-                    if (!(distance > 100 && distance < 120)) {
-                         marker.remove();
+                    if (distance > 80 && distance < 120 && marker.getSnippet().contains("Available")) {
+                        startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition());
+                        startDirectionsSteps(marker.getPosition(), place.getLatLng());
+                        addMarker(marker);
+                        count++;
                     }
+                    else if (marker.getTitle().contains("Home") || marker.getSnippet().contains("Destination")) {
+                        addMarker(marker);
+                    }
+                }
+                if (count == 0) {
+                    Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, please buy a leaf", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -202,6 +217,42 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 Log.i("MAP PROBLEM", "An error occurred: " + status);
             }
         });
+    }
+
+    //if you have a marker made already call this function to redraw it
+    public void addMarker(Marker marker) {
+        if (marker.getTitle().contains("Home")) {
+            mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).anchor(0.3f, 1));
+        }
+        else if (marker.getSnippet().contains("Destination")) {
+            mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.3f, 1));
+        }
+        else if(marker.getSnippet().contains("Available")){
+            mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1));
+        }
+        else if (marker.getSnippet().contains("Occupied")){
+            mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_charger)).anchor(0.5f, 1));
+        }
+
+        else if (marker.getSnippet().contains("Out-of-Service")){
+            markers.add(mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1)));
+        }
+
+        else {
+            mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
+        }
+    }
+
+    public void startDirectionsSteps(LatLng start, LatLng place) {
+        Object dataTransfer[];
+        dataTransfer = new Object[3];
+        String url = getDirectionsURL(start, place);
+        GetDirectionsData getDirectionsData = new GetDirectionsData();
+        dataTransfer[0] = mMap;
+        dataTransfer[1] = url;
+        dataTransfer[2] = new LatLng(place.latitude, place.longitude);
+        getDirectionsData.execute(dataTransfer);
+        polylines = getDirectionsData.polylines;
     }
 
     @Override
@@ -221,7 +272,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         mMap.setInfoWindowAdapter(customInfoWindow);
 
         //add marker and adjust camera
-        mMap.addMarker(new MarkerOptions().position(userLocation).title("Home").anchor(0.5f, 1)); // set a marker for user location
+        markers.add(mMap.addMarker(new MarkerOptions().position(userLocation).title("Home").anchor(0.5f, 1))); // set a marker for user location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
 
         Toast.makeText(this, "Make is " + make + " and Model is " + model, Toast.LENGTH_SHORT).show();
@@ -238,6 +289,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         String url = "https://maps.googleapis.com/maps/api/directions/json?origin=";
         url += userPosition.latitude + "," + userPosition.longitude;
         url += "&destination=" + destPosition.latitude + "," + destPosition.longitude;
+        url += "&sensor=false";
         url += "&key=" + directionsKey;
         return url;
     }
@@ -287,13 +339,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             Intent intent = new Intent(getApplicationContext() , first_launch.class);
             startActivity(intent);
 
-
-
         } else if (id == R.id.nav_help) {
             Intent intent = new Intent(getApplicationContext() , help.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_share) {
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
