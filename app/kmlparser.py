@@ -1,42 +1,5 @@
+
 all_chargers = open("charging-locations.kml" , "r") 
-ac43 = open("ac43.kml" , "r+")
-chademo = open("chademo.kml" , "r+")
-ccs = open("ccs.kml" , "r+" ) 
-
-acpart = False
-ccspart = False
-chademopart = False
-text= all_chargers.readlines()
-for line in text: 
-
-
-    if  "<!-- ======== AC43 ======= -->" in line :
-        acpart= True
-   
-    if "<!-- ======== ComboCCS ======= -->" in line:
-        ccspart = True
-        acpart = False
-        chademopart = False
-
-    if "<!-- ======== CHAdeMO ======= -->" in line :
-        chademopart = True
-        ccspart = False
-        acpart = False
-        
-    if ccspart == True:
-        ccs.write(line)         
-       
-
-    elif acpart == True:
-        ac43.write(line)         
-        
-    
-    elif chademopart == True:
-        chademo.write(line)         
-
-ac43.close()
-ccs.close()
-chademo.close()
 
 def getname(file_name ):
 
@@ -53,13 +16,17 @@ def getname(file_name ):
             name = word[2]
             name = name[:-6]
             if len(name) != 0:
-
+                #name =name.replace("amp" , "")
+                # trying to uncomment them will add two lines to the end of the output no idea why
+                #name =name.replace("amp" , "")
                 namelist.append(name)
 
     charger_file.close()
-
     return namelist
 
+ccs_names = getname("ccs.kml")
+ac43_names = getname("ac43.kml")
+chademo_names = getname("chademo.kml")
 
 
 def getlatlon( file_name):
@@ -76,10 +43,10 @@ def getlatlon( file_name):
         if len(word) >=9:
             name = word[2]
             if len(word) > 9:
-               # print(word[8]  )
                 name = word[8]
                 end = (name[len(name) - 3:] )
                 if end == "tes":
+                        name = name[:19]
                         namelist.append(name)
                 
     
@@ -140,8 +107,6 @@ def getStateChademo():
     return namelist
 
 
-
-
 def getStateCcs():
     namelist = []
     name = ""
@@ -149,7 +114,7 @@ def getStateCcs():
 
     text = charger_file.readlines()
     nextlineget = False
-    text = text[1:]
+    text = text[2:]
     for line in text:
         if nextlineget == True:
             line = line.split("<")
@@ -167,4 +132,51 @@ def getStateCcs():
             nextlineget = True 
     
     return namelist
+
+
+def setupACFile():
+    
+    ACoutput = open("ac_output.txt" , "r+") 
+    names = getname("ac43.kml")
+    latlon = getlatlon("ac43.kml")
+    state = getStateAC()
+    i = 0 
+    while i < len( names ) :
+        ACoutput.write( names[ i] + " | "  +  latlon[i] + " |" + state[i] + "\n" )
+        i += 1
+    ACoutput.close()
+
+
+
+def setupCCSFile():
+    
+    CCSOutput = open("ccs_output.txt" , "r+") 
+    names = getname("ccs.kml")
+    latlon = getlatlon("ccs.kml")
+    state = getStateCcs()
+
+    i = 0 
+    while i < len( names ) :
+        CCSOutput.write( names[ i] + " | "  +  latlon[i] + " |" + state[i] + "\n" )
+        i += 1
+    CCSOutput.close()
+
+
+def setupChademoFile():
+
+    ChademoOutput = open("chademo_output.txt" , "r+") 
+    names = getname("chademo.kml")
+    latlon = getlatlon("chademo.kml")
+    state = getStateChademo()
+
+    i = 0 
+    while i < len( names ) :
+        ChademoOutput.write( names[ i] + " | "  +  latlon[i] + " |" + state[i] + "\n" )
+        i += 1
+    ChademoOutput.close()
+
+
+setupChademoFile()
+setupACFile()
+setupCCSFile()
 

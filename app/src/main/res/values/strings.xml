@@ -3,7 +3,7 @@
     <string name="title_activity_map_main">Charge Guide</string>
     <string name="title_activity_car_setup">car_setup</string>
     <string name="google_maps_key">AIzaSyCfcIfxZ2LyrriWXHl6m8IuCueHibpqOUs</string>
-    <string name="welcome_text">Enter your car and car type in the drop down below</string>
+    <string name="welcome_text">Enter your car in the drop down below</string>
     <string name="make">Make</string>
 
     <string-array name="makes">
@@ -15,8 +15,8 @@
     </string-array>
 
     <string-array name="BMW">
-        <item>i3 94 Ah (34KWh)</item>
-        <item>"i3 60 Ah (22KWh)</item>
+        <item>i3 94 Ah / 34 KWh</item>
+        <item>"i3 60 Ah / 22 KWh</item>
     </string-array>
 
     <string-array name="Nissan">
@@ -50,7 +50,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_help">help</string>
 
-    <string name="ev_help_welcome">"Welcome to ChargeGuide here you will find a few tips and terms explaned to make ev simplify ev ownership"
+    <string name="ev_help_welcome">"Welcome to ChargeGuide this page will briefly enplane the app and your car"
     </string>
 
     <string name="terms">Regen: Using the motor as a generator to slow the car down\n\nKwh: Unit of energy battery capacity is measured in Kwh\'s
@@ -58,9 +58,7 @@
         kWh per 100km: Measure of efficiency of a car typical values are around 20 Kwh per 100km
   </string>
 
-        <string name = "conector">There are three main types of connectors ccs and chademo </string>
-
-
+    <string name="conector">There are three main types of connectors ccs and chademo </string>
 
 
 </resources>
