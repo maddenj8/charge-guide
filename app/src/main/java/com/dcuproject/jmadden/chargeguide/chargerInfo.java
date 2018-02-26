@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -112,22 +113,25 @@ public class chargerInfo extends AppCompatActivity {
         soc.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
-                 String socStr =soc.getText().toString();
+                String socStr =soc.getText().toString();
 
-                     Float socInt = Float.parseFloat(socStr);
-                     if (socInt >=0  && socInt <=100 ){
-                         socInt = socInt / 100;
-                         battery_soc = battery_int * socInt;
-                         Log.v("soc", battery_soc  +"");
-                     }
+                Float socInt = Float.parseFloat(socStr);
 
-                    else {
-                         Toast.makeText(getApplicationContext() , "Enter a number between 0 and 100", Toast.LENGTH_LONG).show();
-                     }
+                if (socInt >=0  && socInt <=100 ){
+                    socInt = socInt / 100;
+                    battery_soc = battery_int * socInt;
+                    Log.v("soc", battery_soc  +"");
+                }
+
+                else {
+
+                    Toast.makeText(getApplicationContext() , "Enter a number between 0 and 100", Toast.LENGTH_LONG).show();
+                    
+                }
 
 
 
-                     
+
             }
         });
     }
