@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,6 +27,8 @@ public class chargerInfo extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_charger_info);
 
@@ -93,6 +96,8 @@ public class chargerInfo extends AppCompatActivity {
                 startActivity(mapIntent);
             }
         });
+
+
 
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("usbattery_interPref", MODE_PRIVATE);
         sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
