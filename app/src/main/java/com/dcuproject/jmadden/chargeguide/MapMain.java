@@ -197,7 +197,15 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 mMap.clear();
                 for (Marker marker:markers) {
                     double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
-                    if (distance > 80 && distance < 120 && marker.getSnippet().contains("Available")) {
+
+                    SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+
+
+                    Float batteryKwh =  sharedPref.getFloat("soc" , 0);
+                    float range = batteryKwh * 6 ;
+                    Log.d("batteryrange", range + "");
+
+                    if (range  < 400 && marker.getSnippet().contains("Available")) {
                         startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition());
                         startDirectionsSteps(marker.getPosition(), place.getLatLng());
                         addMarker(marker);
@@ -261,7 +269,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         mMap = googleMap;
         user_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
         user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
-        user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a coordinate)
+        user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a
         // Add a marker in Sydney and move the camera
         LatLng ireland = new LatLng(53.433333, -7.95); // position for the camera
         LatLng userLocation = new LatLng(user_lat, user_long); // LatLng of the users positions
@@ -358,7 +366,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         //get the directory to store the downloaded charger info
         File path = getApplicationContext().getFilesDir();
         pathStr = path.toString() + "/plug.txt";
-        Log.d("path ", pathStr);
+        //Log.d("path ", pathStr);
 
         try {
             JSch ssh = new JSch();
@@ -424,9 +432,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 //parse the charger details into a more readable state
                 final String [] charger_Info = line.split("\\|"); //
-                Log.d("array" , charger_Info[0] +"");
-                Log.d("array" , charger_Info[1] +"");
-                Log.d("array" , charger_Info[2] +"");
 
                 String charger_Name = charger_Info[0];
                 String latlon = charger_Info[1];
