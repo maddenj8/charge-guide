@@ -119,6 +119,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             downloadThread.start();
         } catch (Exception e) {e.printStackTrace();}
 
+        Log.d("setup " ,setupComplete);
         if (!setupComplete.equals("true")) {
             startActivity(new Intent(getApplicationContext(), first_launch.class));
         }
@@ -372,6 +373,10 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 //parse the charger details into a more readable state
                 final String [] charger_Info = line.split("\\|"); //
+                Log.d("array" , charger_Info[0] +"");
+                Log.d("array" , charger_Info[1] +"");
+                Log.d("array" , charger_Info[2] +"");
+
                 String charger_Name = charger_Info[0];
                 String latlon = charger_Info[1];
                 String state = charger_Info[2];
