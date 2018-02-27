@@ -13,8 +13,8 @@
         android:layout_height="match_parent"
         android:layout_margin="0dp"
         android:layout_marginEnd="6dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -35,20 +35,18 @@
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.603"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.031"
+                app:layout_constraintVertical_bias="0.13"
                 tools:text="@string/ev_help_welcome" />
 
             <TextView
                 android:id="@+id/terms"
                 android:layout_width="292dp"
-                android:layout_height="132dp"
-                android:layout_marginTop="32dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="68dp"
                 android:text="@string/terms"
-                app:layout_constraintHorizontal_bias="0.504"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/about_green"
@@ -58,9 +56,12 @@
                 android:id="@+id/green_charger"
                 android:layout_width="76dp"
                 android:layout_height="68dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="68dp"
-                app:layout_constraintStart_toEndOf="@+id/green_charger2"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="52dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.33"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/helpWelcome"
                 app:srcCompat="@drawable/large_blue_charger" />
 
@@ -70,7 +71,7 @@
                 android:layout_width="76dp"
                 android:layout_height="68dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="68dp"
+                android:layout_marginTop="52dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/helpWelcome"
                 app:srcCompat="@drawable/large_green_charger" />
@@ -79,22 +80,25 @@
                 android:id="@+id/red_charger"
                 android:layout_width="76dp"
                 android:layout_height="68dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/terms"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/gray_charger"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="52dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.972"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/helpWelcome"
-                app:layout_constraintVertical_bias="0.491"
                 app:srcCompat="@drawable/large_red_charger" />
 
             <ImageView
                 android:id="@+id/gray_charger"
                 android:layout_width="76dp"
                 android:layout_height="68dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="68dp"
-                app:layout_constraintStart_toEndOf="@+id/green_charger"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="52dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.65"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/helpWelcome"
                 app:srcCompat="@drawable/large_gray_charger" />
 
@@ -102,43 +106,50 @@
                 android:id="@+id/about_green"
                 android:layout_width="65dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 android:text="Available"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.02"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/green_charger2" />
 
 
             <TextView
                 android:id="@+id/about_gray"
-                android:layout_width="89dp"
+                android:layout_width="wrap_content"
                 android:layout_height="19dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 android:text="Out of contact"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/red_charger" />
 
             <TextView
                 android:id="@+id/about_Blue"
-                android:layout_width="77dp"
-                android:layout_height="19dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
-                android:text="   Occupied"
-                app:layout_constraintStart_toEndOf="@+id/about_green"
+                android:layout_marginTop="20dp"
+                android:text="Occupied"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.31"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/green_charger" />
 
             <TextView
                 android:id="@+id/about_red2"
-                android:layout_width="91dp"
+                android:layout_width="wrap_content"
                 android:layout_height="19dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 android:text="Out of Service"
-                app:layout_constraintEnd_toStartOf="@+id/about_gray"
-                app:layout_constraintStart_toEndOf="@+id/about_Blue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.63"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/gray_charger" />
 
             <ImageView
@@ -146,20 +157,23 @@
                 android:layout_width="146dp"
                 android:layout_height="95dp"
                 android:layout_marginStart="44dp"
-                android:layout_marginTop="172dp"
+                android:layout_marginTop="92dp"
                 android:paddingTop="0dp"
                 android:src="@drawable/chademo"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/terms" />
+                app:layout_constraintTop_toBottomOf="@+id/terms" />
 
             <TextView
                 android:id="@+id/chademoPlug"
-                android:layout_width="105dp"
-                android:layout_height="47dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="64dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="140dp"
                 android:text="Chademo Plug"
-                app:layout_constraintStart_toEndOf="@+id/chademoPlugImage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.742"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/terms"
                 tools:text="Chademo Plug" />
 
@@ -190,30 +204,106 @@
 
             <TextView
                 android:id="@+id/ac43Plug"
-                android:layout_width="228dp"
-                android:layout_height="33dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginStart="48dp"
-                android:layout_marginTop="112dp"
+                android:layout_marginStart="180dp"
+                android:layout_marginTop="292dp"
                 android:paddingLeft="0dp"
                 android:text="CCS / Type 2 cable "
+                app:layout_constraintBottom_toBottomOf="@+id/ccsPlugImage"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ccsPlugImage"
-                app:layout_constraintTop_toBottomOf="@+id/chademoPlug" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/terms"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/ac43Plug2"
-                android:layout_width="228dp"
-                android:layout_height="33dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="120dp"
+                android:layout_marginStart="160dp"
+                android:layout_marginTop="8dp"
                 android:paddingLeft="0dp"
                 android:text="Type 2 Cable"
+                app:layout_constraintBottom_toBottomOf="@+id/type2"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/type2"
-                app:layout_constraintTop_toBottomOf="@+id/ac43Plug"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/type2"
                 tools:text=" Type 2 Cable " />
+
+            <TextView
+                android:id="@+id/helpHeading"
+                android:layout_width="204dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Welcome to Charge Guide"
+                android:textAlignment="center"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/helpWelcome"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.7" />
+
+            <TextView
+                android:id="@+id/termsHeading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Common Terms"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/terms"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.12"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/about_Blue"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/statusIcons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Status Icons"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/green_charger2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/helpWelcome"
+                app:layout_constraintVertical_bias="0.45" />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Charger Types"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/chademoPlugImage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.12"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/terms"
+                app:layout_constraintVertical_bias="0.6" />
 
 
         </android.support.constraint.ConstraintLayout>
