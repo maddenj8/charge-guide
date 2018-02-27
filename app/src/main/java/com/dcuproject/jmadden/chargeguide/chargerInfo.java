@@ -99,7 +99,6 @@ public class chargerInfo extends AppCompatActivity {
         });
 
 
-
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("usbattery_interPref", MODE_PRIVATE);
         sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         //make  = sharedPref.getString("selectedMake" , "");
@@ -109,43 +108,39 @@ public class chargerInfo extends AppCompatActivity {
         final int battery_int = Integer.parseInt(battery);
         //Log.d("bat" , battery_int +"");
 
+
+        final Button applybut = findViewById(R.id.apply);
         final EditText soc = findViewById(R.id.socInt);
-        soc.setOnClickListener(new View.OnClickListener() {
+        applybut.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View view) {
 
-                String socStr =soc.getText().toString();
+                String socStr = soc.getText().toString();
 
                 Float socInt = Float.parseFloat(socStr);
 
-                if (socInt >=0  && socInt <=100 ){
+                if (socInt >= 0 && socInt <= 100) {
                     socInt = socInt / 100;
                     battery_soc = battery_int * socInt;
-                    Log.v("soc", battery_soc  +"");
+
                     SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putFloat("stateOfCharge", battery_int);
-                    editor.commit();
-                }
+                    float range = battery_soc * 6;
+                    editor.putFloat("range", range);
+                    Log.v("range", range + "");
 
+
+                    editor.commit();
+
+                }
                 else {
 
-                    Toast.makeText(getApplicationContext() , "Enter a number between 0 and 100", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Enter a number between 0 and 100", Toast.LENGTH_LONG).show();
 
                 }
-
-
-
-
             }
         });
-    }
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
-
-
-
-
 }

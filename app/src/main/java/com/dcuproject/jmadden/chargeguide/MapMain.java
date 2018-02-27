@@ -93,8 +93,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private int [] colors;
     private Float range ;
     private int colorSelected;
-
-
+    private SharedPreferences sharedPref ;
     // Key for Google directions API
     private String directionsKey = "AIzaSyD0tlhhO3qg6QqbXESkGbiSO_j9ciDG0JU";
 
@@ -104,17 +103,18 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         setContentView(R.layout.activity_map_main);
         colors = new int[] {Color.BLUE, Color.RED, Color.GREEN, Color.CYAN, Color.MAGENTA};
         //checks if the setup process if complete
-        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+
+        final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String setupComplete = sharedPref.getString("Setup_complete", "false");
 
         //show the applicable chargers in Ireland
-        sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+
         make  = sharedPref.getString("selectedMake" , "");
         model  = sharedPref.getString("selectedModel" , "");
 
-        Float batteryKwh =  sharedPref.getFloat("stateOfCharge" , 0);
-        range = batteryKwh * 6 ;
-        Log.d("batteryrange", range + "");
+        final Float range =  sharedPref.getFloat("range" , 0);
+
+        Log.d("mapmain", range + "");
 
 
         //download the charger info on a separate thread to the main thread
@@ -183,6 +183,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             }
         });
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+
             int index = 1;
             @Override
             public void onPlaceSelected(Place place) {
@@ -202,12 +204,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     int count = 0;
                     mMap.clear();
                     for (Marker marker : markers) {
-                        double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
-
-                        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+                        //double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
 
                         if (marker.getSnippet() != null) {
+                             Float range = sharedPref.getFloat("range", 0);
 
+                            Log.d("range" , range + "");
                             if (range < 40 && marker.getSnippet().contains("Available")) {
                                 colorSelected = colors[4 % index];
                                 startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colorSelected);
@@ -220,7 +222,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                             }
                         }
                         if (count == 0) {
-                            Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, please buy a leaf", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, get a bus", Toast.LENGTH_LONG).show();
+                            break;
                         }
                     }
                 }
