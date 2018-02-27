@@ -121,6 +121,10 @@ public class chargerInfo extends AppCompatActivity {
                     socInt = socInt / 100;
                     battery_soc = battery_int * socInt;
                     Log.v("soc", battery_soc  +"");
+                    SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putFloat("stateOfCharge", battery_int);
+                    editor.commit();
                 }
 
                 else {

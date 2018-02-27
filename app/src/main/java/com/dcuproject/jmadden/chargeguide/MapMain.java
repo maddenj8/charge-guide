@@ -89,6 +89,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Thread downloadThread;
     private ArrayList<Marker> markers = new ArrayList<Marker>();
     private List<Polyline> polylines;
+    private Float range ;
 
 
     // Key for Google directions API
@@ -107,6 +108,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         make  = sharedPref.getString("selectedMake" , "");
         model  = sharedPref.getString("selectedModel" , "");
+
+        Float batteryKwh =  sharedPref.getFloat("stateOfCharge" , 0);
+        range = batteryKwh * 6 ;
+        Log.d("batteryrange", range + "");
+
 
         //download the charger info on a separate thread to the main thread
         try {
@@ -174,11 +180,10 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-               // Log.i("PLACE TEST", place.getName().toString());
+                // Log.i("PLACE TEST", place.getName().toString());
                 if (destinationUpdated) {
                     destination.setPosition(place.getLatLng()); // if there is a marker just update the position
-                }
-                else { // else make the new marker
+                } else { // else make the new marker
                     destinationUpdated = true; // tells the program that a marker is made so just update the position in future
                     markerOptions = new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()).snippet("Destination").icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1);
                     destination = mMap.addMarker(markerOptions);
@@ -188,35 +193,36 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     for (Polyline polyline : polylines) {
                         polyline.remove();
                     }
-                } catch(Exception e) {e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 //when a place is selected draw the path between it and home
 
                 //and only show the chargers that the user should stop at
                 int count = 0;
                 mMap.clear();
-                for (Marker marker:markers) {
+                for (Marker marker : markers) {
                     double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
 
                     SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
 
 
-                    Float batteryKwh =  sharedPref.getFloat("soc" , 0);
-                    float range = batteryKwh * 6 ;
-                    Log.d("batteryrange", range + "");
+                    if (marker.getSnippet() != null) {
 
-                    if (range  < 400 && marker.getSnippet().contains("Available")) {
-                        startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition());
-                        startDirectionsSteps(marker.getPosition(), place.getLatLng());
-                        addMarker(marker);
-                        count++;
+
+                        if (range < 40 && marker.getSnippet().contains("Available")) {
+                            startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition());
+                            startDirectionsSteps(marker.getPosition(), place.getLatLng());
+                            addMarker(marker);
+                            count++;
+                        } else if (marker.getTitle().contains("Home") || marker.getSnippet().contains("Destination")) {
+                            addMarker(marker);
+                        }
                     }
-                    else if (marker.getTitle().contains("Home") || marker.getSnippet().contains("Destination")) {
-                        addMarker(marker);
+                    if (count == 0) {
+                        Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, please buy a leaf", Toast.LENGTH_LONG).show();
                     }
-                }
-                if (count == 0) {
-                    Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, please buy a leaf", Toast.LENGTH_LONG).show();
                 }
             }
 
