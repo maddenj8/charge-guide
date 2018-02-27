@@ -72,7 +72,7 @@
                     android:inputType="number"
                     android:layout_gravity="center_vertical"
                     android:maxLines="1"
-                    android:hint="100"
+                    android:text="100"
                     android:textAlignment="center"
                     android:textSize="14sp"/>
 
@@ -81,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:text="Apply"
-                    android:id="@+id/saveSoc"/>
+                    android:id="@+id/applySoc"/>
 
             </LinearLayout>
 
