@@ -65,7 +65,7 @@ import org.apache.commons.net.ftp.*;
 import com.google.android.gms.maps.model.Polyline;
 import com.jcraft.jsch.*;
 
-
+import static android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
 
 
 public class MapMain extends FragmentActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
@@ -99,6 +99,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private EditText socMainEdittext;
     private Float socMain;
     private Button apply;
+    private Float kwh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +114,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         //get the make and model of the user
         make  = sharedPref.getString("selectedMake" , "");
         model  = sharedPref.getString("selectedModel" , "");
-
+        kwh = sharedPref.getFloat("kwh", 9999);
         //get the soc from the user
         socMainEdittext = (EditText) (findViewById(R.id.socIntMain));
 
@@ -162,13 +163,16 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             @Override
             public void onClick(View view) {
                 socMain = Float.valueOf(socMainEdittext.getText().toString());
-                SharedPreferences.Editor e = sharedPref.edit();
-                Toast.makeText(getApplicationContext(), "You have set range to " + String.valueOf(socMain), Toast.LENGTH_SHORT).show();
-                e.putFloat("range", socMain);
-                e.commit();
+                if (socMain >= 0 && socMain <= 100) {
+                    socMain *= (kwh / 100) * 6;
+                    SharedPreferences.Editor e = sharedPref.edit();
+                    Toast.makeText(getApplicationContext(), "You have set range to " + String.valueOf(socMain) + " Km", Toast.LENGTH_SHORT).show();
+                    e.putFloat("range", socMain);
+                    e.commit();
+                } else {Toast.makeText(getApplicationContext(), "Please enter a number between 0 and 100", Toast.LENGTH_SHORT);}
             }
         });
-
+        apply.requestFocus();
 
         //adds functionality to the hamburger button
         hamburger = (ImageButton) (findViewById(R.id.hamburger));
