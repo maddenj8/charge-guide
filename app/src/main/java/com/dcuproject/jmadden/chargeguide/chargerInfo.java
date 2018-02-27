@@ -25,6 +25,8 @@ public class chargerInfo extends AppCompatActivity {
     //String make;
     String model;
     Float battery_soc;
+    Float range;
+    Double dist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,7 @@ public class chargerInfo extends AppCompatActivity {
         TextView subHeading = (TextView) findViewById(R.id.subheader_charger);
         TextView status = (TextView) findViewById(R.id.status_text);
         ImageView icon = (ImageView) findViewById(R.id.status_image);
-        TextView distance = (TextView) findViewById(R.id.distance);
+        final TextView distance = (TextView) findViewById(R.id.distance);
 
 
         try {
@@ -125,13 +127,19 @@ public class chargerInfo extends AppCompatActivity {
 
                     SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
-                    float range = battery_soc * 6;
+                    range = battery_soc * 6;
                     editor.putFloat("range", range);
                     Log.v("range", range + "");
 
 
+
+
                     editor.commit();
 
+                }
+
+                if (dist - range  < 20  ){
+                    Toast.makeText(getApplicationContext(), "You may not reach your destnation", Toast.LENGTH_LONG).show();
                 }
                 else {
 
