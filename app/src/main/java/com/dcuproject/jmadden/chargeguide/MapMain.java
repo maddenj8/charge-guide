@@ -4,6 +4,7 @@ package com.dcuproject.jmadden.chargeguide;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -89,6 +90,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Thread downloadThread;
     private ArrayList<Marker> markers = new ArrayList<Marker>();
     private List<Polyline> polylines;
+    private int [] colors;
     private Float range ;
 
 
@@ -99,7 +101,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
-
+        colors = new int[] {Color.BLUE, Color.RED, Color.GREEN, Color.CYAN, Color.MAGENTA};
         //checks if the setup process if complete
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String setupComplete = sharedPref.getString("Setup_complete", "false");
@@ -168,16 +170,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         autocompleteFragment.getView().findViewById(R.id.place_autocomplete_clear_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mMap.clear();
-                markers.remove(markers.size() - 1);
-                autocompleteFragment.setText("");
-                view.setVisibility(View.GONE);
-                for (Marker marker:markers) {
-                    addMarker(marker);
-                }
+                try {
+                    mMap.clear();
+                    markers.remove(markers.size() - 1);
+                    autocompleteFragment.setText("");
+                    view.setVisibility(View.GONE);
+                    for (Marker marker:markers) {
+                        addMarker(marker);
+                    }
+                } catch (Exception e) {e.printStackTrace();}
             }
         });
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            int index = 1;
             @Override
             public void onPlaceSelected(Place place) {
                 // Log.i("PLACE TEST", place.getName().toString());
@@ -202,7 +207,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 //and only show the chargers that the user should stop at
                 int count = 0;
                 mMap.clear();
-                for (Marker marker : markers) {
+                for (Marker marker:markers) {
                     double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
 
                     SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
@@ -247,9 +252,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         else if (marker.getSnippet().contains("Occupied")){
             mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_charger)).anchor(0.5f, 1));
         }
-
-        else if (marker.getSnippet().contains("Out-of-Service")){
-            markers.add(mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1)));
+        else if (marker.getSnippet().contains("Out of Service")){
+            mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
         }
 
         else {
@@ -259,12 +263,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
     public void startDirectionsSteps(LatLng start, LatLng place) {
         Object dataTransfer[];
-        dataTransfer = new Object[3];
+        dataTransfer = new Object[4];
         String url = getDirectionsURL(start, place);
         GetDirectionsData getDirectionsData = new GetDirectionsData();
         dataTransfer[0] = mMap;
         dataTransfer[1] = url;
         dataTransfer[2] = new LatLng(place.latitude, place.longitude);
+        dataTransfer[3] = colorSelected;
         getDirectionsData.execute(dataTransfer);
         polylines = getDirectionsData.polylines;
     }
