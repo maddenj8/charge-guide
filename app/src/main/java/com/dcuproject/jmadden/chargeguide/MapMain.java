@@ -92,6 +92,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private List<Polyline> polylines;
     private int [] colors;
     private Float range ;
+    private int colorSelected;
 
 
     // Key for Google directions API
@@ -194,40 +195,37 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     destination = mMap.addMarker(markerOptions);
                     markers.add(mMap.addMarker(markerOptions)); // add the newly made marker to the map
                 }
-                try {
-                    for (Polyline polyline : polylines) {
-                        polyline.remove();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
                 //when a place is selected draw the path between it and home
 
                 //and only show the chargers that the user should stop at
-                int count = 0;
-                mMap.clear();
-                for (Marker marker:markers) {
-                    double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
+                if (!(user_lat == 9999)) {
+                    int count = 0;
+                    mMap.clear();
+                    for (Marker marker : markers) {
+                        double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
 
-                    SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+                        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
 
+                        if (marker.getSnippet() != null) {
 
-                    if (marker.getSnippet() != null) {
-
-
-                        if (range < 40 && marker.getSnippet().contains("Available")) {
-                            startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition());
-                            startDirectionsSteps(marker.getPosition(), place.getLatLng());
-                            addMarker(marker);
-                            count++;
-                        } else if (marker.getTitle().contains("Home") || marker.getSnippet().contains("Destination")) {
-                            addMarker(marker);
+                            if (range < 40 && marker.getSnippet().contains("Available")) {
+                                colorSelected = colors[4 % index];
+                                startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colorSelected);
+                                startDirectionsSteps(marker.getPosition(), place.getLatLng(), colorSelected);
+                                addMarker(marker);
+                                count++;
+                                index++;
+                            } else if (marker.getTitle().contains("Home") || marker.getSnippet().contains("Destination")) {
+                                addMarker(marker);
+                            }
+                        }
+                        if (count == 0) {
+                            Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, please buy a leaf", Toast.LENGTH_LONG).show();
                         }
                     }
-                    if (count == 0) {
-                        Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, please buy a leaf", Toast.LENGTH_LONG).show();
-                    }
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Sorry but your location was not set correctly please go the the setup page and try again.", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -261,7 +259,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         }
     }
 
-    public void startDirectionsSteps(LatLng start, LatLng place) {
+    public void startDirectionsSteps(LatLng start, LatLng place, int colorSelected) {
         Object dataTransfer[];
         dataTransfer = new Object[4];
         String url = getDirectionsURL(start, place);
