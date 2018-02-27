@@ -42,6 +42,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:windowSoftInputMode="adjustResize"
             android:name=".MapMain"
             android:label="@string/title_activity_map_main"
             android:screenOrientation="portrait">
