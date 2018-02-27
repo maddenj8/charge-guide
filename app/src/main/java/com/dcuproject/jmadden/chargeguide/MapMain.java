@@ -91,6 +91,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private ArrayList<Marker> markers = new ArrayList<Marker>();
     private List<Polyline> polylines;
     private int [] colors;
+    private Float range ;
 
 
     // Key for Google directions API
@@ -110,6 +111,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         make  = sharedPref.getString("selectedMake" , "");
         model  = sharedPref.getString("selectedModel" , "");
 
+        Float batteryKwh =  sharedPref.getFloat("stateOfCharge" , 0);
+        range = batteryKwh * 6 ;
+        Log.d("batteryrange", range + "");
+
+
         //download the charger info on a separate thread to the main thread
         try {
             downloadThread = new Thread(new Runnable() {
@@ -121,6 +127,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             downloadThread.start();
         } catch (Exception e) {e.printStackTrace();}
 
+        Log.d("setup " ,setupComplete);
         if (!setupComplete.equals("true")) {
             startActivity(new Intent(getApplicationContext(), first_launch.class));
         }
@@ -178,11 +185,10 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             int index = 1;
             @Override
             public void onPlaceSelected(Place place) {
-               // Log.i("PLACE TEST", place.getName().toString());
+                // Log.i("PLACE TEST", place.getName().toString());
                 if (destinationUpdated) {
                     destination.setPosition(place.getLatLng()); // if there is a marker just update the position
-                }
-                else { // else make the new marker
+                } else { // else make the new marker
                     destinationUpdated = true; // tells the program that a marker is made so just update the position in future
                     markerOptions = new MarkerOptions().position(place.getLatLng()).title(place.getName().toString()).snippet("Destination").icon(BitmapDescriptorFactory.fromResource(R.drawable.flag)).anchor(0.5f, 1);
                     destination = mMap.addMarker(markerOptions);
@@ -192,7 +198,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     for (Polyline polyline : polylines) {
                         polyline.remove();
                     }
-                } catch(Exception e) {e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 //when a place is selected draw the path between it and home
 
@@ -201,19 +209,25 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 mMap.clear();
                 for (Marker marker:markers) {
                     double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
-                    if (distance > 80 && distance < 120 && (marker.getSnippet().contains("Available") || marker.getSnippet().contains("Occupied"))) {
-                        int colorSelected = colors[4 % index];
-                        index++;
-                        startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colorSelected);
-                        startDirectionsSteps(marker.getPosition(), place.getLatLng(), colorSelected);
-                        addMarker(marker);
-                        count++;
-                    } else if (marker.getTitle().contains("Home") || marker.getSnippet().contains("Destination")) {
-                        addMarker(marker);
+
+                    SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+
+
+                    if (marker.getSnippet() != null) {
+
+
+                        if (range < 40 && marker.getSnippet().contains("Available")) {
+                            startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition());
+                            startDirectionsSteps(marker.getPosition(), place.getLatLng());
+                            addMarker(marker);
+                            count++;
+                        } else if (marker.getTitle().contains("Home") || marker.getSnippet().contains("Destination")) {
+                            addMarker(marker);
+                        }
                     }
-                }
-                if (count == 0) {
-                    Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, please buy a leaf", Toast.LENGTH_LONG).show();
+                    if (count == 0) {
+                        Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, please buy a leaf", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
 
@@ -241,13 +255,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         else if (marker.getSnippet().contains("Out of Service")){
             mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1));
         }
+
         else {
             mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
         }
     }
 
-
-    public void startDirectionsSteps(LatLng start, LatLng place, int colorSelected) {
+    public void startDirectionsSteps(LatLng start, LatLng place) {
         Object dataTransfer[];
         dataTransfer = new Object[4];
         String url = getDirectionsURL(start, place);
@@ -266,7 +280,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         mMap = googleMap;
         user_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
         user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
-        user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a coordinate)
+        user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a
         // Add a marker in Sydney and move the camera
         LatLng ireland = new LatLng(53.433333, -7.95); // position for the camera
         LatLng userLocation = new LatLng(user_lat, user_long); // LatLng of the users positions
@@ -363,7 +377,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         //get the directory to store the downloaded charger info
         File path = getApplicationContext().getFilesDir();
         pathStr = path.toString() + "/plug.txt";
-        Log.d("path ", pathStr);
+        //Log.d("path ", pathStr);
 
         try {
             JSch ssh = new JSch();
@@ -429,6 +443,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 //parse the charger details into a more readable state
                 final String [] charger_Info = line.split("\\|"); //
+
                 String charger_Name = charger_Info[0];
                 String latlon = charger_Info[1];
                 String state = charger_Info[2];

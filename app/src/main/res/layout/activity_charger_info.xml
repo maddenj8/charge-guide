@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
+        android:fillViewport="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -21,9 +22,9 @@
 
             <TextView
                 android:id="@+id/time_"
-                android:layout_width="153dp"
+                android:layout_width="222dp"
                 android:layout_height="25dp"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:autoSizeMaxTextSize="18dp"
                 android:autoSizeMinTextSize="18dp"
@@ -80,7 +81,6 @@
                 android:id="@+id/soc"
                 android:layout_width="wrap_content"
                 android:layout_height="28dp"
-                android:layout_marginBottom="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
@@ -88,7 +88,6 @@
                 android:autoSizeMinTextSize="18dp"
                 android:text="Battery State of Charge:"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -97,8 +96,8 @@
                 android:id="@+id/status_image"
                 android:layout_width="93dp"
                 android:layout_height="99dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="72dp"
+                android:layout_marginStart="64dp"
+                android:layout_marginTop="76dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -119,9 +118,8 @@
                 android:id="@+id/socInt"
                 android:layout_width="42dp"
                 android:layout_height="37dp"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="116dp"
                 android:autoSizeMaxTextSize="14dp"
                 android:autoSizeMinTextSize="14dp"
                 android:ems="10"
@@ -130,9 +128,8 @@
                 android:maxLines="1"
                 android:text="100"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/openMaps"
-                app:layout_constraintStart_toEndOf="@+id/soc" />
+                app:layout_constraintStart_toEndOf="@+id/soc"
+                app:layout_constraintTop_toBottomOf="@+id/time_" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/openMaps"
@@ -162,7 +159,7 @@
                 android:id="@+id/status_text"
                 android:layout_width="91dp"
                 android:layout_height="21dp"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="56dp"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="TextView"

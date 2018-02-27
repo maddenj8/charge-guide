@@ -159,7 +159,15 @@ public class first_launch extends AppCompatActivity implements LocationListener{
                 String selected_make = makes.getSelectedItem().toString();
                 editor.putString("selectedMake", selected_make);
                 editor.putString("selectedModel" , selected_model);
-                editor.apply();
+
+
+
+                String battery = selected_model.substring(selected_model.length() - 6, selected_model.length() - 4);
+                final float soc_float = Integer.parseInt(battery);
+                editor.putFloat("stateOfCharge", soc_float);
+                Log.d("soc", soc_float + "");
+                editor.commit();
+
             }
 
             @Override
