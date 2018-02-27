@@ -114,7 +114,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
         final Float range =  sharedPref.getFloat("range" , 0);
 
-        Log.d("mapmain", range + "");
+        Log.d("range", range + "");
 
 
         //download the charger info on a separate thread to the main thread
@@ -223,7 +223,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                         }
                         if (count == 0) {
                             Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, get a bus", Toast.LENGTH_LONG).show();
-                            break;
                         }
                     }
                 }

@@ -163,8 +163,8 @@ public class first_launch extends AppCompatActivity implements LocationListener{
 
 
                 String battery = selected_model.substring(selected_model.length() - 6, selected_model.length() - 4);
-                final float soc_float = Integer.parseInt(battery);
-                float range = soc_float * 6;
+                final float kwh = Integer.parseInt(battery);
+                float range = kwh * 6;
                 editor.putFloat("range", range);
                 Log.d("soc", range + "");
                 editor.commit();
