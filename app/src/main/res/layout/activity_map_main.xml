@@ -9,7 +9,6 @@
 
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -17,26 +16,74 @@
         android:layout_height="match_parent"
         tools:context="com.dcuproject.jmadden.chargeguide.MapMain" >
 
-        <LinearLayout android:layout_width="match_parent"
-            android:background="#FFFFFF"
-            android:layout_margin="10dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <ImageButton
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="@null"
-                android:id="@+id/hamburger"
-                android:src="@drawable/hamburger"
-                android:scaleType="fitXY"
-                android:layout_margin="5dp"/>
+            <LinearLayout android:layout_width="match_parent"
+                android:background="#FFFFFF"
+                android:layout_margin="10dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-            <fragment
-                android:id="@+id/place_autocomplete_fragment"
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@null"
+                    android:id="@+id/hamburger"
+                    android:src="@drawable/hamburger"
+                    android:scaleType="fitXY"
+                    android:layout_margin="5dp"/>
+
+                <fragment
+                    android:id="@+id/place_autocomplete_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"/>
+            </LinearLayout>
+
+            <android.support.v4.widget.Space
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <LinearLayout android:layout_width="match_parent"
+                android:background="#FFFFFF"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="15dp"
+                    android:text="State of Charge:"/>
+
+                <EditText
+                    android:id="@+id/socIntMain"
+                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="30dp"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:layout_gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="100"
+                    android:textAlignment="center"
+                    android:textSize="14sp"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="Apply"
+                    android:id="@+id/applySoc"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 

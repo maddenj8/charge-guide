@@ -96,6 +96,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private SharedPreferences sharedPref ;
     // Key for Google directions API
     private String directionsKey = "AIzaSyD0tlhhO3qg6QqbXESkGbiSO_j9ciDG0JU";
+    private EditText socMainEdittext;
+    private Float socMain;
+    private Button apply;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,15 +110,16 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String setupComplete = sharedPref.getString("Setup_complete", "false");
 
-        //show the applicable chargers in Ireland
-
+        //get the make and model of the user
         make  = sharedPref.getString("selectedMake" , "");
         model  = sharedPref.getString("selectedModel" , "");
+
+        //get the soc from the user
+        socMainEdittext = (EditText) (findViewById(R.id.socIntMain));
 
         final Float range =  sharedPref.getFloat("range" , 0);
 
         Log.d("range", range + "");
-
 
         //download the charger info on a separate thread to the main thread
         try {
@@ -152,6 +156,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        apply = (Button) (findViewById(R.id.applySoc));
+        apply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                socMain = Float.valueOf(socMainEdittext.getText().toString());
+                SharedPreferences.Editor e = sharedPref.edit();
+                Toast.makeText(getApplicationContext(), "You have set range to " + String.valueOf(socMain), Toast.LENGTH_SHORT).show();
+                e.putFloat("range", socMain);
+                e.commit();
+            }
+        });
+
 
         //adds functionality to the hamburger button
         hamburger = (ImageButton) (findViewById(R.id.hamburger));
