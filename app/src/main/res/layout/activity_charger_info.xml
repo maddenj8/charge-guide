@@ -10,9 +10,10 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:fillViewport="true"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -21,14 +22,46 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/time_"
-                android:layout_width="222dp"
-                android:layout_height="25dp"
+                android:id="@+id/timeTo80"
+                android:layout_width="183dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:autoSizeMaxTextSize="18dp"
                 android:autoSizeMinTextSize="18dp"
-                android:text="2 hours and 20 minutes"
+                android:text="0 minutes"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.428"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView3"
+                app:layout_constraintTop_toBottomOf="@+id/arrivalsocInt" />
+
+            <TextView
+                android:id="@+id/arrivalsocInt"
+                android:layout_width="183dp"
+                android:layout_height="25dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:autoSizeMaxTextSize="18dp"
+                android:autoSizeMinTextSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.428"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView3"
+                app:layout_constraintTop_toBottomOf="@+id/arrivalTime" />
+
+            <TextView
+                android:id="@+id/arrivalTime"
+                android:layout_width="184dp"
+                android:layout_height="25dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="26dp"
+                android:autoSizeMaxTextSize="18dp"
+                android:autoSizeMinTextSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView3"
                 app:layout_constraintTop_toBottomOf="@+id/distance" />
@@ -43,23 +76,23 @@
                 android:layout_marginTop="24dp"
                 android:autoSizeMaxTextSize="18dp"
                 android:autoSizeMinTextSize="18dp"
-                android:text="Time to 80%:"
+                android:text="Charge Time:"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                app:layout_constraintTop_toBottomOf="@+id/arrivalSOC" />
 
             <TextView
-                android:id="@+id/textView4"
-                android:layout_width="114dp"
+                android:id="@+id/arrivalSOC"
+                android:layout_width="110dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
                 android:autoSizeMaxTextSize="18dp"
                 android:autoSizeMinTextSize="18dp"
-                android:text="Charge Time:"
+                android:text="Arrival SOC:"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView3" />
@@ -96,8 +129,8 @@
                 android:id="@+id/status_image"
                 android:layout_width="93dp"
                 android:layout_height="99dp"
-                android:layout_marginStart="64dp"
-                android:layout_marginTop="76dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="88dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -118,8 +151,8 @@
                 android:id="@+id/socInt"
                 android:layout_width="48dp"
                 android:layout_height="37dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="120dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="12dp"
                 android:autoSizeMaxTextSize="14dp"
                 android:autoSizeMinTextSize="14dp"
                 android:ems="10"
@@ -129,7 +162,7 @@
                 android:text="100"
                 android:textSize="14sp"
                 app:layout_constraintStart_toEndOf="@+id/soc"
-                app:layout_constraintTop_toBottomOf="@+id/time_" />
+                app:layout_constraintTop_toBottomOf="@+id/timeTo80" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/openMaps"
@@ -199,13 +232,13 @@
                 android:layout_width="74dp"
                 android:layout_height="39dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginStart="56dp"
-                android:layout_marginTop="144dp"
+                android:layout_marginStart="44dp"
+                android:layout_marginTop="16dp"
                 android:text="Apply"
                 android:textSize="12dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/socInt"
-                app:layout_constraintTop_toTopOf="@+id/time_" />
+                app:layout_constraintTop_toBottomOf="@+id/timeTo80" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 

@@ -55,6 +55,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -233,8 +234,15 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                             Log.d("range" , range + "");
                             if (range < 40 && marker.getSnippet().contains("Available")) {
                                 colorSelected = colors[4 % index];
+
                                 startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colorSelected);
-                                startDirectionsSteps(marker.getPosition(), place.getLatLng(), colorSelected);
+                                //startDirectionsSteps(marker.getPosition(), place.getLatLng(), colorSelected);
+
+                                ArrayList <Marker> possibleChargers = new ArrayList<>();
+
+                            //    possibleChargers = sortChargers(possibleChargers , LatLng destnation);
+                                possibleChargers.add(marker);
+
                                 addMarker(marker);
                                 count++;
                                 index++;
@@ -258,6 +266,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             }
         });
     }
+
+
+    //public ArrayList sortChargers(ArrayList markers , LatLng destnation ){
+
+//
+  //      return  null;
+ //   }
+
 
     //if you have a marker made already call this function to redraw it
     public void addMarker(Marker marker) {
