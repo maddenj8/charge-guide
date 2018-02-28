@@ -21,6 +21,7 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.sql.Time;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -49,7 +50,6 @@ public class chargerInfo extends AppCompatActivity {
         TextView status = (TextView) findViewById(R.id.status_text);
         ImageView icon = (ImageView) findViewById(R.id.status_image);
         final TextView distance = (TextView) findViewById(R.id.distance);
-        final TextView arrivalTime = (TextView) findViewById(R.id.arrivalTime);
 
 
 
@@ -72,12 +72,11 @@ public class chargerInfo extends AppCompatActivity {
             status.setText(stats);
 
 
-            double hourdouble= dist / 90 ; // time in hours
-            double totalSecs = hourdouble *60 * 60;
-            double hours = totalSecs / 3600;
-            double minutes = (totalSecs % 3600) / 60;
-            Log.d("hour" , totalSecs + "");
-            arrivalTime.setText(round(hours) + " hours" + " "+ round(minutes) +" minutes away");
+         //   double hourdouble= dist / 90 ; // time in hours
+        //    double totalSecs = hourdouble *60 * 60;
+        //    double minutes = (totalSecs % 3600) / 60;
+         //   Log.d("hour" , totalSecs + "");
+           // arrivalTime.setText(round(hours) + " hours" + " "+ round(minutes) +" minutes away");
 
 
 
@@ -133,7 +132,7 @@ public class chargerInfo extends AppCompatActivity {
         model = sharedPref.getString("selectedModel", "");
 
         final String battery = model.substring(model.length() - 6, model.length() - 4);
-        final int battery_int = Integer.parseInt(battery);
+        final int fullKwh = Integer.parseInt(battery);
         //Log.d("bat" , battery_int +"");
 
         final TextView chargeTime =  findViewById(R.id.timeTo80);
@@ -150,33 +149,35 @@ public class chargerInfo extends AppCompatActivity {
 
                 if (socInt >= 0 && socInt <= 100) {
                     socInt = socInt / 100;
-                    kwh = battery_int * socInt;
+                    float currentKwh = fullKwh * socInt;
 
                     SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
-                    range = kwh * 6;
+                    range = currentKwh * 6;
                     editor.putFloat("range", range);
                     Log.v("range", range + "");
 
-                    float KwhToFull =  battery_int- kwh;
-                    // apoxomity 120 seconds per kwh to charge
-                    int minToCharge  = round(KwhToFull) *2;
-                    Log.d("mintocharge", minToCharge + "");
-
-                    chargeTime.setText(battery_int + " minutes");
-
-                    float tmp = round(range  - dist)/100;
-                    Log.d("tmp" , tmp + "");
-                    tmp = battery_int * tmp / 6;
-                    arrivalSoc.setText(  tmp + "%");
 
 
+                   double arrivalRange =  round(range - dist);
+                   double doubleArriveSoc = arrivalRange / (fullKwh*6 ) * 100 ;
+                    DecimalFormat f = new DecimalFormat("##.00");
+                   arrivalSoc.setText(  f.format(doubleArriveSoc) + "%");
+
+                    //133kph charge speed
+                    //4.4 km per min
+                    if ( doubleArriveSoc > 0 ) {
+                        double chargeAmmountKwh = fullKwh * (1 -(doubleArriveSoc / 100));
+                        Log.d("kwhtocharge", chargeAmmountKwh + "");
+                        double minToCharge = (chargeAmmountKwh * 6) / 4.4;
+                        chargeTime.setText(f.format(minToCharge) + " minutes");
+                    }
                     if ( range  - dist < 20   &&  range  - dist >0){
                         Toast.makeText(getApplicationContext(), "You may not reach your destination"  , Toast.LENGTH_LONG).show();
                     }
 
                     if ( range  - dist < 0  ){
-                        Toast.makeText(getApplicationContext(), "You are unlikely to reach your destination"  , Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "You are unlikely to reach your destination"  , Toast.LENGTH_SHORT).show();
                     }
 
 
