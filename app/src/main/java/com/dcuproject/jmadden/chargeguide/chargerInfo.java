@@ -163,15 +163,24 @@ public class chargerInfo extends AppCompatActivity {
                    double doubleArriveSoc = arrivalRange / (fullKwh*6 ) * 100 ;
                     DecimalFormat f = new DecimalFormat("##.00");
                    arrivalSoc.setText(  f.format(doubleArriveSoc) + "%");
+                   if ( doubleArriveSoc < 0 ) {
+                        Log.d("soc" ,doubleArriveSoc + "");
 
+                       chargeTime.setText("");
+                   }
+
+                   else{
+
+
+                       double chargeAmmountKwh = fullKwh * (1 -(doubleArriveSoc / 100));
+                       Log.d("kwhtocharge", chargeAmmountKwh + "");
+                       double minToCharge = (chargeAmmountKwh * 6) / 4.4;
+                       chargeTime.setText(f.format(minToCharge) + " minutes");
+                   }
                     //133kph charge speed
                     //4.4 km per min
-                    if ( doubleArriveSoc > 0 ) {
-                        double chargeAmmountKwh = fullKwh * (1 -(doubleArriveSoc / 100));
-                        Log.d("kwhtocharge", chargeAmmountKwh + "");
-                        double minToCharge = (chargeAmmountKwh * 6) / 4.4;
-                        chargeTime.setText(f.format(minToCharge) + " minutes");
-                    }
+
+
                     if ( range  - dist < 20   &&  range  - dist >0){
                         Toast.makeText(getApplicationContext(), "You may not reach your destination"  , Toast.LENGTH_LONG).show();
                     }
