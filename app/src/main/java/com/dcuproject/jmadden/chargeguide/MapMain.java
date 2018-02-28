@@ -169,7 +169,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     Toast.makeText(getApplicationContext(), "You have set range to " + String.valueOf(socMain) + " Km", Toast.LENGTH_SHORT).show();
                     e.putFloat("range", socMain);
                     e.commit();
-                } else {Toast.makeText(getApplicationContext(), "Please enter a number between 0 and 100", Toast.LENGTH_SHORT);}
+                } else {Toast.makeText(getApplicationContext(), "Please enter a number between 0 and 100", Toast.LENGTH_SHORT).show();}
             }
         });
         apply.requestFocus();
