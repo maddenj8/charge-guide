@@ -84,6 +84,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private CustomInfoWindow customInfoWindow;
     private Float user_lat;
     private Float user_long;
+    private Marker userMarker;
     private ViewGroup infoWindow;
     private Button infoButton;
     private String line = null;
@@ -103,6 +104,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Float socMain;
     private Button apply;
     private Float kwh;
+    private TreeMap tm;
+    private Place prevPlace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,6 +200,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             public void onClick(View view) {
                 try {
                     mMap.clear();
+                    addMarker(userMarker);
                     markers.remove(markers.size() - 1);
                     autocompleteFragment.setText("");
                     view.setVisibility(View.GONE);
@@ -212,6 +216,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             int index = 1;
             @Override
             public void onPlaceSelected(Place place) {
+                tm = new TreeMap();
                 // Log.i("PLACE TEST", place.getName().toString());
                 if (destinationUpdated) {
                     destination.setPosition(place.getLatLng()); // if there is a marker just update the position
@@ -222,70 +227,63 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                     markers.add(mMap.addMarker(markerOptions)); // add the newly made marker to the map
                 }
-                //when a place is selected draw the path between it and home
 
-                //and only show the chargers that the user should stop at
-                if (!(user_lat == 9999)) {
-                    int count = 0;
+                //if the user can reach the destination without charging
+                if (getDistance(place.getLatLng().latitude, place.getLatLng().longitude) < range) {
                     mMap.clear();
-                    for (Marker marker : markers) {
-                        //double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
+                    addMarker(destination);
+                    addMarker(userMarker);
+                    Toast.makeText(getApplicationContext(), "You shold reach your destination without charging", Toast.LENGTH_SHORT).show();
+                    startDirectionsSteps(new LatLng(user_lat, user_long), place.getLatLng(), colors[0]);
+                }
+                else { //else find a charger to stop at
+                    if (!(user_lat == 9999)) {
+                        int count = 0;
+                        mMap.clear();
+                        for (Marker marker : markers) {
+                            double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
 
-                        if (marker.getSnippet() != null) {
+                            if (marker.getSnippet() != null) {
 
-                            Float range = sharedPref.getFloat("range", 0);
-                             //  if (marker.getSnippet().contains("Destnation"))
-                            //    Log.d("range", range + "");
-
-                            if (range < 60 && marker.getSnippet().contains("Available")) {
-                                colorSelected = colors[4 % index];
-
-                              //  startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colorSelected);
-                                //startDirectionsSteps(marker.getPosition(), place.getLatLng(), colorSelected);
-
-                                ArrayList<Marker> possibleChargers = new ArrayList<>();
-
-                                Set chargerSet;
-                                chargerSet = sortChargers(possibleChargers);
-
-                                Iterator i = chargerSet.iterator();
-
-
-                                while (i.hasNext()) {
-                                    Map.Entry pair = (Map.Entry) i.next();
-                                    double distToDest = (Double) pair.getKey();
-                                    Marker chargerMarker = (Marker) pair.getValue();
-
-                                    if ( distToDest < range ){
-                                        //we should set that as a line and then stop
-                                        startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colorSelected);
-                                        count++;
-                                    }
-
-                                    if( count == 0){
-                                        // no on hop to destnation found need to use more hops
-                                    }
-                                   // possibleChargers.add(marker);
-
-                                    //addMarker(marker);
-
-                                    index++;
-
+                                Float range = sharedPref.getFloat("range", 0);
+                                //if the charger is reachable regardless of direction
+                                if (range > distance && marker.getSnippet().contains("Available")) { //if you can get to the charger
+                                    colorSelected = colors[4 % index];
+                                    addToMap(marker);
                                 }
-
-
-                                if (marker.getTitle().contains("Home") || marker.getSnippet().contains("Destination")) {
-                                    addMarker(marker);
-                                }
-                            }
-                            if (count == 0) {
-                                Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, get a bus", Toast.LENGTH_LONG).show();
                             }
                         }
+
+                        //go through the markers in range
+                        //SEPARATE INTO FUNCTION
+                        try {
+                            int limit = 0;
+                            Set keys = tm.keySet();
+                            addMarker(destination);
+                            addMarker(userMarker);
+
+                            for (Iterator i = keys.iterator(); i.hasNext(); ) {
+                                //only pick the top three
+                                if (limit > 2) {
+                                    break;
+                                }
+
+                                double key = (double) i.next();
+                                Marker marker = (Marker) tm.get(key);
+                                addMarker(marker);
+                                startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[4%index]);
+                                index++;
+                                //startDirectionsSteps();
+
+                                limit++;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (count == 0) {
+                            Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, get a bus", Toast.LENGTH_LONG).show();
+                        }
                     }
-            //    else{
-            //            Toast.makeText(getApplicationContext(), "Sorry but your location was not set correctly please go the the setup page and try again.", Toast.LENGTH_LONG).show();
-           //         }
                 }
             }
 
@@ -296,42 +294,21 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         });
     }
 
+    public void addToMap(Marker marker) { //only pick the ones that are in the direction of the destination
+        try {
+            Location destLocation = new Location("destLocation");
+            destLocation.setLatitude(destination.getPosition().latitude);
+            destLocation.setLongitude(destination.getPosition().longitude);
 
-    public Set sortChargers(ArrayList <Marker> markers  ) {
-        //ArrayList <Double> chargerDistToDest = new ArrayList<Double>();
-        TreeMap tm = new TreeMap();
-        for (Marker marker : markers) {
-            LatLng markerLatLang = marker.getPosition();
-            double chargerLat = markerLatLang.latitude;
-            double chargerLon = markerLatLang.longitude;
-            LatLng destLatLang = destination.getPosition();
-            double destLat = destLatLang.latitude;
-            double destLon = destLatLang.longitude;
+            Location markerLocation = new Location("markerLocation");
+            markerLocation.setLatitude(marker.getPosition().latitude);
+            markerLocation.setLongitude(marker.getPosition().longitude);
 
-
-            Location chargerLoc = new Location("chargerLoc");
-            Location dest_Locaation = new Location("dest_Locaation");
-            chargerLoc.setLatitude(chargerLat);
-            chargerLoc.setLongitude(chargerLon);
-            dest_Locaation.setLatitude(chargerLat);
-            dest_Locaation.setLongitude(chargerLon);
-
-
-            double distToCharger = dest_Locaation.distanceTo(chargerLoc);
-            //chargerDistToDest.add(distToCharger);
-            tm.put(distToCharger, marker);
-
-
-        }
-
-
-        Set set = tm.entrySet();
-
-
-
-
-
-        return set;
+            double distToLocation = destLocation.distanceTo(markerLocation);
+            //sort by the distance the charger is from the destination to take direction
+            //into account
+            tm.put(distToLocation, marker);
+        } catch(Exception e) {e.printStackTrace();}
     }
 
     //if you have a marker made already call this function to redraw it
@@ -387,7 +364,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         mMap.setInfoWindowAdapter(customInfoWindow);
 
         //add marker and adjust camera
-        markers.add(mMap.addMarker(new MarkerOptions().position(userLocation).title("Home").anchor(0.5f, 1))); // set a marker for user location
+        userMarker = mMap.addMarker(new MarkerOptions().position(userLocation).title("Home").anchor(0.5f, 1)); // set a marker for user location
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
 
         Toast.makeText(this, "Make is " + make + " and Model is " + model, Toast.LENGTH_SHORT).show();
