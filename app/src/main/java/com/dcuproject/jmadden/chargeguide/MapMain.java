@@ -232,13 +232,15 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                         //double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
 
                         if (marker.getSnippet() != null) {
+
                             Float range = sharedPref.getFloat("range", 0);
-                            if (marker.getSnippet().contains("Destnation"))
-                                Log.d("range", range + "");
-                            if (range < 40 && marker.getSnippet().contains("Available")) {
+                             //  if (marker.getSnippet().contains("Destnation"))
+                            //    Log.d("range", range + "");
+
+                            if (range < 60 && marker.getSnippet().contains("Available")) {
                                 colorSelected = colors[4 % index];
 
-                                startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colorSelected);
+                              //  startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colorSelected);
                                 //startDirectionsSteps(marker.getPosition(), place.getLatLng(), colorSelected);
 
                                 ArrayList<Marker> possibleChargers = new ArrayList<>();
@@ -254,11 +256,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                                     double distToDest = (Double) pair.getKey();
                                     Marker chargerMarker = (Marker) pair.getValue();
 
+                                    if ( distToDest < range ){
+                                        //we should set that as a line and then stop
+                                        startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colorSelected);
+                                        count++;
+                                    }
 
-                                    possibleChargers.add(marker);
+                                    if( count == 0){
+                                        // no on hop to destnation found need to use more hops
+                                    }
+                                   // possibleChargers.add(marker);
 
-                                    addMarker(marker);
-                                    count++;
+                                    //addMarker(marker);
+
                                     index++;
 
                                 }
