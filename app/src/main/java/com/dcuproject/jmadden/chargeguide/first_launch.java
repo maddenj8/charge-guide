@@ -191,6 +191,7 @@ public class first_launch extends AppCompatActivity implements LocationListener{
                             //get the latitude and longitude of the place that was searched for
                             float lat = (float) placeSelected.getLatLng().latitude;
                             float lng = (float) placeSelected.getLatLng().longitude;
+                            Toast.makeText(getApplicationContext(), "You selected " + placeSelected.getName(), Toast.LENGTH_SHORT).show();
                             saveCoordinates(lat, lng);
                             finishSetup();
                         }
