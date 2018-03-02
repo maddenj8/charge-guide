@@ -290,7 +290,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                                         // Also I have gone for just one hop as more than one hop was melting my brain and
                                         // this code is not well suited to doing that and we dont have the time to change it
 
-                                        //one hop is more than good enfough for most trips and they can always just manualy
+                                        //one hop is more than good enough for most trips and they can always just manualy
                                         //set a path to a charger.
 
                                         //I will ( try )  make the home clickable so it will be set as the destnation and the
