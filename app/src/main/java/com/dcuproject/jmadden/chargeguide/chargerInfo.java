@@ -205,6 +205,6 @@ public class chargerInfo extends AppCompatActivity {
             }
         });
 
-
+        applybut.performClick();
     }
 }
