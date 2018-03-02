@@ -88,6 +88,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private int trys ;
     private  Marker bestSoFar;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +96,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         colors = new int[] {Color.BLUE, Color.RED, Color.GREEN, Color.CYAN, Color.MAGENTA};
         //checks if the setup process if complete
 
-        final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String setupComplete = sharedPref.getString("Setup_complete", "false");
 
         //get the make and model of the user
@@ -192,8 +193,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             }
         });
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-
-
             int index = 1;
             @Override
             public void onPlaceSelected(Place place) {
@@ -222,21 +221,23 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                         mMap.clear();
                         for (Marker marker : markers) {
                             double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
-                }
-                else { //else find a charger to stop at
-                    findOptimalChargers();
+                        }
+                    }
+                    try {
+                        findOptimalChargers();
+                    } catch(Exception e) {e.printStackTrace();}
                 }
             }
 
             @Override
             public void onError(Status status) {
-                Log.i("MAP PROBLEM", "An error occurred: " + status);
+                Log.e("PlaceError", status.getStatusMessage());
             }
         });
     }
-
     public void findOptimalChargers() {
         int index = 1;
+        range = sharedPref.getFloat("range", 100);
         double rangeAtEighty = 80 * (kwh / 100) * 6; //if the user stops at a charger use this range instead
         if (!(user_lat == 9999)) {
             int count = 0;
@@ -246,7 +247,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 if (marker.getSnippet() != null) {
 
-                    Float range = sharedPref.getFloat("range", 0);
                     //if the charger is reachable regardless of direction
                     if (range > distance && marker.getSnippet().contains("Available")) { //if you can get to the charger
                         colorSelected = colors[4 % index];
@@ -255,105 +255,138 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 }
             }
 
-                        //go through the markers in range
-                        //SEPARATE INTO FUNCTION
+            //go through the markers in range
 
-                        Bundle pathBundel = new Bundle();
-                            try {
-                               // trys++; // limits the number of hops to 3;
-                                int limit = 0;
-                                Set keys = tm.keySet();
-                                addMarker(destination);
-                                addMarker(userMarker);
+            Bundle pathBundel = new Bundle();
+            try {
+                // trys++; // limits the number of hops to 3;
+                int limit = 0;
+                Set keys = tm.keySet();
+                addMarker(destination);
+                addMarker(userMarker);
 
-                                for (Iterator i = keys.iterator(); i.hasNext(); ) {
-                                    //only pick the top three
+                for (Iterator i = keys.iterator(); i.hasNext();) {
+                    //only pick the top three
 
-                                    if (limit > 2) {
-                                        break;
-                                    }
-
-                                    double key = (double) i.next();
-                                    Marker marker = (Marker) tm.get(key);
-
-                                    LatLng mkPosition = marker.getPosition();
-                                    double mklat = mkPosition.latitude;
-                                    double mklon = mkPosition.longitude;
-
-
-                                    LatLng desPos = destination.getPosition();
-                                    double deslat = desPos.latitude;
-                                    double deslon = desPos.longitude;
-
-                                   double distToDestnaiton =  getDistanceToDestination(mklat , mklon ,deslat , deslon);
-                                   double homeToCharger = getDistance(mklat  , mklon);
-
-
-                                    if (distToDestnaiton < range) {
-                                        Log.d("key", distToDestnaiton + "");
-
-
-                                        mMap.setInfoWindowAdapter(customInfoWindow);
-
-                                        addMarker(marker); // a full charge form the charger will get you to your destnation
-                                        startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[ index]);
-                                        startDirectionsSteps( marker.getPosition() , destination.getPosition(),  colors[ index]);
-
-                                        String stringIndex = Integer.toString(index);
-                                        double totalDistance =  distToDestnaiton + homeToCharger;
-
-                                        ArrayList <Double> journyInfo = new ArrayList<>();
-                                        journyInfo.add(totalDistance );
-
-
-                                        // eh right I need to put the info about the charger and the path and color
-                                        // so when the user clicks on the destnation pin they can pick at path
-                                        // Also I have gone for just one hop as more than one hop was melting my brain and
-                                        // this code is not well suited to doing that and we dont have the time to change it
-
-                                        //one hop is more than good enough for most trips and they can always just manualy
-                                        //set a path to a charger.
-
-                                        //I will ( try )  make the home clickable so it will be set as the destnation and the
-                                        //actual location will be used as the location
-
-
-                                        //pathBundel.putInt( stringIndex ,index);
-                                        //pathBundel.(stringIndex+" totalDistance " , journyInfo);
-                                        //pathBundel.putDoubleArray();
-                                       // pathBundel.put("destination", marker.getPosition().latitude);
-
-                                        index++;
-                                        count++;
-                                    }
-
-
-                                    limit++;
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                           // if(  count == 0 && trys < 3){
-                            //find chargers reachable to best chargers
-                            //  addToMap(bestSoFar);
-
-                           // }
-
-                             if (count == 0) {
-                                Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName(), Toast.LENGTH_LONG).show();
-                            }
-
+                    if (limit > 2) {
+                        break;
                     }
-                }
 
-            @Override
-            public void onError(Status status) {
-                Log.i("MAP PROBLEM", "An error occurred: " + status);
+                    double key = (double) i.next();
+                    Marker marker = (Marker) tm.get(key);
+
+                    LatLng mkPosition = marker.getPosition();
+                    double mklat = mkPosition.latitude;
+                    double mklon = mkPosition.longitude;
+
+
+                    LatLng desPos = destination.getPosition();
+                    double deslat = desPos.latitude;
+                    double deslon = desPos.longitude;
+
+                    double distToDestnaiton = getDistanceToDestination(mklat, mklon, deslat, deslon);
+                    double homeToCharger = getDistance(mklat, mklon);
+
+
+                    //if (distToDestnaiton < range) {
+                    Log.d("key", distToDestnaiton + "");
+
+
+                    mMap.setInfoWindowAdapter(customInfoWindow);
+
+                    addMarker(marker); // a full charge form the charger will get you to your destnation
+                    startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[index]);
+                    //startDirectionsSteps(marker.getPosition(), destination.getPosition(), colors[index]);
+
+                    String stringIndex = Integer.toString(index);
+                    double totalDistance = distToDestnaiton + homeToCharger;
+
+                    ArrayList<Double> journyInfo = new ArrayList<>();
+                    journyInfo.add(totalDistance);
+
+                    // eh right I need to put the info about the charger and the path and color
+                    // so when the user clicks on the destnation pin they can pick at path
+                    // Also I have gone for just one hop as more than one hop was melting my brain and
+                    // this code is not well suited to doing that and we dont have the time to change it
+
+                    //one hop is more than good enough for most trips and they can always just manualy
+                    //set a path to a charger.
+
+                    //I will ( try )  make the home clickable so it will be set as the destnation and the
+                    //actual location will be used as the location
+
+
+                    //pathBundel.putInt( stringIndex ,index);
+                    //pathBundel.(stringIndex+" totalDistance " , journyInfo);
+                    //pathBundel.putDoubleArray();
+                    //pathBundel.put("destination", marker.getPosition().latitude);
+
+                        index++;
+                        count++;
+                    //}
+
+
+                    limit++;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
+
+            index = 1;
+            Set keys =  tm.keySet();
+            Iterator i = keys.iterator();
+            int limit = 0;
+            while (i.hasNext() && limit < 3) {
+                Marker marker = (Marker) tm.get(i.next());
+                continueHoppingChargers(rangeAtEighty, marker, colors[4 % index]);
+                index++;
+                limit++;
+            }
+            // if(  count == 0 && trys < 3){
+            //find chargers reachable to best chargers
+            //  addToMap(bestSoFar);
+
+            // }
+
+            //if (count == 0) {
+            //    Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName(), Toast.LENGTH_LONG).show();
+            //}
+
+        }
     }
 
+    public void continueHoppingChargers(double range, Marker startCharger, int color) {
+        Toast.makeText(getApplicationContext(), "It is being called the range is " + String.valueOf(range), Toast.LENGTH_SHORT).show();
+        double distance = getDistanceToDestination(startCharger.getPosition().longitude, startCharger.getPosition().latitude, destination.getPosition().longitude, destination.getPosition().latitude);
+        if (range > distance) {
+            // you can reach without stopping at another charger
+            Toast.makeText(getApplicationContext(), "You are hitting the base case", Toast.LENGTH_SHORT).show();
+            startDirectionsSteps(startCharger.getPosition(), destination.getPosition(), color);
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "You are reaching the recursion", Toast.LENGTH_SHORT).show();
+            TreeMap localTree = new TreeMap();
+            for (Marker marker : markers) {
+                double distToDest = getDistanceToDestination(marker.getPosition().longitude, marker.getPosition().latitude, destination.getPosition().longitude, destination.getPosition().latitude);
+                if (range > distToDest) {
+                    addMarker(marker);
+                    localTree.put(distToDest, marker);
+                }
+            }
+            Set keys = localTree.keySet();
+            Iterator i = keys.iterator();
+            Marker marker = null;
+            while (i.hasNext()) {
+                marker = (Marker) localTree.get(i.next());
+                addMarker(marker);
+                break;
+            }
+            startDirectionsSteps(startCharger.getPosition(), marker.getPosition(), color);
+            Log.d("markerLocation", String.valueOf(marker.getPosition().latitude) + " " + String.valueOf(marker.getPosition().longitude));
+            continueHoppingChargers(range, marker, color); // keep recursing until you can reach the destination without charging
+            //you have to find another charger to stop at
+        }
+    }
     public void addToMap(Marker marker) { //only pick the ones that are in the direction of the destination
         try {
 
