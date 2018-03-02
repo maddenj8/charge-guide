@@ -16,16 +16,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-
-
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
         android:screenOrientation="portrait"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <uses-library android:name="com.google.android.maps" />
 
         <!--
@@ -42,10 +39,10 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:windowSoftInputMode="adjustResize"
             android:name=".MapMain"
             android:label="@string/title_activity_map_main"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -58,10 +55,14 @@
         <activity
             android:name=".help"
             android:parentActivityName=".MapMain"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".chargerInfo" android:screenOrientation="portrait"></activity>
-        <uses-library android:name="com.google.android.maps" />
-    </application>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".chargerInfo"
+            android:screenOrientation="portrait" />
 
+        <uses-library android:name="com.google.android.maps" />
+
+        <activity android:name=".chargerOnRoute"></activity>
+    </application>
 
 </manifest>

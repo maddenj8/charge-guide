@@ -52,6 +52,7 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
             TextView subText = view.findViewById(R.id.tv_subtitle);
             subText.setText(marker.getSnippet());
 
+
             if (subText.getText().toString().contains("Available")) {
                 statusIcon.setBackgroundResource(R.drawable.green_charger);
             }
@@ -63,6 +64,13 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
             }
             else if (subText.getText().toString().contains("Out of Service")){
                 statusIcon.setBackgroundResource(R.drawable.red_charger);
+            }
+
+            else if (subText.getText().toString().contains("Destination")) {
+                statusIcon.setBackgroundResource(R.drawable.flag);
+                button.setText("Choose Path");
+
+                return view;
             }
             else{
                 statusIcon.setBackgroundResource(R.drawable.home);
