@@ -237,53 +237,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     startDirectionsSteps(new LatLng(user_lat, user_long), place.getLatLng(), colors[0]);
                 }
                 else { //else find a charger to stop at
-                    if (!(user_lat == 9999)) {
-                        int count = 0;
-                        mMap.clear();
-                        for (Marker marker : markers) {
-                            double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
-
-                            if (marker.getSnippet() != null) {
-
-                                Float range = sharedPref.getFloat("range", 0);
-                                //if the charger is reachable regardless of direction
-                                if (range > distance && marker.getSnippet().contains("Available")) { //if you can get to the charger
-                                    colorSelected = colors[4 % index];
-                                    addToMap(marker);
-                                }
-                            }
-                        }
-
-                        //go through the markers in range
-                        //SEPARATE INTO FUNCTION
-                        try {
-                            int limit = 0;
-                            Set keys = tm.keySet();
-                            addMarker(destination);
-                            addMarker(userMarker);
-
-                            for (Iterator i = keys.iterator(); i.hasNext(); ) {
-                                //only pick the top three
-                                if (limit > 2) {
-                                    break;
-                                }
-
-                                double key = (double) i.next();
-                                Marker marker = (Marker) tm.get(key);
-                                addMarker(marker);
-                                startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[4%index]);
-                                index++;
-                                //startDirectionsSteps();
-
-                                limit++;
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        if (count == 0) {
-                            Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName() + " today, get a bus", Toast.LENGTH_LONG).show();
-                        }
-                    }
+                    findOptimalChargers();
                 }
             }
 
@@ -292,6 +246,53 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 Log.i("MAP PROBLEM", "An error occurred: " + status);
             }
         });
+    }
+
+    public void findOptimalChargers() {
+        int index = 1;
+        double rangeAtEighty = 80 * (kwh / 100) * 6; //if the user stops at a charger use this range instead
+        if (!(user_lat == 9999)) {
+            int count = 0;
+            mMap.clear();
+            for (Marker marker : markers) {
+                double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
+
+                if (marker.getSnippet() != null) {
+
+                    Float range = sharedPref.getFloat("range", 0);
+                    //if the charger is reachable regardless of direction
+                    if (range > distance && marker.getSnippet().contains("Available")) { //if you can get to the charger
+                        colorSelected = colors[4 % index];
+                        addToMap(marker);
+                    }
+                }
+            }
+
+            //go through the markers in range
+            //SEPARATE INTO FUNCTION
+            try {
+                int limit = 0;
+                Set keys = tm.keySet();
+                addMarker(destination);
+                addMarker(userMarker);
+
+                for (Iterator i = keys.iterator(); i.hasNext(); ) {
+                    //only pick the top three
+                    if (limit > 2) {
+                        break;
+                    }
+
+                    double key = (double) i.next();
+                    Marker marker = (Marker) tm.get(key);
+                    addMarker(marker);
+                    startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[4%index]);
+                    index++;
+                    limit++;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void addToMap(Marker marker) { //only pick the ones that are in the direction of the destination
