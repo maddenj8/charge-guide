@@ -92,7 +92,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
-        colors = new int[] {Color.BLUE, Color.RED, Color.GREEN, Color.CYAN, Color.MAGENTA};
+        colors = new int[] {Color.CYAN, Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA};
+
         //checks if the setup process if complete
 
         final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
@@ -274,33 +275,26 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                                         mMap.setInfoWindowAdapter(customInfoWindow);
 
-                                        addMarker(marker); // a full charge form the charger will get you to your destnation
+                                           addMarker(marker); // a full charge form the charger will get you to your destnation
                                         startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[ index]);
                                         startDirectionsSteps( marker.getPosition() , destination.getPosition(),  colors[ index]);
 
                                         String stringIndex = Integer.toString(index);
                                         double totalDistance =  distToDestnaiton + homeToCharger;
 
-                                        ArrayList <Double> journyInfo = new ArrayList<>();
-                                        journyInfo.add(totalDistance );
 
+                                        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPref.edit();
 
-                                        // eh right I need to put the info about the charger and the path and color
-                                        // so when the user clicks on the destnation pin they can pick at path
-                                        // Also I have gone for just one hop as more than one hop was melting my brain and
-                                        // this code is not well suited to doing that and we dont have the time to change it
+                                        editor.putInt(stringIndex , index);
+                                        editor.putFloat(stringIndex + "chargerLat", ((float) mklat));
+                                        editor.putFloat(stringIndex + "chargerLon", ((float) mklon));
+                                        editor.putFloat(stringIndex + "userLat", (user_lat));
+                                        editor.putFloat(stringIndex + "userLon", (user_long));
+                                        editor.putFloat(stringIndex + "distance", ((float) totalDistance));
 
-                                        //one hop is more than good enough for most trips and they can always just manualy
-                                        //set a path to a charger.
+                                        editor.commit();
 
-                                        //I will ( try )  make the home clickable so it will be set as the destnation and the
-                                        //actual location will be used as the location
-
-
-                                        //pathBundel.putInt( stringIndex ,index);
-                                        //pathBundel.(stringIndex+" totalDistance " , journyInfo);
-                                        //pathBundel.putDoubleArray();
-                                       // pathBundel.put("destination", marker.getPosition().latitude);
 
                                         index++;
                                         count++;
@@ -309,6 +303,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                                     limit++;
                                 }
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -390,6 +385,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
 
         mMap = googleMap;
         user_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
@@ -615,7 +611,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-                        if (!marker.getTitle().equals("Home") && (!marker.getPosition().equals(destination.getPosition()) ) ) {
+                            //done to avoid null pointer issues
+                          if (destinationUpdated == true && marker.getPosition().equals(destination.getPosition()) )
+                        {
+                            Intent intent = new Intent(MapMain.this, pathPicker.class);
+                            startActivity(intent);
+                        }
+
+                       else if (!marker.getTitle().equals("Home") ) {
                             Double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
 
                             Intent intent = new Intent(MapMain.this, chargerInfo.class);
@@ -630,6 +633,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                             startActivity(intent);
                             //another comment
                         }
+
+
                     }
                 });
             }
