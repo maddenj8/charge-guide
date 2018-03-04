@@ -157,7 +157,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     SharedPreferences.Editor e = sharedPref.edit();
                     Toast.makeText(getApplicationContext(), "You have set range to " + String.valueOf(socMain) + " Km", Toast.LENGTH_SHORT).show();
                     e.putFloat("range", socMain);
-
                     e.commit();
                 } else {Toast.makeText(getApplicationContext(), "Please enter a number between 0 and 100", Toast.LENGTH_SHORT).show();}
             }
@@ -196,7 +195,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     for (Marker marker:markers) {
                         addMarker(marker);
                     }
-                } catch (Exception e) {e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -205,12 +206,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             int index = 1;
             @Override
             public void onPlaceSelected(Place place) {
-                SharedPreferences path = getApplicationContext().getSharedPreferences("path", MODE_PRIVATE);
-                SharedPreferences.Editor pathEdit = path.edit();
+                SharedPreferences.Editor editor = sharedPref.edit();
 
-                pathEdit.clear();
+                for( int i = 0 ; i < 3 ; i++) {
+                    Log.d("workie", "workie");
+                    editor.putFloat(i + "chargerLat", 0);
+                    editor.putFloat(i + "chargerLon", 0);
+                    editor.putFloat("destLat", 0);
+                    editor.putFloat("destLon", 0);
+                    editor.putFloat(i + "distance", 0);
 
-            // need to add home as a place will take but a moment
+
+                }
+
                 tm = new TreeMap();
                 // Log.i("PLACE TEST", place.getName().toString());
                 if (destinationUpdated) {
@@ -228,24 +236,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     mMap.clear();
                     addMarker(destination);
                     addMarker(userMarker);
-                    oneStop = true;
                     Toast.makeText(getApplicationContext(), "You should reach your destination without charging", Toast.LENGTH_SHORT).show();
                     startDirectionsSteps(new LatLng(user_lat, user_long), place.getLatLng(), colors[0]);
-                    oneStop = true;
-
-                   // SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
-
-                    double distance = getDistance(destination.getPosition().latitude, destination.getPosition().longitude);
-                    Log.d("one stop" ,"onestop");
-
-                    pathEdit.putFloat( "destLat", ((float) destination.getPosition().latitude));
-                    pathEdit.putFloat( "destLon", ((float) destination.getPosition().longitude));
-                    pathEdit.putFloat(0 + "distance", ((float) distance));
-                    pathEdit.putBoolean( "oneStop" , oneStop );
-                    pathEdit.commit();
-
-
-
                 } else { //else find a charger to stop at
                     if (!(user_lat == 9999)) {
                         int count = 0;
@@ -312,16 +304,16 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                                         double totalDistance =  distToDestnaiton + homeToCharger;
 
 
-                                        //SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+                                        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
 
 
-                                        pathEdit.putFloat(stringIndex + "chargerLat", ((float) mklat));
-                                        pathEdit.putFloat(stringIndex + "chargerLon", ((float) mklon));;
-                                        pathEdit.putFloat( "destLat", ((float) deslat));
-                                        pathEdit.putFloat( "destLon", ((float) deslon));
-                                        pathEdit.putFloat(stringIndex + "distance", ((float) totalDistance));
+                                        editor.putFloat(stringIndex + "chargerLat", ((float) mklat));
+                                        editor.putFloat(stringIndex + "chargerLon", ((float) mklon));;
+                                        editor.putFloat( "destLat", ((float) deslat));
+                                        editor.putFloat( "destLon", ((float) deslon));
+                                        editor.putFloat(stringIndex + "distance", ((float) totalDistance));
 
-                                        pathEdit.commit();
+                                        editor.commit();
 
                                         index++;
                                         count++;
