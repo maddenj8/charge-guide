@@ -87,27 +87,29 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Place prevPlace;
     private int trys ;
     private  Marker bestSoFar;
+    private boolean notArrived;
+    private ArrayList<Marker> firstChargers;
+    private List<Marker> route;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
-        colors = new int[] {Color.CYAN, Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA};
-
-
+        colors = new int[]{Color.BLUE, Color.RED, Color.GREEN, Color.CYAN, Color.MAGENTA};
         //checks if the setup process if complete
 
-        final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         String setupComplete = sharedPref.getString("Setup_complete", "false");
 
         //get the make and model of the user
-        make  = sharedPref.getString("selectedMake" , "");
-        model  = sharedPref.getString("selectedModel" , "");
+        make = sharedPref.getString("selectedMake", "");
+        model = sharedPref.getString("selectedModel", "");
         kwh = sharedPref.getFloat("kwh", 9999);
         //get the soc from the user
         socMainEdittext = (EditText) (findViewById(R.id.socIntMain));
 
-        final Float range =  sharedPref.getFloat("range" , 0);
+        final Float range = sharedPref.getFloat("range", 0);
 
         Log.d("range", range + "");
 
@@ -120,9 +122,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 }
             });
             downloadThread.start();
-        } catch (Exception e) {e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        Log.d("setup " ,setupComplete);
+        Log.d("setup ", setupComplete);
         if (!setupComplete.equals("true")) {
             startActivity(new Intent(getApplicationContext(), first_launch.class));
         }
@@ -158,7 +162,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     Toast.makeText(getApplicationContext(), "You have set range to " + String.valueOf(socMain) + " Km", Toast.LENGTH_SHORT).show();
                     e.putFloat("range", socMain);
                     e.commit();
-                } else {Toast.makeText(getApplicationContext(), "Please enter a number between 0 and 100", Toast.LENGTH_SHORT).show();}
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please enter a number between 0 and 100", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         apply.requestFocus();
@@ -187,16 +193,16 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     markers.remove(markers.size() - 1);
                     autocompleteFragment.setText("");
                     view.setVisibility(View.GONE);
-                    for (Marker marker:markers) {
+                    for (Marker marker : markers) {
                         addMarker(marker);
                     }
-                } catch (Exception e) {e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
 
-
-            int index = 1;
             @Override
             public void onPlaceSelected(Place place) {
                 SharedPreferences.Editor editor = sharedPref.edit();
@@ -237,21 +243,55 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                         mMap.clear();
                         for (Marker marker : markers) {
                             double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
-
-                            if (marker.getSnippet() != null) {
-
-                                Float range = sharedPref.getFloat("range", 0);
-                                //if the charger is reachable regardless of direction
-                                if (range > distance && marker.getSnippet().contains("Available")) { //if you can get to the charger
-                                    colorSelected = colors[4 % index];
-                                    addToMap(marker);
-                                }
-                            }
                         }
+                    }
+                    try {
+                        findOptimalChargers();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
-                        //go through the markers in range
-                        //SEPARATE INTO FUNCTION
+            @Override
+            public void onError(Status status) {
+                Log.e("PlaceError", status.getStatusMessage());
+            }
+        });
+    }
 
+    public void buildMap(LatLng startPos, double range, int index) {
+        for (Marker marker : markers) {
+            double distance = getDistanceToDestination(startPos.latitude, startPos.longitude, marker.getPosition().latitude, marker.getPosition().longitude);
+
+            if (marker.getSnippet() != null) {
+
+                //if the charger is reachable regardless of direction
+                if (range > distance && marker.getSnippet().contains("Available")) { //if you can get to the charger
+                    colorSelected = colors[2 % index];
+                    addToMap(marker);
+                }
+            }
+        }
+    }
+
+    public void findOptimalChargers() {
+        firstChargers = new <Marker> ArrayList();
+        int index = 1;
+        range = sharedPref.getFloat("range", 100);
+        double rangeAtEighty = 80 * (kwh / 100) * 6; //if the user stops at a charger use this range instead
+        int count = 0;
+        mMap.clear();
+
+        buildMap(new LatLng(user_lat, user_long), range, index);
+
+        //Bundle pathBundel = new Bundle();
+        try {
+            // trys++; // limits the number of hops to 3;
+            int limit = 0;
+            Set keys = tm.keySet();
+            addMarker(destination);
+            addMarker(userMarker);
 
                             try {
                                 int limit = 0;
@@ -259,44 +299,54 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                                 addMarker(destination);
                                 addMarker(userMarker);
 
-                                for (Iterator i = keys.iterator(); i.hasNext(); ) {
-                                    //only pick the top three
+            for (Iterator i = keys.iterator(); i.hasNext();) {
+                //only pick the top three
 
-                                    if (limit > 2) {
-                                        break;
-                                    }
+                if (limit > 2) {
+                    break;
+                }
 
-                                    double key = (double) i.next();
-                                    Marker marker = (Marker) tm.get(key);
-
-                                    LatLng mkPosition = marker.getPosition();
-                                    double mklat = mkPosition.latitude;
-                                    double mklon = mkPosition.longitude;
-
-
-                                    LatLng desPos = destination.getPosition();
-                                    double deslat = desPos.latitude;
-                                    double deslon = desPos.longitude;
-
-                                   double distToDestnaiton =  getDistanceToDestination(mklat , mklon ,deslat , deslon);
-                                   double homeToCharger = getDistance(mklat  , mklon);
+                double key = (double) i.next();
+                Marker marker = (Marker) tm.get(key);
+                firstChargers.add(marker);
+                LatLng mkPosition = marker.getPosition();
+                double mklat = mkPosition.latitude;
+                double mklon = mkPosition.longitude;
 
 
-                                    if (distToDestnaiton < range) {
-                                        Log.d("key", distToDestnaiton + "");
+                LatLng desPos = destination.getPosition();
+                double deslat = desPos.latitude;
+                double deslon = desPos.longitude;
+
+                double distToDestnaiton = getDistanceToDestination(mklat, mklon, deslat, deslon);
+                double homeToCharger = getDistance(mklat, mklon);
 
 
-                                        mMap.setInfoWindowAdapter(customInfoWindow);
+                //if (distToDestnaiton < range) {
+                Log.d("key", distToDestnaiton + "");
 
+
+                mMap.setInfoWindowAdapter(customInfoWindow);
+
+                addMarker(marker); // a full charge form the charger will get you to your destnation
+                startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[index]);
                                            addMarker(marker); // a full charge form the charger will get you to your destnation
                                         startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[ index]);
                                         startDirectionsSteps( marker.getPosition() , destination.getPosition(),  colors[ index]);
 
+                String stringIndex = Integer.toString(index);
+                double totalDistance = distToDestnaiton + homeToCharger;
                                         int myindex = index -1;
                                         String stringIndex = Integer.toString(myindex);
                                         double totalDistance =  distToDestnaiton + homeToCharger;
 
+                ArrayList<Double> journyInfo = new ArrayList<>();
+                journyInfo.add(totalDistance);
 
+                // eh right I need to put the info about the charger and the path and color
+                // so when the user clicks on the destnation pin they can pick at path
+                // Also I have gone for just one hop as more than one hop was melting my brain and
+                // this code is not well suited to doing that and we dont have the time to change it
                                         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
 
 
@@ -313,28 +363,80 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                                     }
 
 
-                                    limit++;
-                                }
+                limit++;
+            }
 
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-
-
-                             if (count == 0) {
-                                Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName(), Toast.LENGTH_LONG).show();
-                            }
-
-                    }
+            index = 1;
+            List<List<Marker>> routes = new ArrayList<>();
+            //Marker currentCharger = firstChargers.get(2);
+            for (Marker currentCharger : firstChargers) {
+                route = new ArrayList<>();
+                route.add(userMarker);
+                route.add(currentCharger);
+                tm = new TreeMap();
+                buildMap(currentCharger.getPosition(), rangeAtEighty, index);
+                double currDistToDest = getDistanceToDestination(currentCharger.getPosition().longitude, currentCharger.getPosition().latitude, destination.getPosition().longitude, destination.getPosition().latitude);
+                if (currDistToDest < rangeAtEighty) {
+                    startDirectionsSteps(currentCharger.getPosition(), destination.getPosition(), colorSelected);
                 }
+                else {
+                    getNextCharger(route.get(route.size() - 1), rangeAtEighty, index, route, routes);
+                    buildMap(route.get(route.size() - 1).getPosition(), rangeAtEighty, index);
+                    getNextCharger(route.get(route.size() - 1), rangeAtEighty, index, route, routes);
+                    buildMap(route.get(route.size() - 1).getPosition(), rangeAtEighty, index);
+                    getNextCharger(route.get(route.size() - 1), rangeAtEighty, index, route, routes);
+                    buildMap(route.get(route.size() - 1).getPosition(), rangeAtEighty, index);
+                    getNextCharger(route.get(route.size() - 1), rangeAtEighty, index, route, routes);
+                }
+                index++;
             }
+            //}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-            @Override
-            public void onError(Status status) {
-                Log.i("MAP PROBLEM", "An error occurred: " + status);
+        //index = 1;
+        //Set keys =  tm.keySet();
+        //Iterator i = keys.iterator();
+        //int limit = 0;
+        //while (i.hasNext() && limit < 3) {
+        //    Marker marker = (Marker) tm.get(i.next());
+        //    continueHoppingChargers(rangeAtEighty, marker, colors[4 % index]);
+        //    index++;
+        //    limit++;
+        //}
+        // if(  count == 0 && trys < 3){
+        //find chargers reachable to best chargers
+        //  addToMap(bestSoFar);
+
+        // }
+
+        //if (count == 0) {
+        //    Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName(), Toast.LENGTH_LONG).show();
+        //}
+
+    }
+
+    public void getNextCharger (Marker currentCharger, double rangeAtEighty, int index, List<Marker> route, List<List<Marker>> routes) {
+        double distance = getDistanceToDestination(currentCharger.getPosition().latitude, currentCharger.getPosition().longitude, destination.getPosition().latitude, destination.getPosition().longitude);
+        if (distance < rangeAtEighty || currentCharger == null) {
+            startDirectionsSteps(currentCharger.getPosition(), destination.getPosition(), colors[index]);
+            return;
+        }
+        Log.d("routeSize", String.valueOf(route.size()));
+        for (Iterator i = tm.keySet().iterator(); i.hasNext();) {
+            Marker nextCharger = (Marker) tm.get(i.next());
+            double distToCharger = getDistanceToDestination(currentCharger.getPosition().longitude, currentCharger.getPosition().latitude, nextCharger.getPosition().longitude, nextCharger.getPosition().latitude);
+            if (distToCharger < rangeAtEighty && currentCharger != nextCharger) {
+                addMarker(nextCharger);
+                route.add(nextCharger);
+                startDirectionsSteps(currentCharger.getPosition(), nextCharger.getPosition(), colors[index]);
+                double distToEnd = getDistanceToDestination(nextCharger.getPosition().latitude, nextCharger.getPosition().longitude, destination.getPosition().latitude, destination.getPosition().longitude);
+                break;
             }
-        });
+        }
+        routes.add(route);
     }
 
     public void addToMap(Marker marker) { //only pick the ones that are in the direction of the destination
