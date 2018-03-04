@@ -22,31 +22,32 @@ public class pathPicker extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_path_picker);
-        int [] colors = new int[] {Color.CYAN, Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA};
-        final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+        SharedPreferences path = getApplicationContext().getSharedPreferences("path", MODE_PRIVATE);
+
 
         Boolean boolPath0 = false;
         Boolean boolPath1 = false;
         Boolean boolPath2 = false;
 
-       final Float  destLat  = sharedPref.getFloat("destLat"  ,0);
-       final Float destLon  = sharedPref.getFloat("destLon"  ,0);
+       final Float  destLat  = path.getFloat("destLat"  ,0);
+       final Float destLon  = path.getFloat("destLon"  ,0);
 
 
 
-        float dist0 = sharedPref.getFloat("0" + "distance", 0);
-        final float lat0 = sharedPref.getFloat("0" + "chargerLat", 0);
-        final float lon0 = sharedPref.getFloat("0" + "chargerLon", 0);
+        float dist0 = path.getFloat("0" + "distance", 0);
+        final float lat0 = path.getFloat("0" + "chargerLat", 0);
+        final float lon0 = path.getFloat("0" + "chargerLon", 0);
+        boolean oneStop = path.getBoolean("oneStop" , false);
 
 
-        float dist1 = sharedPref.getFloat("1" + "distance", 0);
-        final float lat1 = sharedPref.getFloat("1" + "chargerLat", 0);
-        final float lon1 = sharedPref.getFloat("1" + "chargerLon", 0);
+        float dist1 = path.getFloat("1" + "distance", 0);
+        final float lat1 = path.getFloat("1" + "chargerLat", 0);
+        final float lon1 = path.getFloat("1" + "chargerLon", 0);
 
 
-        float dist2 = sharedPref.getFloat("2" + "distance", 0);
-        final float lat2 = sharedPref.getFloat("2" + "chargerLat", 0);
-        final float lon2 = sharedPref.getFloat("2" + "chargerLon", 0);
+        float dist2 = path.getFloat("2" + "distance", 0);
+        final float lat2 = path.getFloat("2" + "chargerLat", 0);
+        final float lon2 = path.getFloat("2" + "chargerLon", 0);
 
 
         dist0 = round(dist0);
@@ -103,6 +104,10 @@ public class pathPicker extends AppCompatActivity {
                 distance1.setVisibility(View.GONE);
                 des1.setVisibility(View.GONE);
                 path1.setVisibility(View.GONE);
+            }
+
+            if( oneStop){
+                sel0.setVisibility(View.GONE);
             }
 
 
