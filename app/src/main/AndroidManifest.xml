@@ -62,7 +62,7 @@
 
         <uses-library android:name="com.google.android.maps" />
 
-        <activity android:name=".chargerOnRoute" />
+
         <activity android:name=".pathPicker"></activity>
     </application>
 

@@ -121,6 +121,7 @@ public class chargerInfo extends AppCompatActivity {
                 Uri gmmIntentUri = Uri.parse(mapUrl);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
+                Log.d("url" ,mapUrl);
                 startActivity(mapIntent);
             }
         });

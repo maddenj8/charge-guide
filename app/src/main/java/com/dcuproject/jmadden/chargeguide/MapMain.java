@@ -94,6 +94,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         setContentView(R.layout.activity_map_main);
         colors = new int[] {Color.CYAN, Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA};
 
+
         //checks if the setup process if complete
 
         final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
@@ -198,6 +199,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             int index = 1;
             @Override
             public void onPlaceSelected(Place place) {
+                SharedPreferences.Editor editor = sharedPref.edit();
+
+                for( int i = 0 ; i < 3 ; i++) {
+                    Log.d("workie", "workie");
+                    editor.putFloat(i + "chargerLat", 0);
+                    editor.putFloat(i + "chargerLon", 0);
+                    editor.putFloat("destLat", 0);
+                    editor.putFloat("destLon", 0);
+                    editor.putFloat(i + "distance", 0);
+
+
+                }
+
                 tm = new TreeMap();
                 // Log.i("PLACE TEST", place.getName().toString());
                 if (destinationUpdated) {
@@ -238,9 +252,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                         //go through the markers in range
                         //SEPARATE INTO FUNCTION
 
-                        Bundle pathBundel = new Bundle();
+
                             try {
-                               // trys++; // limits the number of hops to 3;
                                 int limit = 0;
                                 Set keys = tm.keySet();
                                 addMarker(destination);
@@ -279,22 +292,21 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                                         startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[ index]);
                                         startDirectionsSteps( marker.getPosition() , destination.getPosition(),  colors[ index]);
 
-                                        String stringIndex = Integer.toString(index);
+                                        int myindex = index -1;
+                                        String stringIndex = Integer.toString(myindex);
                                         double totalDistance =  distToDestnaiton + homeToCharger;
 
 
                                         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPref.edit();
 
-                                        editor.putInt(stringIndex , index);
+
                                         editor.putFloat(stringIndex + "chargerLat", ((float) mklat));
-                                        editor.putFloat(stringIndex + "chargerLon", ((float) mklon));
-                                        editor.putFloat(stringIndex + "userLat", (user_lat));
-                                        editor.putFloat(stringIndex + "userLon", (user_long));
+                                        editor.putFloat(stringIndex + "chargerLon", ((float) mklon));;
+                                        editor.putFloat( "destLat", ((float) deslat));
+                                        editor.putFloat( "destLon", ((float) deslon));
                                         editor.putFloat(stringIndex + "distance", ((float) totalDistance));
 
                                         editor.commit();
-
 
                                         index++;
                                         count++;
@@ -308,11 +320,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                                 e.printStackTrace();
                             }
 
-                           // if(  count == 0 && trys < 3){
-                            //find chargers reachable to best chargers
-                            //  addToMap(bestSoFar);
 
-                           // }
 
                              if (count == 0) {
                                 Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName(), Toast.LENGTH_LONG).show();
@@ -368,6 +376,10 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         else {
             mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
         }
+
+
+
+
     }
 
     public void startDirectionsSteps(LatLng start, LatLng place, int colorSelected) {
@@ -469,10 +481,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             startActivity(intent);
 
         } else if (id == R.id.nav_help) {
-            Intent intent = new Intent(getApplicationContext() , help.class);
+            Intent intent = new Intent(getApplicationContext(), help.class);
             startActivity(intent);
-
-        } else if (id == R.id.nav_share) {
 
         }
 
