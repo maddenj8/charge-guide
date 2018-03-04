@@ -320,15 +320,13 @@
                                                 count++;
                                             }
 
-
                                             limit++;
                                         }
 
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
-
-
+                                
 
                                      if (count == 0) {
                                         Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName(), Toast.LENGTH_LONG).show();
