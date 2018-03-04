@@ -59,6 +59,7 @@
   </string>
 
     <string name="conector">There are three main types of connectors ccs and chademo </string>
+    <string name="title_activity_path_picker">pathPicker</string>
 
 
 </resources>

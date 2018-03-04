@@ -205,6 +205,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
             @Override
             public void onPlaceSelected(Place place) {
+                SharedPreferences.Editor editor = sharedPref.edit();
+
+                for( int i = 0 ; i < 3 ; i++) {
+                    Log.d("workie", "workie");
+                    editor.putFloat(i + "chargerLat", 0);
+                    editor.putFloat(i + "chargerLon", 0);
+                    editor.putFloat("destLat", 0);
+                    editor.putFloat("destLon", 0);
+                    editor.putFloat(i + "distance", 0);
+
+
+                }
+
                 tm = new TreeMap();
                 // Log.i("PLACE TEST", place.getName().toString());
                 if (destinationUpdated) {
@@ -280,6 +293,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             addMarker(destination);
             addMarker(userMarker);
 
+                            try {
+                                int limit = 0;
+                                Set keys = tm.keySet();
+                                addMarker(destination);
+                                addMarker(userMarker);
+
             for (Iterator i = keys.iterator(); i.hasNext();) {
                 //only pick the top three
 
@@ -311,9 +330,15 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 addMarker(marker); // a full charge form the charger will get you to your destnation
                 startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[index]);
+                                           addMarker(marker); // a full charge form the charger will get you to your destnation
+                                        startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[ index]);
+                                        startDirectionsSteps( marker.getPosition() , destination.getPosition(),  colors[ index]);
 
                 String stringIndex = Integer.toString(index);
                 double totalDistance = distToDestnaiton + homeToCharger;
+                                        int myindex = index -1;
+                                        String stringIndex = Integer.toString(myindex);
+                                        double totalDistance =  distToDestnaiton + homeToCharger;
 
                 ArrayList<Double> journyInfo = new ArrayList<>();
                 journyInfo.add(totalDistance);
@@ -322,22 +347,20 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 // so when the user clicks on the destnation pin they can pick at path
                 // Also I have gone for just one hop as more than one hop was melting my brain and
                 // this code is not well suited to doing that and we dont have the time to change it
-
-                //one hop is more than good enough for most trips and they can always just manualy
-                //set a path to a charger.
-
-                //I will ( try )  make the home clickable so it will be set as the destnation and the
-                //actual location will be used as the location
+                                        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
 
 
-                //pathBundel.putInt( stringIndex ,index);
-                //pathBundel.(stringIndex+" totalDistance " , journyInfo);
-                //pathBundel.putDoubleArray();
-                //pathBundel.put("destination", marker.getPosition().latitude);
+                                        editor.putFloat(stringIndex + "chargerLat", ((float) mklat));
+                                        editor.putFloat(stringIndex + "chargerLon", ((float) mklon));;
+                                        editor.putFloat( "destLat", ((float) deslat));
+                                        editor.putFloat( "destLon", ((float) deslon));
+                                        editor.putFloat(stringIndex + "distance", ((float) totalDistance));
 
-                    index++;
-                    count++;
-                //}
+                                        editor.commit();
+
+                                        index++;
+                                        count++;
+                                    }
 
 
                 limit++;
@@ -371,6 +394,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
         //index = 1;
         //Set keys =  tm.keySet();
@@ -454,6 +478,10 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         else {
             mMap.addMarker(new MarkerOptions().position(marker.getPosition()).title(marker.getTitle()).snippet(marker.getSnippet()).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1));
         }
+
+
+
+
     }
 
     public void startDirectionsSteps(LatLng start, LatLng place, int colorSelected) {
@@ -471,6 +499,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
 
         mMap = googleMap;
         user_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
@@ -554,10 +583,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             startActivity(intent);
 
         } else if (id == R.id.nav_help) {
-            Intent intent = new Intent(getApplicationContext() , help.class);
+            Intent intent = new Intent(getApplicationContext(), help.class);
             startActivity(intent);
-
-        } else if (id == R.id.nav_share) {
 
         }
 
@@ -696,7 +723,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-                        if (!marker.getTitle().equals("Home") && (!marker.getPosition().equals(destination.getPosition()) ) ) {
+                            //done to avoid null pointer issues
+                          if (destinationUpdated == true && marker.getPosition().equals(destination.getPosition()) )
+                        {
+                            Intent intent = new Intent(MapMain.this, pathPicker.class);
+                            startActivity(intent);
+                        }
+
+                       else if (!marker.getTitle().equals("Home") ) {
                             Double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
 
                             Intent intent = new Intent(MapMain.this, chargerInfo.class);
@@ -711,6 +745,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                             startActivity(intent);
                             //another comment
                         }
+
+
                     }
                 });
             }
