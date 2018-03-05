@@ -52,41 +52,41 @@
 
         public class MapMain extends FragmentActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
-            private GoogleMap mMap;
-            private ImageButton hamburger;
-            private PlaceAutocompleteFragment autocompleteFragment; // the searchbar at the top
-            private SharedPreferences user_info; // user info that was obtained by the setup process
-            private MarkerOptions markerOptions;
-            public Marker destination; // the marker that has to be updated
-            private Boolean destinationUpdated = false; // check if app has to draw a new marker or update an existing one
-            private AutocompleteFilter autocompleteFilter;
-            private CustomInfoWindow customInfoWindow;
-            private Float user_lat;
-            private Float user_long;
-            private Marker userMarker;
-            private ViewGroup infoWindow;
-            private Button infoButton;
-            private String line = null;
-            private String make;
-            private String model;
-            private String pathStr;
-            private Thread downloadThread;
-            private ArrayList<Marker> markers = new ArrayList<Marker>();
-            private List<Polyline> polylines;
-            private int [] colors;
-            private Float range ;
-            private int colorSelected;
-            private SharedPreferences sharedPref ;
-            // Key for Google directions API
-            private String directionsKey = "AIzaSyD0tlhhO3qg6QqbXESkGbiSO_j9ciDG0JU";
-            private EditText socMainEdittext;
-            private Float socMain;
-            private Button apply;
-            private Float kwh;
-            private TreeMap tm;
-            private Place prevPlace;
-            private int trys ;
-            private  Marker bestSoFar;
+    private GoogleMap mMap;
+    private ImageButton hamburger;
+    private PlaceAutocompleteFragment autocompleteFragment; // the searchbar at the top
+    private SharedPreferences user_info; // user info that was obtained by the setup process
+    private MarkerOptions markerOptions;
+    public Marker destination; // the marker that has to be updated
+    private Boolean destinationUpdated = false; // check if app has to draw a new marker or update an existing one
+    private AutocompleteFilter autocompleteFilter;
+    private CustomInfoWindow customInfoWindow;
+    private Float user_lat;
+    private Float user_long;
+    private Marker userMarker;
+    private ViewGroup infoWindow;
+    private Button infoButton;
+    private String line = null;
+    private String make;
+    private String model;
+    private String pathStr;
+    private Thread downloadThread;
+    private ArrayList<Marker> markers = new ArrayList<Marker>();
+    private List<Polyline> polylines;
+    private int [] colors;
+    private Float range ;
+    private int colorSelected;
+    private SharedPreferences sharedPref ;
+    // Key for Google directions API
+    private String directionsKey = "AIzaSyD0tlhhO3qg6QqbXESkGbiSO_j9ciDG0JU";
+    private EditText socMainEdittext;
+    private Float socMain;
+    private Button apply;
+    private Float kwh;
+    private TreeMap tm;
+    private ArrayList<Marker> firstChargers;
+    private List<Marker> route;
+
 
             @Override
             protected void onCreate(Bundle savedInstanceState) {
@@ -260,15 +260,18 @@
                                 //go through the markers in range
                                 //SEPARATE INTO FUNCTION
 
+        buildMap(new LatLng(user_lat, user_long), range, index);
 
-                                    try {
-                                        int limit = 0;
-                                        Set keys = tm.keySet();
-                                        addMarker(destination);
-                                        addMarker(userMarker);
+        //Bundle pathBundel = new Bundle();
+        try {
+            // trys++; // limits the number of hops to 3;
+            int limit = 0;
+            Set keys = tm.keySet();
+            addMarker(destination);
+            addMarker(userMarker);
 
-                                        for (Iterator i = keys.iterator(); i.hasNext(); ) {
-                                            //only pick the top three
+            for (Iterator i = keys.iterator(); i.hasNext();) {
+                //only pick the top three
 
                                             if (limit > 2) {
                                                 break;
@@ -292,6 +295,8 @@
 
                                             if (distToDestnaiton < range) {
                                                 Log.d("key", distToDestnaiton + "");
+                //if (distToDestnaiton < range) {
+                Log.d("key", distToDestnaiton + "");
 
 
                                                 mMap.setInfoWindowAdapter(customInfoWindow);
@@ -299,7 +304,11 @@
                                                    addMarker(marker); // a full charge form the charger will get you to your destnation
                                                 startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[ index]);
                                                 startDirectionsSteps( marker.getPosition() , destination.getPosition(),  colors[ index]);
+                addMarker(marker); // a full charge form the charger will get you to your destnation
+                startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[index]);
 
+                String stringIndex = Integer.toString(index);
+                double totalDistance = distToDestnaiton + homeToCharger;
                                                 int myindex = index -1;
                                                 String stringIndex = Integer.toString(myindex);
                                                 double totalDistance =  distToDestnaiton + homeToCharger;
@@ -307,14 +316,16 @@
 
                                                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
 
+                SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
 
-                                                editor.putFloat(stringIndex + "chargerLat", ((float) mklat));
-                                                editor.putFloat(stringIndex + "chargerLon", ((float) mklon));;
-                                                editor.putFloat( "destLat", ((float) deslat));
-                                                editor.putFloat( "destLon", ((float) deslon));
-                                                editor.putFloat(stringIndex + "distance", ((float) totalDistance));
+                editor.putFloat(stringIndex + "chargerLat", ((float) mklat));
+                editor.putFloat(stringIndex + "chargerLon", ((float) mklon));;
+                editor.putFloat( "destLat", ((float) deslat));
+                editor.putFloat( "destLon", ((float) deslon));
+                editor.putFloat(stringIndex + "distance", ((float) totalDistance));
 
-                                                editor.commit();
+                editor.commit();
 
                                                 index++;
                                                 count++;
@@ -326,7 +337,7 @@
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
-                                
+
 
                                      if (count == 0) {
                                         Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName(), Toast.LENGTH_LONG).show();
@@ -342,6 +353,60 @@
                     }
                 });
             }
+                index++;
+                count++;
+                limit++;
+            }
+            index = 1;
+            List<List<Marker>> routes = new ArrayList<>();
+            //Marker currentCharger = firstChargers.get(2);
+            for (Marker currentCharger : firstChargers) {
+                route = new ArrayList<>();
+                route.add(userMarker);
+                route.add(currentCharger);
+                tm = new TreeMap();
+                buildMap(currentCharger.getPosition(), rangeAtEighty, index);
+                double currDistToDest = getDistanceToDestination(currentCharger.getPosition().longitude, currentCharger.getPosition().latitude, destination.getPosition().longitude, destination.getPosition().latitude);
+                if (currDistToDest < rangeAtEighty) {
+                    startDirectionsSteps(currentCharger.getPosition(), destination.getPosition(), colorSelected);
+                }
+                else {
+                    getNextCharger(route.get(route.size() - 1), rangeAtEighty, index, route, routes);
+                    buildMap(route.get(route.size() - 1).getPosition(), rangeAtEighty, index);
+                    getNextCharger(route.get(route.size() - 1), rangeAtEighty, index, route, routes);
+                    buildMap(route.get(route.size() - 1).getPosition(), rangeAtEighty, index);
+                    getNextCharger(route.get(route.size() - 1), rangeAtEighty, index, route, routes);
+                    buildMap(route.get(route.size() - 1).getPosition(), rangeAtEighty, index);
+                    getNextCharger(route.get(route.size() - 1), rangeAtEighty, index, route, routes);
+                }
+                index++;
+            }
+            //}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getNextCharger (Marker currentCharger, double rangeAtEighty, int index, List<Marker> route, List<List<Marker>> routes) {
+        double distance = getDistanceToDestination(currentCharger.getPosition().latitude, currentCharger.getPosition().longitude, destination.getPosition().latitude, destination.getPosition().longitude);
+        if (distance < rangeAtEighty || currentCharger == null) {
+            startDirectionsSteps(currentCharger.getPosition(), destination.getPosition(), colors[index]);
+            return;
+        }
+        Log.d("routeSize", String.valueOf(route.size()));
+        for (Iterator i = tm.keySet().iterator(); i.hasNext();) {
+            Marker nextCharger = (Marker) tm.get(i.next());
+            double distToCharger = getDistanceToDestination(currentCharger.getPosition().longitude, currentCharger.getPosition().latitude, nextCharger.getPosition().longitude, nextCharger.getPosition().latitude);
+            if (distToCharger < rangeAtEighty && currentCharger != nextCharger) {
+                addMarker(nextCharger);
+                route.add(nextCharger);
+                startDirectionsSteps(currentCharger.getPosition(), nextCharger.getPosition(), colors[index]);
+                double distToEnd = getDistanceToDestination(nextCharger.getPosition().latitude, nextCharger.getPosition().longitude, destination.getPosition().latitude, destination.getPosition().longitude);
+                break;
+            }
+        }
+        routes.add(route);
+    }
 
             public void addToMap(Marker marker) { //only pick the ones that are in the direction of the destination
                 try {
@@ -401,262 +466,262 @@
                 polylines = getDirectionsData.polylines;
             }
 
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
 
 
-                mMap = googleMap;
-                user_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
-                user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
-                user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a
-                // Add a marker in Sydney and move the camera
-                LatLng ireland = new LatLng(53.433333, -7.95); // position for the camera
-                LatLng userLocation = new LatLng(user_lat, user_long); // LatLng of the users positions
-               // Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
+        mMap = googleMap;
+        user_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
+        user_lat = user_info.getFloat("latitude", 9999); // 9999 is to make sure the value returned when there is no value set is not
+        user_long = user_info.getFloat("longitude", 9999); // mistaken for a coordinate (example if -1 was used for error it's also a
+        // Add a marker in Sydney and move the camera
+        LatLng ireland = new LatLng(53.433333, -7.95); // position for the camera
+        LatLng userLocation = new LatLng(user_lat, user_long); // LatLng of the users positions
+       // Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
 
-                //Adapter to handle the infoWindow
-                customInfoWindow = new CustomInfoWindow(this);
-                mMap.setInfoWindowAdapter(customInfoWindow);
+        //Adapter to handle the infoWindow
+        customInfoWindow = new CustomInfoWindow(this);
+        mMap.setInfoWindowAdapter(customInfoWindow);
 
-                //add marker and adjust camera
-                userMarker = mMap.addMarker(new MarkerOptions().position(userLocation).title("Home").anchor(0.5f, 1)); // set a marker for user location
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
+        //add marker and adjust camera
+        userMarker = mMap.addMarker(new MarkerOptions().position(userLocation).title("Home").anchor(0.5f, 1)); // set a marker for user location
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ireland, 6.5f)); //animate camera towards Ireland
 
-                Toast.makeText(this, "Make is " + make + " and Model is " + model, Toast.LENGTH_SHORT).show();
-                //add the charger pins of the chargers that are applicable to the car the user drives
-                pinDrop();
+        Toast.makeText(this, "Make is " + make + " and Model is " + model, Toast.LENGTH_SHORT).show();
+        //add the charger pins of the chargers that are applicable to the car the user drives
+        pinDrop();
 
-            }
+    }
 
-            public String getJSONResponse(String strUrl) {
-                return "";
-            }
+    public String getJSONResponse(String strUrl) {
+        return "";
+    }
 
-            public String getDirectionsURL(LatLng userPosition, LatLng destPosition) {
-                String url = "https://maps.googleapis.com/maps/api/directions/json?origin=";
-                url += userPosition.latitude + "," + userPosition.longitude;
-                url += "&destination=" + destPosition.latitude + "," + destPosition.longitude;
-                url += "&sensor=false";
-                url += "&key=" + directionsKey;
-                return url;
-            }
+    public String getDirectionsURL(LatLng userPosition, LatLng destPosition) {
+        String url = "https://maps.googleapis.com/maps/api/directions/json?origin=";
+        url += userPosition.latitude + "," + userPosition.longitude;
+        url += "&destination=" + destPosition.latitude + "," + destPosition.longitude;
+        url += "&sensor=false";
+        url += "&key=" + directionsKey;
+        return url;
+    }
 
-            @Override
-            public void onBackPressed() {
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
-                } else {
-                    super.onBackPressed();
-                }
-            }
-
-            @Override
-            public boolean onCreateOptionsMenu(Menu menu) {
-                // Inflate the menu; this adds items to the action bar if it is present.
-                getMenuInflater().inflate(R.menu.nav_bar, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onOptionsItemSelected(MenuItem item) {
-                // Handle action bar item clicks here. The action bar will
-                // automatically handle clicks on the Home/Up button, so long
-                // as you specify a parent activity in AndroidManifest.xml.
-                int id = item.getItemId();
-
-                //noinspection SimplifiableIfStatement//compile 'com.github.ar-android:DrawRouteMaps:1.0.0'
-                if (id == R.id.action_settings) {
-                    return true;
-                }
-
-                return super.onOptionsItemSelected(item);
-            }
-
-
-          @SuppressWarnings("StatementWithEmptyBody")
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                // Handle navigation view item clicks here.
-                item.setChecked(true);
-                int id = item.getItemId();
-
-                if (id == R.id.nav_manage) {
-
-                    Intent intent = new Intent(getApplicationContext() , first_launch.class);
-                    startActivity(intent);
-
-                } else if (id == R.id.nav_help) {
-                    Intent intent = new Intent(getApplicationContext(), help.class);
-                    startActivity(intent);
-
-                }
-
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-                return true;
-                }
-
-            public void downloadChargerInfo() {
-
-
-                //get the directory to store the downloaded charger info
-                File path = getApplicationContext().getFilesDir();
-                pathStr = path.toString() + "/plug.txt";
-                //Log.d("path ", pathStr);
-
-                try {
-                    JSch ssh = new JSch();
-                    Session session = ssh.getSession("nugenc12", "student.computing.dcu.ie", 22);
-                    java.util.Properties config = new java.util.Properties();
-                    config.put("StrictHostKeyChecking", "no");
-                    session.setConfig(config);
-                    session.setPassword("5yv68ain");
-                    session.connect();
-                    Channel channel = session.openChannel("sftp");
-                    channel.connect();
-
-                    ChannelSftp sftp = (ChannelSftp) channel;
-
-                    //sftp.cd("/users/case3/nugenc12/kml_parse/");
-
-                    if( make.equals("Nissan")){
-                        sftp.get("/users/case3/nugenc12/kml_parse/chademo_output.txt" , pathStr);
-                    }
-                    else if ( make.equals("Renault")){
-                        sftp.get("/users/case3/nugenc12/kml_parse/ac_output.txt" , pathStr);
-                    }
-
-                    else{
-                        sftp.get("/users/case3/nugenc12/kml_parse/ccs_output.txt" , pathStr);
-                    }
-
-                    channel.disconnect();
-                    session.disconnect();
-                } catch ( Exception e) {
-                    System.out.println(e.getMessage().toString());
-                    e.printStackTrace();
-                }
-            }
-
-            public double getDistance(double charger_lat, double charger_long) {
-                    Location chargerLoc = new Location("charger_Location");
-                    Location userLocation = new Location("user_Location");
-                    chargerLoc.setLatitude(charger_lat);
-                    chargerLoc.setLongitude(charger_long);
-                    userLocation.setLatitude(user_lat);
-                    userLocation.setLongitude(user_long);
-                    return userLocation.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km and add a fudge factor
-            }
-
-
-            public double getDistanceToDestination(double charger_lat, double charger_long , double destination_lat , double destination_lon) {
-                Location chargerLoc = new Location("charger_Location");
-                Location destination_location = new Location("destination_location");
-                chargerLoc.setLatitude(charger_lat);
-                chargerLoc.setLongitude(charger_long);
-                destination_location.setLatitude(destination_lat);
-                destination_location.setLongitude(destination_lon);
-                return destination_location.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km and add a fudge factor
-            }
-
-
-            public void pinDrop () {
-                // wait for the download to complete before trying to add the markers
-                try {
-                    downloadThread.join();
-                } catch(Exception e) {e.printStackTrace();}
-
-                BufferedReader reader;
-                try{
-
-                    //open an input stream for the downloaded charger info
-                    FileInputStream fileInputStream = new FileInputStream (new File(pathStr));
-                    InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-                    reader = new BufferedReader(inputStreamReader);
-                    line = reader.readLine();
-
-                    //while there are still chargers to show
-                    while(line != null){
-
-                        //parse the charger details into a more readable state
-                        final String [] charger_Info = line.split("\\|"); //
-
-                        String charger_Name = charger_Info[0];
-                        String latlon = charger_Info[1];
-                        String state = charger_Info[2];
-                        String stateEnds = state.charAt(state.length() -4) + "";
-                        String placeOutput = "";
-                        final String [] chargeSplit = charger_Name.split(", ");
-                        String title = chargeSplit[0];
-
-                        title = title.replace("amp;" , ""); // because the python script brakes when this is done
-                        for (int i = 1; i < chargeSplit.length - 2; i++) {
-                            placeOutput = placeOutput + chargeSplit[i] + "\n";
-                        }
-
-                        placeOutput += chargeSplit[chargeSplit.length - 2];
-
-                        //parsing the latlng of each of the chargers
-                        String [] split_Lat_Lon = latlon.split(",");
-                        final double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
-                        final double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
-                        LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
-
-                        if(state.contains("Available")){
-                            state = "Available";
-                            markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1)));
-                        }
-                        else if (state.contains("Occupied")){
-                            state = "Occupied";
-                            markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_charger)).anchor(0.5f, 1)));
-                        }
-
-                        else if (state.contains("Out-of-Service")){
-                            state = "Out of Service";
-                            markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1)));
-                        }
-
-                        else {
-                            state = "Out of Contact";
-                            markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1)));
-                        }
-
-                        line = reader.readLine();
-
-                        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                            @Override
-                            public void onInfoWindowClick(Marker marker) {
-                                    //done to avoid null pointer issues
-                                  if (destinationUpdated == true && marker.getPosition().equals(destination.getPosition()) )
-                                {
-                                    Intent intent = new Intent(MapMain.this, pathPicker.class);
-                                    startActivity(intent);
-                                }
-
-                               else if (!marker.getTitle().equals("Home") ) {
-                                    Double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
-
-                                    Intent intent = new Intent(MapMain.this, chargerInfo.class);
-                                    Bundle bundle = new Bundle();
-                                    //final Double dist = distance;
-                                    bundle.putString("chargerTitle", marker.getTitle().toString());
-                                    bundle.putString("chargerSnippet", marker.getSnippet().toString());
-                                    bundle.putDouble("lat", marker.getPosition().latitude);
-                                    bundle.putDouble("lon", marker.getPosition().longitude);
-                                    bundle.putDouble("distance", distance);
-                                    intent.putExtras(bundle);
-                                    startActivity(intent);
-                                    //another comment
-                                }
-
-
-                            }
-                        });
-                    }
-                } catch(IOException ioe){
-                    ioe.printStackTrace();
-                    Toast.makeText(getApplicationContext(),"Charger not Found" , Toast.LENGTH_LONG).show();
-                }
-            }
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.nav_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement//compile 'com.github.ar-android:DrawRouteMaps:1.0.0'
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+  @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        item.setChecked(true);
+        int id = item.getItemId();
+
+        if (id == R.id.nav_manage) {
+
+            Intent intent = new Intent(getApplicationContext() , first_launch.class);
+            startActivity(intent);
+
+        } else if (id == R.id.nav_help) {
+            Intent intent = new Intent(getApplicationContext(), help.class);
+            startActivity(intent);
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+        }
+
+    public void downloadChargerInfo() {
+
+
+        //get the directory to store the downloaded charger info
+        File path = getApplicationContext().getFilesDir();
+        pathStr = path.toString() + "/plug.txt";
+        //Log.d("path ", pathStr);
+
+        try {
+            JSch ssh = new JSch();
+            Session session = ssh.getSession("nugenc12", "student.computing.dcu.ie", 22);
+            java.util.Properties config = new java.util.Properties();
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+            session.setPassword("5yv68ain");
+            session.connect();
+            Channel channel = session.openChannel("sftp");
+            channel.connect();
+
+            ChannelSftp sftp = (ChannelSftp) channel;
+
+            //sftp.cd("/users/case3/nugenc12/kml_parse/");
+
+            if( make.equals("Nissan")){
+                sftp.get("/users/case3/nugenc12/kml_parse/chademo_output.txt" , pathStr);
+            }
+            else if ( make.equals("Renault")){
+                sftp.get("/users/case3/nugenc12/kml_parse/ac_output.txt" , pathStr);
+            }
+
+            else{
+                sftp.get("/users/case3/nugenc12/kml_parse/ccs_output.txt" , pathStr);
+            }
+
+            channel.disconnect();
+            session.disconnect();
+        } catch ( Exception e) {
+            System.out.println(e.getMessage().toString());
+            e.printStackTrace();
+        }
+    }
+
+    public double getDistance(double charger_lat, double charger_long) {
+            Location chargerLoc = new Location("charger_Location");
+            Location userLocation = new Location("user_Location");
+            chargerLoc.setLatitude(charger_lat);
+            chargerLoc.setLongitude(charger_long);
+            userLocation.setLatitude(user_lat);
+            userLocation.setLongitude(user_long);
+            return userLocation.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km and add a fudge factor
+    }
+
+
+    public double getDistanceToDestination(double charger_lat, double charger_long , double destination_lat , double destination_lon) {
+        Location chargerLoc = new Location("charger_Location");
+        Location destination_location = new Location("destination_location");
+        chargerLoc.setLatitude(charger_lat);
+        chargerLoc.setLongitude(charger_long);
+        destination_location.setLatitude(destination_lat);
+        destination_location.setLongitude(destination_lon);
+        return destination_location.distanceTo(chargerLoc) / 1000 * 1.17; // convert to km and add a fudge factor
+    }
+
+
+    public void pinDrop () {
+        // wait for the download to complete before trying to add the markers
+        try {
+            downloadThread.join();
+        } catch(Exception e) {e.printStackTrace();}
+
+        BufferedReader reader;
+        try{
+
+            //open an input stream for the downloaded charger info
+            FileInputStream fileInputStream = new FileInputStream (new File(pathStr));
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            reader = new BufferedReader(inputStreamReader);
+            line = reader.readLine();
+
+            //while there are still chargers to show
+            while(line != null){
+
+                //parse the charger details into a more readable state
+                final String [] charger_Info = line.split("\\|"); //
+
+                String charger_Name = charger_Info[0];
+                String latlon = charger_Info[1];
+                String state = charger_Info[2];
+                String stateEnds = state.charAt(state.length() -4) + "";
+                String placeOutput = "";
+                final String [] chargeSplit = charger_Name.split(", ");
+                String title = chargeSplit[0];
+
+                title = title.replace("amp;" , ""); // because the python script brakes when this is done
+                for (int i = 1; i < chargeSplit.length - 2; i++) {
+                    placeOutput = placeOutput + chargeSplit[i] + "\n";
+                }
+
+                placeOutput += chargeSplit[chargeSplit.length - 2];
+
+                //parsing the latlng of each of the chargers
+                String [] split_Lat_Lon = latlon.split(",");
+                final double charger_lat = Double.parseDouble(split_Lat_Lon[0]);
+                final double charger_lon = Double.parseDouble(split_Lat_Lon[1]);
+                LatLng chargerLocation = new LatLng(charger_lon, charger_lat); // LatLng of the chargers positions
+
+                if(state.contains("Available")){
+                    state = "Available";
+                    markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.green_charger)).anchor(0.3f, 1)));
+                }
+                else if (state.contains("Occupied")){
+                    state = "Occupied";
+                    markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_charger)).anchor(0.5f, 1)));
+                }
+
+                else if (state.contains("Out-of-Service")){
+                    state = "Out of Service";
+                    markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.red_charger)).anchor(0.5f, 1)));
+                }
+
+                else {
+                    state = "Out of Contact";
+                    markers.add(mMap.addMarker(new MarkerOptions().position(chargerLocation).title(title).snippet(placeOutput + "\n" + state).icon(BitmapDescriptorFactory.fromResource(R.drawable.gray_charger)).anchor(0.5f, 1)));
+                }
+
+                line = reader.readLine();
+
+                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                            //done to avoid null pointer issues
+                          if (destinationUpdated == true && marker.getPosition().equals(destination.getPosition()) )
+                        {
+                            Intent intent = new Intent(MapMain.this, pathPicker.class);
+                            startActivity(intent);
+                        }
+
+                       else if (!marker.getTitle().equals("Home") ) {
+                            Double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
+
+                            Intent intent = new Intent(MapMain.this, chargerInfo.class);
+                            Bundle bundle = new Bundle();
+                            //final Double dist = distance;
+                            bundle.putString("chargerTitle", marker.getTitle().toString());
+                            bundle.putString("chargerSnippet", marker.getSnippet().toString());
+                            bundle.putDouble("lat", marker.getPosition().latitude);
+                            bundle.putDouble("lon", marker.getPosition().longitude);
+                            bundle.putDouble("distance", distance);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                            //another comment
+                        }
+
+
+                    }
+                });
+            }
+        } catch(IOException ioe){
+            ioe.printStackTrace();
+            Toast.makeText(getApplicationContext(),"Charger not Found" , Toast.LENGTH_LONG).show();
+        }
+    }
+}
