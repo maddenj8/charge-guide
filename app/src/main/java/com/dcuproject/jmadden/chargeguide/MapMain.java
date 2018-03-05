@@ -84,10 +84,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Button apply;
     private Float kwh;
     private TreeMap tm;
-    private Place prevPlace;
-    private int trys ;
-    private  Marker bestSoFar;
-    private boolean notArrived;
     private ArrayList<Marker> firstChargers;
     private List<Marker> route;
 
@@ -293,12 +289,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             addMarker(destination);
             addMarker(userMarker);
 
-                            try {
-                                int limit = 0;
-                                Set keys = tm.keySet();
-                                addMarker(destination);
-                                addMarker(userMarker);
-
             for (Iterator i = keys.iterator(); i.hasNext();) {
                 //only pick the top three
 
@@ -321,7 +311,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 double distToDestnaiton = getDistanceToDestination(mklat, mklon, deslat, deslon);
                 double homeToCharger = getDistance(mklat, mklon);
 
-
                 //if (distToDestnaiton < range) {
                 Log.d("key", distToDestnaiton + "");
 
@@ -330,42 +319,28 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 addMarker(marker); // a full charge form the charger will get you to your destnation
                 startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[index]);
-                                           addMarker(marker); // a full charge form the charger will get you to your destnation
-                                        startDirectionsSteps(new LatLng(user_lat, user_long), marker.getPosition(), colors[ index]);
-                                        startDirectionsSteps( marker.getPosition() , destination.getPosition(),  colors[ index]);
 
                 String stringIndex = Integer.toString(index);
                 double totalDistance = distToDestnaiton + homeToCharger;
-                                        int myindex = index -1;
-                                        String stringIndex = Integer.toString(myindex);
-                                        double totalDistance =  distToDestnaiton + homeToCharger;
 
                 ArrayList<Double> journyInfo = new ArrayList<>();
                 journyInfo.add(totalDistance);
 
-                // eh right I need to put the info about the charger and the path and color
-                // so when the user clicks on the destnation pin they can pick at path
-                // Also I have gone for just one hop as more than one hop was melting my brain and
-                // this code is not well suited to doing that and we dont have the time to change it
-                                        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+                SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
 
+                editor.putFloat(stringIndex + "chargerLat", ((float) mklat));
+                editor.putFloat(stringIndex + "chargerLon", ((float) mklon));;
+                editor.putFloat( "destLat", ((float) deslat));
+                editor.putFloat( "destLon", ((float) deslon));
+                editor.putFloat(stringIndex + "distance", ((float) totalDistance));
 
-                                        editor.putFloat(stringIndex + "chargerLat", ((float) mklat));
-                                        editor.putFloat(stringIndex + "chargerLon", ((float) mklon));;
-                                        editor.putFloat( "destLat", ((float) deslat));
-                                        editor.putFloat( "destLon", ((float) deslon));
-                                        editor.putFloat(stringIndex + "distance", ((float) totalDistance));
+                editor.commit();
 
-                                        editor.commit();
-
-                                        index++;
-                                        count++;
-                                    }
-
-
+                index++;
+                count++;
                 limit++;
             }
-
             index = 1;
             List<List<Marker>> routes = new ArrayList<>();
             //Marker currentCharger = firstChargers.get(2);
@@ -394,28 +369,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-        //index = 1;
-        //Set keys =  tm.keySet();
-        //Iterator i = keys.iterator();
-        //int limit = 0;
-        //while (i.hasNext() && limit < 3) {
-        //    Marker marker = (Marker) tm.get(i.next());
-        //    continueHoppingChargers(rangeAtEighty, marker, colors[4 % index]);
-        //    index++;
-        //    limit++;
-        //}
-        // if(  count == 0 && trys < 3){
-        //find chargers reachable to best chargers
-        //  addToMap(bestSoFar);
-
-        // }
-
-        //if (count == 0) {
-        //    Toast.makeText(getApplicationContext(), "Sorry you are not getting to " + place.getName(), Toast.LENGTH_LONG).show();
-        //}
-
     }
 
     public void getNextCharger (Marker currentCharger, double rangeAtEighty, int index, List<Marker> route, List<List<Marker>> routes) {
