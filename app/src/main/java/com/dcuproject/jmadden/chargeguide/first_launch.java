@@ -95,6 +95,7 @@ public class first_launch extends AppCompatActivity implements LocationListener{
                 Log.d("PLACE SELECTED", place.toString());
                 placeSelected = place; //remember the place that the user selected
                 oneSelected = true;
+                saveCoordinates((float) place.getLatLng().latitude, (float) place.getLatLng().longitude);
             }
 
             @Override
@@ -103,6 +104,12 @@ public class first_launch extends AppCompatActivity implements LocationListener{
             }
         });
 
+        searchBar.getView().findViewById(R.id.place_autocomplete_clear_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                oneSelected = false;
+            }
+        });
         searchBar.getView().findViewById(R.id.place_autocomplete_clear_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -188,12 +195,14 @@ public class first_launch extends AppCompatActivity implements LocationListener{
                     else {
                         // home is set by what is searched in the search bar
                         if (placeSelected != null) {
-                            //get the latitude and longitude of the place that was searched for
-                            float lat = (float) placeSelected.getLatLng().latitude;
-                            float lng = (float) placeSelected.getLatLng().longitude;
-                            Toast.makeText(getApplicationContext(), "You selected " + placeSelected.getName(), Toast.LENGTH_SHORT).show();
-                            saveCoordinates(lat, lng);
-                            finishSetup();
+                            try {
+                                //get the latitude and longitude of the place that was searched for
+                                float lat = (float) placeSelected.getLatLng().latitude;
+                                float lng = (float) placeSelected.getLatLng().longitude;
+                                Toast.makeText(getApplicationContext(), "You selected " + placeSelected.getName(), Toast.LENGTH_SHORT).show();
+                                saveCoordinates(lat, lng);
+                                finishSetup();
+                            } catch (Exception e) {e.printStackTrace();}
                         }
                     }
                 }
@@ -289,11 +298,7 @@ public class first_launch extends AppCompatActivity implements LocationListener{
     @Override
     public void onLocationChanged(Location location) {
         Log.i("LOCATION", location.getLatitude() + " " + location.getLongitude());
-        SharedPreferences location_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE);
-        SharedPreferences.Editor e = location_info.edit();
-        e.putFloat("latitude", (float) location.getLatitude());
-        e.putFloat("longitude", (float) location.getLongitude());
-        Log.i("COMMIT MESSAGE", String.valueOf(e.commit()));
+        saveCoordinates((float) location.getLatitude(), (float) location.getLongitude());
     }
 
     @Override
