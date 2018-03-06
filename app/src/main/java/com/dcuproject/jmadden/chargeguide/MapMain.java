@@ -293,11 +293,30 @@
 
                         //if the user can reach the destination without charging
                         if (getDistance(place.getLatLng().latitude, place.getLatLng().longitude) < range) {
-                            mMap.clear();
-                            addMarker(destination);
-                            addMarker(userMarker);
-                            Toast.makeText(getApplicationContext(), "You should reach your destination without charging", Toast.LENGTH_SHORT).show();
-                            startDirectionsSteps(new LatLng(user_lat, user_long), place.getLatLng(), colors[0]);
+                            //else find a charger to stop at
+                            if (!(user_lat == 9999)) {
+                                int count = 0;
+                                mMap.clear();
+                                for (Marker marker : markers) {
+                                    double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
+                                }
+                            }
+                            try {
+                                findOptimalChargers();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (routes.size() >= 1) {
+                                route1.setVisibility(View.VISIBLE);
+                            }
+                            if (routes.size() >= 2) {
+                                route2.setVisibility(View.VISIBLE);
+                            }
+                            if (routes.size() >= 3) {
+                                route3.setVisibility(View.VISIBLE);
+                            }
+
+                            
                         } else { //else find a charger to stop at
                             if (!(user_lat == 9999)) {
                                 int count = 0;
@@ -767,7 +786,7 @@ pathedit.commit();*/
                     line = reader.readLine();
 
                     //while there are still chargers to show
-                    while (line != null) {
+                    while (line != null && line.length() > 12) {
 
                         //parse the charger details into a more readable state
                         final String[] charger_Info = line.split("\\|"); //
