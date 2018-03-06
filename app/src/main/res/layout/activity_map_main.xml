@@ -48,43 +48,74 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
 
-            <LinearLayout android:layout_width="match_parent"
-                android:background="#FFFFFF"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <TextView
+                <Button style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:textSize="15dp"
-                    android:text="State of Charge:"/>
-
-                <EditText
-                    android:id="@+id/socIntMain"
-                    android:layout_height="wrap_content"
-                    android:layout_width="100dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="30dp"
-                    android:imeOptions="actionDone"
-                    android:inputType="number"
-                    android:layout_gravity="center_vertical"
-                    android:maxLines="1"
-                    android:text="100"
-                    android:textAlignment="center"
-                    android:textSize="14sp"/>
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:text="Route 1"
+                    android:backgroundTint="#bc4949"
                     android:layout_gravity="right"
-                    android:text="Apply"
-                    android:id="@+id/applySoc"/>
+                    android:visibility="gone"
+                    android:id="@+id/route1"/>
+                <Button style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Route 2"
+                    android:layout_gravity="right"
+                    android:backgroundTint="#4975bc"
+                    android:visibility="gone"
+                    android:id="@+id/route2"/>
 
+                <Button style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Route 3"
+                    android:backgroundTint="#5abc49"
+                    android:layout_gravity="right"
+                    android:visibility="gone"
+                    android:id="@+id/route3"/>
+
+                <LinearLayout android:layout_width="match_parent"
+                    android:background="#FFFFFF"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_gravity="center_vertical"
+                        android:textSize="15dp"
+                        android:text="State of Charge:"/>
+
+                    <EditText
+                        android:id="@+id/socIntMain"
+                        android:layout_height="wrap_content"
+                        android:layout_width="100dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="30dp"
+                        android:imeOptions="actionDone"
+                        android:inputType="number"
+                        android:layout_gravity="center_vertical"
+                        android:maxLines="1"
+                        android:text="100"
+                        android:textAlignment="center"
+                        android:textSize="14sp"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:text="Apply"
+                        android:id="@+id/applySoc"/>
+
+                </LinearLayout>
             </LinearLayout>
-
         </LinearLayout>
 
     </fragment>
