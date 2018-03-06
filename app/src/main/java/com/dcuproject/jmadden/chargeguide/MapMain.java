@@ -93,6 +93,7 @@
             private List<Marker> route;
             private List<Marker> pickedChargers;
             public List<List<Marker>> routes;
+            private Button route0;
             private Button route1;
             private Button route2;
             private Button route3;
@@ -107,9 +108,30 @@
                 setContentView(R.layout.activity_map_main);//
                 colors = new int[]{Color.RED, Color.BLUE, Color.GREEN};
 
+                route0 = (Button) findViewById(R.id.route0);
                 route1 = (Button) findViewById(R.id.route1);
                 route2 = (Button) findViewById(R.id.route2);
                 route3 = (Button) findViewById(R.id.route3);
+
+                route0.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(getApplicationContext(), "it is being pressed", Toast.LENGTH_SHORT).show();
+
+                        String url = "https://www.google.com/maps/dir/?api=1";
+                        url += "&origin=" + String.valueOf(user_lat) + "," + String.valueOf(user_long);
+                        url += "&destination=" + String.valueOf(destination.getPosition().latitude) + "," + String.valueOf(destination.getPosition().longitude);
+                        url += "&travelmode=driving";
+                        url += "&waypoints=";
+
+                        Uri gmmIntentUri = Uri.parse(url);
+                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                        mapIntent.setPackage("com.google.android.apps.maps");
+
+                        startActivity(mapIntent);
+                    }
+                });
+
 
                 route1.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -256,6 +278,7 @@
                             markers.remove(markers.size() - 1);
                             autocompleteFragment.setText("");
                             view.setVisibility(View.GONE);
+                            route0.setVisibility(View.GONE);
                             route1.setVisibility(View.GONE);
                             route2.setVisibility(View.GONE);
                             route3.setVisibility(View.GONE);
@@ -293,31 +316,24 @@
 
                         //if the user can reach the destination without charging
                         if (getDistance(place.getLatLng().latitude, place.getLatLng().longitude) < range) {
-                            //else find a charger to stop at
-                            if (!(user_lat == 9999)) {
-                                int count = 0;
-                                mMap.clear();
-                                for (Marker marker : markers) {
-                                    double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
-                                }
-                            }
-                            try {
-                                findOptimalChargers();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            if (routes.size() >= 1) {
-                                route1.setVisibility(View.VISIBLE);
-                            }
-                            if (routes.size() >= 2) {
-                                route2.setVisibility(View.VISIBLE);
-                            }
-                            if (routes.size() >= 3) {
-                                route3.setVisibility(View.VISIBLE);
-                            }
+                            mMap.clear();
+                            addMarker(destination);
+                            addMarker(userMarker);
+                            Toast.makeText(getApplicationContext(), "You should reach your destination without charging", Toast.LENGTH_SHORT).show();
+                            startDirectionsSteps(new LatLng(user_lat, user_long), place.getLatLng(), colors[0]);
 
-                            
-                        } else { //else find a charger to stop at
+
+
+                            route0.setVisibility(View.VISIBLE);
+
+                            //else find a charger to stop at
+
+                        }
+
+
+
+
+                         else { //else find a charger to stop at
                             if (!(user_lat == 9999)) {
                                 int count = 0;
                                 mMap.clear();
@@ -442,22 +458,7 @@
                 }
             }
 
-            /*double totalDistance = distToDestnaiton + homeToCharger;
 
-
-SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
-
-// SharedPreferences path = getApplicationContext().getSharedPreferences("path", MODE_PRIVATE);
-SharedPreferences.Editor pathedit = path.edit();
-
-pathedit.putFloat(stringIndex + "chargerLat", ((float) mklat));
-pathedit.putFloat(stringIndex + "chargerLon", ((float) mklon));
-
-pathedit.putFloat("destLat", ((float) deslat));
-pathedit.putFloat("destLon", ((float) deslon));
-pathedit.putFloat(stringIndex + "distance", ((float) totalDistance));
-
-pathedit.commit();*/
 
             public void addToMap(Marker marker) { //only pick the ones that are in the direction of the destination
                 try {
