@@ -60,6 +60,15 @@
                     android:backgroundTint="#bc4949"
                     android:layout_gravity="right"
                     android:visibility="gone"
+                    android:id="@+id/route0"/>
+
+                <Button style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Route 1"
+                    android:backgroundTint="#bc4949"
+                    android:layout_gravity="right"
+                    android:visibility="gone"
                     android:id="@+id/route1"/>
                 <Button style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"

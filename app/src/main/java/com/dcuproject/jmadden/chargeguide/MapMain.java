@@ -321,9 +321,6 @@
                             addMarker(userMarker);
                             Toast.makeText(getApplicationContext(), "You should reach your destination without charging", Toast.LENGTH_SHORT).show();
                             startDirectionsSteps(new LatLng(user_lat, user_long), place.getLatLng(), colors[0]);
-
-
-
                             route0.setVisibility(View.VISIBLE);
 
                             //else find a charger to stop at
@@ -346,6 +343,7 @@
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            route0.setVisibility(View.GONE);
                             if (routes.size() >= 1) {
                                 route1.setVisibility(View.VISIBLE);
                             }
