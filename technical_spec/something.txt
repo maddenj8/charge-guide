@@ -125,7 +125,15 @@ The first_launch class is called when the app is first run this is determened wi
 onCheckBoxClicked will pull the gps latitude and longitude using location manager and saves the coordinates to shared Preferences as a float later used in mapMain and chargerInfo.
 
 
-#### Problems and Resoloutions
+#### High-Level Design
+![](http://student.computing.dcu.ie/~nugenc12/pref.PNG)
+
+![](http://student.computing.dcu.ie/~nugenc12/downloadChargerInfo.png)
+
+
+
+
+####4 Problems and Resoloutions
 
 Getting sftp working to transfer the files from the server to the device was an issue at first as using a sftp on a setup on a laptop in the lab was not working as there was a firewall in place. This was resolved by sshing into dcu servers to start the bash script to update the data then using sftp on the phone to get the data.
 
