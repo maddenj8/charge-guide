@@ -1,3 +1,4 @@
+
 ####Installation Guide
 
 This is a guide to install Charge Guide application.
@@ -17,5 +18,4 @@ Select the APK and press the install option.
 ![apk in downloads](http://student.computing.dcu.ie/~maddenj8/images/install_3.png)
 
 Once installed you have the option to open the application.
-
 
