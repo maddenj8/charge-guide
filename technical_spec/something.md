@@ -88,15 +88,17 @@ Chademo , CCS , AC43  , Chademo = Fast charge plugs
 
 
 
+
+
+
+
 #### 2 System Architecture
 
-This section describes the high-level overview of the system architecture showing the distribution functions across (potential) system modules. Architectural components that are reused or 3rd party should be highlighted. Unlike the architecture in the Functional Specification  this description must reflect the design components of the system as it is demonstrated.
 
 
- The application is made up of get_charging_data.sh which wgets the kml file , split.py splits out the kml files into 3 files chademo ccs and ac. Parse.py pares out the kml file into the latitude longitude state and name spit by “|”. 
+The application is made up of get_charging_data.sh which wgets the kml file , split.py splits out the kml files into 3 files chademo ccs and ac. Parse.py pares out the kml file into the latitude longitude state and name spit by “|”. 
 
 The main class for the application is MapMain.java.
-
 
 Inside of MapMain.java there is downloadChargerInfo this uses sftp form the school of computing servers to pulls the appropriate file for the car and stores it on the device.  This is an external library from Java secure channel.
 
