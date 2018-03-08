@@ -158,41 +158,31 @@ public class chargerInfo extends AppCompatActivity {
                     editor.putFloat("range", range);
                     Log.v("range", range + "");
 
-
-
-                   double arrivalRange =  round(range - dist);
-                   double doubleArriveSoc = arrivalRange / (fullKwh*6 ) * 100 ;
+                    double arrivalRange =  round(range - dist);
+                    double doubleArriveSoc = arrivalRange / (fullKwh*6 ) * 100 ;
                     DecimalFormat f = new DecimalFormat("##.00");
-                   arrivalSoc.setText(  f.format(doubleArriveSoc) + "%");
+                    arrivalSoc.setText(  f.format(doubleArriveSoc) + "%");
                    if ( doubleArriveSoc < 0 ) {
                         Log.d("soc" ,doubleArriveSoc + "");
-
-                       chargeTime.setText("");
+                        chargeTime.setText("");
                    }
 
                    else{
-
-
                        double chargeAmmountKwh = fullKwh * (1 -(doubleArriveSoc / 100));
                        Log.d("kwhtocharge", chargeAmmountKwh + "");
                        double minToCharge = (chargeAmmountKwh * 6) / 4.4;
                        chargeTime.setText(f.format(minToCharge) + " minutes");
                    }
-                    //133kph charge speed
-                    //4.4 km per min
 
+                if ( range  - dist < 20   &&  range  - dist >0){
+                    Toast.makeText(getApplicationContext(), "You may not reach your destination"  , Toast.LENGTH_LONG).show();
+                }
 
-                    if ( range  - dist < 20   &&  range  - dist >0){
-                        Toast.makeText(getApplicationContext(), "You may not reach your destination"  , Toast.LENGTH_LONG).show();
-                    }
+                if ( range  - dist < 0  ){
+                    Toast.makeText(getApplicationContext(), "You are unlikely to reach your destination"  , Toast.LENGTH_SHORT).show();
+                }
 
-                    if ( range  - dist < 0  ){
-                        Toast.makeText(getApplicationContext(), "You are unlikely to reach your destination"  , Toast.LENGTH_SHORT).show();
-                    }
-
-
-
-                    editor.commit();
+                editor.commit();
 
                 }
 
@@ -200,8 +190,6 @@ public class chargerInfo extends AppCompatActivity {
 
                     Toast.makeText(getApplicationContext(), "Enter a number between 0 and 100", Toast.LENGTH_LONG).show();
                 }
-
-
 
             }
         });

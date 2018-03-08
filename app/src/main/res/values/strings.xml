@@ -9,7 +9,7 @@
     <string-array name="makes">
         <item>BMW</item>
         <item>Nissan</item>
-        <item>VW</item>
+        <item>Volkswagen</item>
         <item>Renault</item>
         <item>Hyundai</item>
     </string-array>
@@ -20,14 +20,14 @@
     </string-array>
 
     <string-array name="Nissan">
-        <item>"Leaf 24 KWh</item>
+        <item>Leaf 24 KWh</item>
         <item>Leaf 30 KWh</item>
         <item>Leaf 40 KWh</item>
     </string-array>
 
-    <string-array name="VW">
-        <item>e Golf 24KWh</item>
-        <item>e GOlf 35KWh</item>
+    <string-array name="Volkswagen">
+        <item>e-Golf 24 KWh</item>
+        <item>e-Golf 35 KWh</item>
     </string-array>
 
     <string-array name="Renault">
