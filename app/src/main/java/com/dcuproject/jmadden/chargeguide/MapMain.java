@@ -114,7 +114,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         route0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "it is being pressed", Toast.LENGTH_SHORT).show();
 
                 String url = "https://www.google.com/maps/dir/?api=1";
                 url += "&origin=" + String.valueOf(user_lat) + "," + String.valueOf(user_long);
@@ -183,11 +182,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         //get the soc from the user
         socMainEdittext = (EditText) (findViewById(R.id.socIntMain));
         try {
-            range = sharedPref.getFloat("range", 100);
-        } catch(Exception e) {e.printStackTrace();}
-        final Float range = sharedPref.getFloat("range", 0);
+            float range = sharedPref.getFloat("range", 100);
 
-        Log.d("range", range + "");
+        } catch(Exception e) {e.printStackTrace();}
+
+
 
         //download the charger info on a separate thread to the main thread
         try {
@@ -236,6 +235,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     SharedPreferences.Editor e = sharedPref.edit();
                     Toast.makeText(getApplicationContext(), "You have set range to " + String.valueOf(socMain) + " Km", Toast.LENGTH_SHORT).show();
                     e.putFloat("range", socMain);
+                    range = socMain;
+
                     e.commit();
                 } else {
                     Toast.makeText(getApplicationContext(), "Please enter a number between 0 and 100", Toast.LENGTH_SHORT).show();
@@ -266,6 +267,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     Thread clearTags = new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            apply.performClick();
                             for (List<Marker> route : routes) {
                                 for (Marker marker : route) {
                                     marker.setTag(null);
@@ -285,7 +287,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     route3.setVisibility(View.GONE);
                     SharedPreferences path = getApplicationContext().getSharedPreferences("path", MODE_PRIVATE);
                     SharedPreferences.Editor pathEdit = path.edit();
-
+                    range = sharedPref.getFloat("range" , 0);;
                     pathEdit.clear();
                     pathEdit.commit();
 
@@ -303,6 +305,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             @Override
             public void onPlaceSelected(Place place) {
                 tm = new TreeMap();
+                apply.performClick();
                 // Log.i("PLACE TEST", place.getName().toString());
                 if (destinationUpdated) {
                     destination.setPosition(place.getLatLng()); // if there is a marker just update the position
@@ -316,8 +319,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 }
 
                 //if the user can reach the destination without charging
+
+                float range = sharedPref.getFloat("range", 0);
+
+
                 if (getDistance(place.getLatLng().latitude, place.getLatLng().longitude) < range) {
                     mMap.clear();
+                    apply.performClick();
                     addMarker(destination);
                     addMarker(userMarker);
                     Toast.makeText(getApplicationContext(), "You should reach your destination without charging", Toast.LENGTH_SHORT).show();
@@ -328,6 +336,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 }
 
                 else { //else find a charger to stop at
+                    range = sharedPref.getFloat("range" , 0);;
                     if (!(user_lat == 9999)) {
                         int count = 0;
                         mMap.clear();
@@ -372,7 +381,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         }
         url = url.substring(0, url.length() - 1);
         Log.i("URL", url);
-        Toast.makeText(getApplicationContext(), url, Toast.LENGTH_SHORT).show();
+
         return url;
     }
 
@@ -587,7 +596,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         SharedPreferences.Editor editor = sharedPref.edit();
         firstChargers = new <Marker>ArrayList();
         int index = 1;
-        Toast.makeText(getApplicationContext(), String.valueOf(range), Toast.LENGTH_SHORT).show();
+        //float range = sharedPref.getFloat("range", 0);
         double rangeAtEighty = 80 * (kwh / 100) * 6; //if the user stops at a charger use this range instead
         int count = 0;
         mMap.clear();
@@ -638,6 +647,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 ArrayList<Double> journyInfo = new ArrayList<>();
                 journyInfo.add(totalDistance);
+
+                range = sharedPref.getFloat("range" , 0);
+              //  Log.d("range" ,range + "");
 
                 editor.putFloat(stringIndex + "chargerLat", ((float) mklat));
                 editor.putFloat(stringIndex + "chargerLon", ((float) mklon));
