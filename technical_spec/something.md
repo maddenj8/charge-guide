@@ -19,8 +19,6 @@ page 2 High-Level Design
 
 page 3 Problems and Resoloutions
 
-page 4 Problems and Resoloutions
-
 page 5 Installation Guide
 
 
@@ -60,9 +58,9 @@ page 5 Installation Guide
 ###### Overview: 1.1
 
 
-ChargeGuide is a android application used to inform the user which chargers are working in use or broken. The user can then select a charger on a map and route with a estimate of state of charge on arrival and distance to the charger to it directly routing to those chargers directly. The user can also search for a destination and the application will select upto 3 possible routes each rout can contain upto 4 stops. The user can also configure what there state of charge is at the bottom of the main page and when the click on a charger. The user can then select one of these routes and open it up in google maps directly in navigation mode. There is also a brief help page explaining the chargers states and the different connectors. When the user first uses the app they can setup where they live and what car they drive so the app can estimate the range and only show applicable chargers.  
+ChargeGuide is a android application used to inform the user which chargers are working in use or broken. The user can then select a charger on a map and route with a estimate of state of charge on arrival and distance to the charger to it directly routing to those chargers directly. The user can also search for a destination and the application will select upto 3 possible routes each route can contain upto 4 stops. The user can also configure what there state of charge is at the bottom of the main page and when the click on a charger. The user can then select one of these routes and open it up in google maps directly in navigation mode. There is also a brief help page explaining the chargers states and the different connectors. When the user first uses the app they can setup where they live and what car they drive so the app can estimate the range and only show applicable chargers.
 
-The charger information is gotten from pulling form a kml from the esb charge point cap. This kml file is then parsed into 3 files one for each charger. The application gets its information over ftp from dcu student.computing server.  This information is updated every 10 minutes.
+The charger information is acquired from pulling form a kml from the esb charge point cap. This kml file is then parsed into 3 files one for each charger. The application gets its information over ftp from dcu student.computing server.  This information is updated every 10 minutes.
 
 
 
@@ -112,7 +110,7 @@ pinDrop will open up the downloaded file and makes it a marker object and draws 
 
 getDirectionUrl() makes a url that is used by startDirectionSetps to draw a path from home to the charger to the destination.
 
-onmapReady() will position the camera with just ireland in frame and call pin drop and gets the users home location.  
+onmapReady() will position the camera with just ireland in frame and call pin drop and gets the users home location.
 
 getNext() charger will pick the chargers that are near to the chargers that are in range sort them in terms of distance to the destination.
 
@@ -132,13 +130,13 @@ The onCreate has getting a shared preference set up in the setup page the batter
 In the first_launch class is called if the app has never been run before.
 It is made up of 2 spinners used to take the make and model of car. The selection of the first spinner sets the options for the second spinner.
 
-The first_launch class is called when the app is first run this is determened with SharedPreference setup being true 
+The first_launch class is called when the app is first run this is determened with SharedPreference setup being true
 
 onCheckBoxClicked will pull the gps latitude and longitude using location manager and saves the coordinates to shared Preferences as a float later used in mapMain and chargerInfo.
 
 
 #### 3 High-Level Design
- 
+
 ![](http://student.computing.dcu.ie/~nugenc12/pref.PNG)
 This is the class digram explaing user preference are saved and axcessed within the program. The preferences are created in the first launch activity when the application first launches then it is axcessed and modified in mainMap and chargerInfo.
 
@@ -165,10 +163,12 @@ On two occasions using large images caused the app to crash. The hamburger icon 
 Getting location of the user took several days as it was complicated as it required checking for premissions and having several catch and accept statements that took about a week to get in order.
 
 
+We tryed to estmate the arrival time by just assuming an average speed of 90 Kph but this was found to overestmate the time of arrival for short journey and underestmate the arrival time for short journeys sometimes by a factorof two so this feture was droped. Using the google maps api would have worked but there was not enfough time.
+
 
 #### 5 Installation Guide
 
-Enable installs form unknown sorces in settings > security. 
+Enable installs form unknown sorces in settings > security.
 
 ![apk on gitlab](http://student.computing.dcu.ie/~nugenc12/trusted.png)
 
@@ -189,10 +189,12 @@ Select the APK and press the install option.
 ![apk in downloads](http://student.computing.dcu.ie/~maddenj8/images/install_3.png)
 
 Once installed you have the option to open the application.
+You will then be prompted to allow ChargeGuide to use location. Click alow as it is necessary for the app to function corretely.
 
 
 
 
  
+
 
 
