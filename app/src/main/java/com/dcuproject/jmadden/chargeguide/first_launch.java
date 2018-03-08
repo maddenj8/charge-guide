@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class first_launch extends AppCompatActivity implements LocationListener{
+public class first_launch extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private Spinner makes, model;
     private Button currentLocAsHome;
@@ -56,9 +56,10 @@ public class first_launch extends AppCompatActivity implements LocationListener{
     private PlaceAutocompleteFragment searchBar;
     boolean mLocationPermissionGranted;
     private AutocompleteFilter autocompleteFilter;
+    private LocationListener mLocationListener;
     TextView address;
     AppCompatEditText placeEditText;
-    LocationManager locationManager;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,28 @@ public class first_launch extends AppCompatActivity implements LocationListener{
         //PLACE SELECTED CHECKS
         oneSelected = false;
         home = false;
+        mLocationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.i("LOCATION", location.getLatitude() + " " + location.getLongitude());
+                saveCoordinates((float) location.getLatitude(), (float) location.getLongitude());
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) { //check to see what this does
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) { //check to see what this does
+
+            }
+        };
 
         //PLACEAUTOCOMPLETEFRAGMENT
         searchBar = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment); //PlaceAutocomplete fragment
@@ -138,7 +161,7 @@ public class first_launch extends AppCompatActivity implements LocationListener{
                     model.setAdapter(adapter);
 
                 } else if (selected_make.equals("VW")) {
-                    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.VW, android.R.layout.simple_spinner_dropdown_item);
+                    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.Volkswagen, android.R.layout.simple_spinner_dropdown_item);
                     model.setAdapter(adapter);
 
                 } else if (selected_make.equals("Renault")) {
@@ -165,14 +188,13 @@ public class first_launch extends AppCompatActivity implements LocationListener{
                 SharedPreferences.Editor editor = sharedPref.edit();
                 String selected_make = makes.getSelectedItem().toString();
                 editor.putString("selectedMake", selected_make);
-                editor.putString("selectedModel" , selected_model);
-
+                editor.putString("selectedModel", selected_model);
 
 
                 String battery = selected_model.substring(selected_model.length() - 6, selected_model.length() - 4);
                 final float kwh = Integer.parseInt(battery);
                 float range = kwh * 6;
-                editor.putFloat("kwh" , kwh);
+                editor.putFloat("kwh", kwh);
                 editor.putFloat("range", range);
                 Log.d("soc", range + "");
                 editor.commit();
@@ -191,8 +213,7 @@ public class first_launch extends AppCompatActivity implements LocationListener{
                     if (!oneSelected) {
                         // none of the selections are made so the user should be notified
                         Toast.makeText(getApplicationContext(), "Nothing was selected for home, please enter a home address or use current location", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
+                    } else {
                         // home is set by what is searched in the search bar
                         if (placeSelected != null) {
                             try {
@@ -202,13 +223,15 @@ public class first_launch extends AppCompatActivity implements LocationListener{
                                 Toast.makeText(getApplicationContext(), "You selected " + placeSelected.getName(), Toast.LENGTH_SHORT).show();
                                 saveCoordinates(lat, lng);
                                 finishSetup();
-                            } catch (Exception e) {e.printStackTrace();}
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
-                }
-                else {
+                } else {
                     // else home is already set as current location be this point so just go to the map activity
                     Log.i("something", "something else ");
+                    locationManager.removeUpdates(mLocationListener);
                     finishSetup();
                 }
             }
@@ -230,9 +253,9 @@ public class first_launch extends AppCompatActivity implements LocationListener{
             try {
                 searchBar.getView().setVisibility(View.GONE);
                 if (ContextCompat.checkSelfPermission(this.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     //commented out as we don't need updates we just need the initial location
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) this); //check for changes
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener); //check for changes
 
                     String bestProvider = locationManager.NETWORK_PROVIDER; //set the provider of the location (network is faster)
 
@@ -260,9 +283,10 @@ public class first_launch extends AppCompatActivity implements LocationListener{
                         Toast.makeText(this, "Issue finding your location please check your internet connection and try again.", Toast.LENGTH_LONG).show();
                     }
                 }
-            } catch(Exception e) {e.printStackTrace();}
-        }
-        else {
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
             searchBar.getView().setVisibility(View.VISIBLE);
             address.setVisibility(View.GONE);
         }
@@ -276,8 +300,7 @@ public class first_launch extends AppCompatActivity implements LocationListener{
     */
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
-        }
-        else {
+        } else {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
@@ -295,27 +318,6 @@ public class first_launch extends AppCompatActivity implements LocationListener{
         }
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.i("LOCATION", location.getLatitude() + " " + location.getLongitude());
-        saveCoordinates((float) location.getLatitude(), (float) location.getLongitude());
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) { //check to see what this does
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) { //check to see what this does
-
-    }
-
     public void saveCoordinates(float lat, float lng) {
         SharedPreferences location_info = getApplicationContext().getSharedPreferences("user_location", Context.MODE_PRIVATE); //save the lat/lng of the user
         SharedPreferences.Editor e = location_info.edit();
@@ -323,4 +325,5 @@ public class first_launch extends AppCompatActivity implements LocationListener{
         e.putFloat("longitude", lng);
         e.commit();
     }
+
 }
