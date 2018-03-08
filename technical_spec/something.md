@@ -149,7 +149,7 @@ On two occasions using large images caused the app to crash. The hamburger icon 
 Getting location of the user took several days as it was complicated as it required checking for premissions and having several catch and accept statements that took about a week to get in order.
 
 
-####Installation Guide
+#### 5 Installation Guide
 
 Enable installs form unknown sorces in settings > security. 
 
