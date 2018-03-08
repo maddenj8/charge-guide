@@ -125,7 +125,7 @@ The first_launch class is called when the app is first run this is determened wi
 onCheckBoxClicked will pull the gps latitude and longitude using location manager and saves the coordinates to shared Preferences as a float later used in mapMain and chargerInfo.
 
 
-#### High-Level Design
+####3 High-Level Design
 ![](http://student.computing.dcu.ie/~nugenc12/pref.PNG)
 
 ![](http://student.computing.dcu.ie/~nugenc12/downloadChargerInfo.png)
@@ -151,7 +151,32 @@ Getting location of the user took several days as it was complicated as it requi
 
 
 
+####5 Installation Guide
 
- 
+
+
+This is a guide to install Charge Guide application.
+
+Locate the APK file on the gitlab project.
+
+![apk on gitlab](http://student.computing.dcu.ie/~maddenj8/images/install_1.png)
+
+Download the APK and place on an android device.
+
+Go into settting > security > and enable unknown sources.
+
+![apk on gitlab](http://student.computing.dcu.ie/~nugenc12/trusted.png)
+
+Locate this APK in the devices downloads manager.
+
+![apk in downloads](http://student.computing.dcu.ie/~maddenj8/images/install_2.png)
+
+Select the APK and press the install option.
+
+![apk in downloads](http://student.computing.dcu.ie/~maddenj8/images/install_3.png)
+
+Once installed you have the option to open the application.
+
+
 
 
