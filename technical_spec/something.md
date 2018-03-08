@@ -11,6 +11,18 @@
 
 
 
+page 1 Overview
+
+page 1 System Architecture
+
+page 2 High-Level Design
+
+page 3 Problems and Resoloutions
+
+page 4 Problems and Resoloutions
+
+page 5 Installation Guide
+
 
 
 
@@ -128,11 +140,14 @@ onCheckBoxClicked will pull the gps latitude and longitude using location manage
 #### 3 High-Level Design
  
 ![](http://student.computing.dcu.ie/~nugenc12/pref.PNG)
+This is the class digram explaing user preference are saved and axcessed within the program. The preferences are created in the first launch activity when the application first launches then it is axcessed and modified in mainMap and chargerInfo.
 
 ![](http://student.computing.dcu.ie/~nugenc12/downloadChargerInfo.png)
+This is a use case diagram here the program downloads the correct file from  the server via sftp and save to the device.
 
 ![](http://student.computing.dcu.ie/~nugenc12/setupusecase.PNG)
 
+The setup use case diagram is where the user makes a route by clicking on the search bar then selecting one of the routes displayed as a button then opening the route in google in google maps
 
 #### 4 Problems and Resoloutions
 
@@ -148,6 +163,7 @@ There was a issue where on the volkswagen e golf 24 Kwh was being selected was r
 On two occasions using large images caused the app to crash. The hamburger icon on the navagaton drawer was 1000 x 1000 which caused it to crash on one phone lag on another and run just fine on another phone. This was resolved by making the image smaller. A simalar thing occoured when the help page was running very slowly as the images has to be rescalled.
 
 Getting location of the user took several days as it was complicated as it required checking for premissions and having several catch and accept statements that took about a week to get in order.
+
 
 
 #### 5 Installation Guide
