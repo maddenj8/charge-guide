@@ -168,6 +168,8 @@ We tryed to estmate the arrival time by just assuming an average speed of 90 Kph
 
 #### 5 Installation Guide
 
+An android phone running Lollipop(api version 21) or above is required to run the application. The application is 4mb in size and needs about 1gb of ram to run smothley.
+
 Enable installs form unknown sorces in settings > security.
 
 ![apk on gitlab](http://student.computing.dcu.ie/~nugenc12/trusted.png)
@@ -194,7 +196,8 @@ You will then be prompted to allow ChargeGuide to use location. Click alow as it
 
 
 
- 
 
+
+ 
 
 
