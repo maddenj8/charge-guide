@@ -131,6 +131,7 @@ onCheckBoxClicked will pull the gps latitude and longitude using location manage
 ![](http://student.computing.dcu.ie/~nugenc12/downloadChargerInfo.png)
 
 
+![](http://student.computing.dcu.ie/~nugenc12/setupusecase.PNG)
 
 
 ####4 Problems and Resoloutions
