@@ -236,7 +236,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     Toast.makeText(getApplicationContext(), "You have set range to " + String.valueOf(socMain) + " Km", Toast.LENGTH_SHORT).show();
                     e.putFloat("range", socMain);
                     range = socMain;
-
+                    assert range >= 0;
                     e.commit();
                 } else {
                     Toast.makeText(getApplicationContext(), "Please enter a number between 0 and 100", Toast.LENGTH_SHORT).show();
@@ -267,7 +267,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     Thread clearTags = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            apply.performClick();
+                          //  apply.performClick();
                             for (List<Marker> route : routes) {
                                 for (Marker marker : route) {
                                     marker.setTag(null);
@@ -305,7 +305,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             @Override
             public void onPlaceSelected(Place place) {
                 tm = new TreeMap();
-                apply.performClick();
+          //      apply.performClick();
                 // Log.i("PLACE TEST", place.getName().toString());
                 if (destinationUpdated) {
                     destination.setPosition(place.getLatLng()); // if there is a marker just update the position
@@ -325,7 +325,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 if (getDistance(place.getLatLng().latitude, place.getLatLng().longitude) < range) {
                     mMap.clear();
-                    apply.performClick();
+         //           apply.performClick();
                     addMarker(destination);
                     addMarker(userMarker);
                     Toast.makeText(getApplicationContext(), "You should reach your destination without charging", Toast.LENGTH_SHORT).show();
