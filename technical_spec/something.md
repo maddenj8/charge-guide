@@ -12,15 +12,10 @@
 
 
 page 1 Overview
-
 page 1 System Architecture
-
-page 2 High-Level Design
-
-page 3 Problems and Resoloutions
-
+page 3 High-Level Design
+page 4 Problems and Resoloutions
 page 5 Installation Guide
-
 
 
 
