@@ -70,9 +70,10 @@ Clicking the search bar at the top of the page you can enter a destination.  The
 
 Route picking screen 
 
+ChargeGuide has sent google maps the chargers as waypoints on your journey 
 
+![](http://student.computing.dcu.ie/~nugenc12/screenshot_12.png)
 
-
-
+google maps
 
 

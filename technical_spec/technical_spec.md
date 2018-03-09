@@ -14,7 +14,7 @@
 page 1 Overview
 page 1 System Architecture
 page 3 High-Level Design
-page 4 Problems and Resoloutions
+page 4 Problems and resolutions
 page 5 Installation Guide
 
 
@@ -99,21 +99,21 @@ Inside of MapMain.java there is downloadChargerInfo this uses sftp form the scho
 
 getDistance() gets the distance from a charger in km to home and getdistancetodestnation() gets the distance between any two coordinates.
 
-pinDrop will open up the downloaded file and makes it a marker object and draws it on the map this will give a title when clicked on an gives the apporatpate icon.
+pinDrop() will open up the downloaded file and makes it a marker object and draws it on the map this will give a title when clicked on an gives the apporatpate icon.
 
  mMap.setOnInfoWindowClickListener checks to see if if destination updated is set if so it opens chargerInfo.class activity is opened otherwise it ignores the input.
 
- onNavigationItemSelected() listens for any click on the navigation drawer so it can start a the help or set up activity.
+onNavigationItemSelected() listens for any click on the navigation drawer so it can start a the help or set up activity.
 
 getDirectionUrl() makes a url that is used by startDirectionSetps to draw a path from home to the charger to the destination.
 
 onmapReady() will position the camera with just ireland in frame and call pin drop and gets the users home location.
 
-getNext() charger will pick the chargers that are near to the chargers that are in range sort them in terms of distance to the destination.
+getNextCharger() charger will pick the chargers that are near to the chargers that are in range sort them in terms of distance to the destination.
 
 addMarker() is given a marker and puts an icon on the map with the corresponding title and icon
 
-route0 is a button for journeys with no need to stop and buttons 1 to  3 deal with routes with routes with waypoints
+route zero is a button for journeys with no need to stop and buttons 1 to  3 deal with routes with routes with waypoints
 
 The charger info class has to display information about the charger when the charger icon is clicked.
 
@@ -135,16 +135,18 @@ onCheckBoxClicked will pull the gps latitude and longitude using location manage
 #### 3 High-Level Design
 
 ![](http://student.computing.dcu.ie/~nugenc12/pref.PNG)
+
  This is the class digram explaing user preference are saved and axcessed within the program. The preferences are created in the first launch activity when the application first launches then it is axcessed and modified in mainMap and chargerInfo.
 
 ![](http://student.computing.dcu.ie/~nugenc12/downloadChargerInfo.png)
+
 This is a use case diagram here the program downloads the correct file from  the server via sftp and save to the device.
 
 ![](http://student.computing.dcu.ie/~nugenc12/setupusecase.PNG)
 
 The setup use case diagram is where the user makes a route by clicking on the search bar then selecting one of the routes displayed as a button then opening the route in google in google maps
 
-#### 4 Problems and Resoloutions
+#### 4 Problems and Resolutions
 
 Getting sftp working to transfer the files from the server to the device was an issue at first as using a sftp on a setup on a laptop in the lab was not working as there was a firewall in place. This was resolved by sshing into dcu servers to start the bash script to update the data then using sftp on the phone to get the data.
 
