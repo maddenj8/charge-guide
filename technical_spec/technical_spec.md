@@ -12,11 +12,11 @@
 
 
 page 1 Overview
-page 1 System Architecture
-page 3 High-Level Design
-page 4 Problems and resolutions
-page 5 Installation Guide
-
+page 1 Glossary
+Page 2 System Architecture
+Page 4 High-Level Design
+Page 6 Problems and resolutions
+Page 7 Installation Guide
 
 
 
@@ -53,7 +53,7 @@ page 5 Installation Guide
 ###### Overview: 1.1
 
 
-ChargeGuide is a android application used to inform the user which chargers are working in use or broken. The user can then select a charger on a map and route with a estimate of state of charge on arrival and distance to the charger to it directly routing to those chargers directly. The user can also search for a destination and the application will select upto 3 possible routes each route can contain upto 4 stops. The user can also configure what there state of charge is at the bottom of the main page and when the click on a charger. The user can then select one of these routes and open it up in google maps directly in navigation mode. There is also a brief help page explaining the chargers states and the different connectors. When the user first uses the app they can setup where they live and what car they drive so the app can estimate the range and only show applicable chargers.
+ChargeGuide is a android application used to inform the user which chargers are working in use or broken. The user can then select a charger on a map and route with a estimate of state of charge on arrival and distance to the charger to it directly routing to those chargers directly. The user can also search for a destination and the application will select Upton 3 possible routes each route can contain upto 4 stops. The user can also configure what there state of charge is at the bottom of the main page and when the click on a charger. The user can then select one of these routes and open it up in google maps directly in navigation mode. There is also a brief help page explaining the chargers states and the different connectors. When the user first uses the app they can setup where they live and what car they drive so the app can estimate the range and only show applicable chargers.
 
 The charger information is acquired from pulling form a kml from the esb charge point cap. This kml file is then parsed into 3 files one for each charger. The application gets its information over ftp from dcu student.computing server.  This information is updated every 10 minutes.
 
@@ -91,7 +91,7 @@ Chademo , CCS , AC43  , Chademo = Fast charge plugs
 
 
 
-The application is made up of get_charging_data.sh which wgets the kml file , split.py splits out the kml files into 3 files chademo ccs and ac. Parse.py pares out the kml file into the latitude longitude state and name spit by “|”. 
+The application is made up of get_charging_data.sh which wgets the kml file , split.py splits out the kml files into 3 files chademo ccs and ac. Parse.py pares out the kml file into the latitude longitude state and name spit by |. 
 
 The main class for the application is MapMain.java.
 
@@ -99,9 +99,9 @@ Inside of MapMain.java there is downloadChargerInfo this uses sftp form the scho
 
 getDistance() gets the distance from a charger in km to home and getdistancetodestnation() gets the distance between any two coordinates.
 
-pinDrop() will open up the downloaded file and makes it a marker object and draws it on the map this will give a title when clicked on an gives the apporatpate icon.
+pinDrop() will open up the downloaded file and makes it a marker object and draws it on the map this will give a title when clicked on an gives the appropriate icon.
 
- mMap.setOnInfoWindowClickListener checks to see if if destination updated is set if so it opens chargerInfo.class activity is opened otherwise it ignores the input.
+ mMap.setOnInfoWindowClickListener Checks to see if if destination updated is set if so it opens chargerInfo.class activity is opened otherwise it ignores the input.
 
 onNavigationItemSelected() listens for any click on the navigation drawer so it can start a the help or set up activity.
 
@@ -119,7 +119,7 @@ The charger info class has to display information about the charger when the cha
 
 Information about the charger is passed by a bundle from map main class.
 
-Using the battery size in kwh’s and the state of charge percentage it will estimate the range in km and the charge time. This is then displayed to the user. There is a button that will open google maps in navigation mode passing the charger as the destination.
+Using the battery size in kwhs and the state of charge percentage it will estimate the range in km and the charge time. This is then displayed to the user. There is a button that will open google maps in navigation mode passing the charger as the destination.
 
 The onCreate has getting a shared preference set up in the setup page the battery size in kwh and is pulled.
 
@@ -136,7 +136,7 @@ onCheckBoxClicked will pull the gps latitude and longitude using location manage
 
 ![](http://student.computing.dcu.ie/~nugenc12/pref.PNG)
 
- This is the class digram explaing user preference are saved and axcessed within the program. The preferences are created in the first launch activity when the application first launches then it is axcessed and modified in mainMap and chargerInfo.
+This is the class digram explaing user preference are saved and axcessed within the program. The preferences are created in the first launch activity when the application first launches then it is axcessed and modified in mainMap and chargerInfo.
 
 ![](http://student.computing.dcu.ie/~nugenc12/downloadChargerInfo.png)
 
@@ -149,20 +149,21 @@ The setup use case diagram is where the user makes a route by clicking on the se
 #### 4 Problems and Resolutions
 
 Getting sftp working to transfer the files from the server to the device was an issue at first as using a sftp on a setup on a laptop in the lab was not working as there was a firewall in place. This was resolved by sshing into dcu servers to start the bash script to update the data then using sftp on the phone to get the data.
+ 
+The split.py and parse.py were part of one larger program but there was an issue where chaddemo_output.text would be concatenated into ccs_output.text. This was resolved after some time by putting the split and parse functions into separate programs.
+Selecting different routes was at one point accomplished by clicking on the destination flag and then selecting the charger then selecting the destination in a separate activity. This solution was not realistically compatible with multiple stops on as there would be upto 4 buttons per charger. There was a better solution proposed were a button should be drawn on the main page when a route is drawn and then use waypoints in google maps.
+ 
+There was a issue where on the volkswagen e golf 24 Kwh was being selected was reported by a tester as causing the app to crash. This was because the string e golf 24 Kwh was being parsed and the program did not expect the model being the model being 4 words long rather than 3 words long this was resolved by replacing e golf with e-golf.
+ 
+On two occasions using large images caused the app to crash. The hamburger icon on the navigation drawer was 1000 x 1000 which caused it to crash on one phone lag on another and run just fine on another phone. This was resolved by making the image smaller. A similar thing occurred when the help page was running very slowly as the images has to be recalled.
+Getting location of the user took several days as it was complicated as it required checking for permissions and having several catch and accept statements that took about a week to get in order.
+ 
+We tried to estimate the arrival time by just assuming an average speed of 90 Kph but this was found to overestimate the time of arrival for short journey and underestimate the arrival time for short journeys sometimes by a factor of two so this feature was dropped. Using the google maps api would have worked but there was not enough time.
+ 
+ 
+ 
 
-The split.py and parse.py were part of one larger program but there was an issue where chaddemo_output.txt would be concanated onto ccs_output.txt. This was resolved after some time by putting the split and parse functions into seprate progams.
 
-Selecting diffrent routs was at one point accomplissed by clicking on the destnation flag and then selecting the charger then selecting the destnation in a seprate acctivity. This solution was not realisticly compatable with multible stops on as there would be upto 4 buttons per charger. There was a better solution propoed wehre a buttion whould be drawn on the main page when a route is drawn and then use waypoints in google maps.
-
-
-There was a issue where on the volkswagen e golf 24 Kwh was being selected was reporeted by a tester as causing the app to crash. This was because the string "e golf 24 Kwh" was being parsed and the program did not expect the model being the model being 4 words long rather than 3 words long this was resoled by replacing e golf with e-golf.
-
-On two occasions using large images caused the app to crash. The hamburger icon on the navagaton drawer was 1000 x 1000 which caused it to crash on one phone lag on another and run just fine on another phone. This was resolved by making the image smaller. A simalar thing occoured when the help page was running very slowly as the images has to be rescalled.
-
-Getting location of the user took several days as it was complicated as it required checking for premissions and having several catch and accept statements that took about a week to get in order.
-
-
-We tryed to estmate the arrival time by just assuming an average speed of 90 Kph but this was found to overestmate the time of arrival for short journey and underestmate the arrival time for short journeys sometimes by a factorof two so this feture was droped. Using the google maps api would have worked but there was not enfough time.
 
 
 #### 5 Installation Guide
