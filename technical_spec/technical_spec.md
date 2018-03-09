@@ -191,3 +191,12 @@ Select the APK and press the install option.
 
 Once installed you have the option to open the application.
 You will then be prompted to allow ChargeGuide to use location. Click alow as it is necessary for the app to function corretely.
+
+
+
+
+
+
+ 
+
+
