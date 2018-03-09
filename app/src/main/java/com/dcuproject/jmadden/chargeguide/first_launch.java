@@ -160,7 +160,7 @@ public class first_launch extends AppCompatActivity {
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.Nissan, android.R.layout.simple_spinner_dropdown_item);
                     model.setAdapter(adapter);
 
-                } else if (selected_make.equals("VW")) {
+                } else if (selected_make.equals("Volkswagen")) {
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.Volkswagen, android.R.layout.simple_spinner_dropdown_item);
                     model.setAdapter(adapter);
 
@@ -189,22 +189,15 @@ public class first_launch extends AppCompatActivity {
                 String selected_make = makes.getSelectedItem().toString();
                 editor.putString("selectedMake", selected_make);
                 editor.putString("selectedModel", selected_model);
-                Log.d(selected_make , selected_make);
-                Log.d(selected_model , selected_model);
 
-                if( selected_model.equals("Leaf 24 KWh")){
-                    String battery = selected_model.substring(selected_model.length() - 6, selected_model.length() - 4);
-
-                    editor.putString("range" , "126");
+                if(selected_model.equals("Leaf 24 KWh")) {
+                    editor.putFloat("range" , 126);
                     editor.putFloat("kwh", 21);
-
 
                     editor.commit();
                 }
 
                 else {
-
-
                     String battery = selected_model.substring(selected_model.length() - 6, selected_model.length() - 4);
 
                     final float kwh = Integer.parseInt(battery);
