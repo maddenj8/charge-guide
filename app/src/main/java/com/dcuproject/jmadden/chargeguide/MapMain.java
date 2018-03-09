@@ -231,7 +231,10 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         apply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                socMain = Float.valueOf(socMainEdittext.getText().toString());
+                String socMainTxt = socMainEdittext.getText().toString();
+                try {
+                    socMain = Float.valueOf(socMainTxt);
+                } catch (Exception e) {socMain = (float) 0.0;}
                 if (socMain >= 0 && socMain <= 100) {
                     assert socMain >= 0 && socMain <= 100 : "FAILED: socMain ";
                     Log.i("Test 5", "PASSED: SoC in range");
