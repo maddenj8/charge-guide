@@ -58,6 +58,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".chargerInfo"
+            android:parentActivityName=".MapMain"
             android:screenOrientation="portrait" />
 
         <uses-library android:name="com.google.android.maps" />

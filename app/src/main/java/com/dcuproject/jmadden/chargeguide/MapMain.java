@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.location.Location;
 import android.net.Uri;
 import android.support.design.widget.NavigationView;
@@ -115,11 +114,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             @Override
             public void onClick(View view) {
 
-                String url = "https://www.google.com/maps/dir/?api=1";
+                String url = buildMapUrl(null);
+              /*  String url = "https://www.google.com/maps/dir/?api=1";
                 url += "&origin=" + String.valueOf(user_lat) + "," + String.valueOf(user_long);
                 url += "&destination=" + String.valueOf(destination.getPosition().latitude) + "," + String.valueOf(destination.getPosition().longitude);
                 url += "&travelmode=driving";
-                url += "&waypoints=";
+                url += "&waypoints="; */
 
                 Uri gmmIntentUri = Uri.parse(url);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -263,39 +263,23 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         autocompleteFragment.getView().findViewById(R.id.place_autocomplete_clear_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    Thread clearTags = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                          //  apply.performClick();
-                            for (List<Marker> route : routes) {
-                                for (Marker marker : route) {
-                                    marker.setTag(null);
-                                }
-                            }
-                        }
-                    });
-                    clearTags.run();
-                    mMap.clear();
-                    addMarker(userMarker);
-                    markers.remove(markers.size() - 1);
-                    autocompleteFragment.setText("");
-                    view.setVisibility(View.GONE);
-                    route0.setVisibility(View.GONE);
-                    route1.setVisibility(View.GONE);
-                    route2.setVisibility(View.GONE);
-                    route3.setVisibility(View.GONE);
-                    SharedPreferences path = getApplicationContext().getSharedPreferences("path", MODE_PRIVATE);
-                    SharedPreferences.Editor pathEdit = path.edit();
-                    range = sharedPref.getFloat("range" , 0);;
-                    pathEdit.clear();
-                    pathEdit.commit();
+                mMap.clear();
+                addMarker(userMarker);
+                markers.remove(markers.size() - 1);
+                autocompleteFragment.setText("");
+                view.setVisibility(View.GONE);
+                route0.setVisibility(View.GONE);
+                route1.setVisibility(View.GONE);
+                route2.setVisibility(View.GONE);
+                route3.setVisibility(View.GONE);
+                SharedPreferences path = getApplicationContext().getSharedPreferences("path", MODE_PRIVATE);
+                SharedPreferences.Editor pathEdit = path.edit();
+                range = sharedPref.getFloat("range" , 0);;
+                pathEdit.clear();
+                pathEdit.commit();
 
-                    for (Marker marker : markers) {
-                        addMarker(marker);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                for (Marker marker : markers) {
+                    addMarker(marker);
                 }
             }
         });
@@ -372,17 +356,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     }
 
     public String buildMapUrl(List<Marker> route) {
+
         String url = "https://www.google.com/maps/dir/?api=1";
         url += "&origin=" + String.valueOf(user_lat) + "," + String.valueOf(user_long);
         url += "&destination=" + String.valueOf(destination.getPosition().latitude) + "," + String.valueOf(destination.getPosition().longitude);
         url += "&travelmode=driving";
-        url += "&waypoints=";
-        for (Marker charger : route) {
-            url += String.valueOf(charger.getPosition().latitude) + "," + String.valueOf(charger.getPosition().longitude) + "|";
+        if (route != null) {
+            url += "&waypoints=";
+            for (Marker charger : route) {
+                url += String.valueOf(charger.getPosition().latitude) + "," + String.valueOf(charger.getPosition().longitude) + "|";
+            }
+            url = url.substring(0, url.length() - 1);
+            Log.i("URL", url);
         }
-        url = url.substring(0, url.length() - 1);
-        Log.i("URL", url);
-
         return url;
     }
 
@@ -550,10 +536,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
     }
 
-    public String getJSONResponse(String strUrl) {
-        return "";
-    }
-
     public String getDirectionsURL(LatLng userPosition, LatLng destPosition) {
         String url = "https://maps.googleapis.com/maps/api/directions/json?origin=";
         url += userPosition.latitude + "," + userPosition.longitude;
@@ -605,6 +587,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         int count = 0;
         mMap.clear();
 
+        Log.i("Stuff", String.valueOf(user_lat) + " " + String.valueOf(user_long) + " " + String.valueOf(range) + " " + String.valueOf(index));
         buildMap(new LatLng(user_lat, user_long), range, index);
 
         //Bundle pathBundel = new Bundle();
