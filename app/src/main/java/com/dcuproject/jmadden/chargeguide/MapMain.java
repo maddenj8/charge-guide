@@ -63,8 +63,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private Boolean destinationUpdated = false; // check if app has to draw a new marker or update an existing one
     private AutocompleteFilter autocompleteFilter;
     private CustomInfoWindow customInfoWindow;
-    private Float user_lat;
-    private Float user_long;
+    private float user_lat;
+    private float user_long;
     private Marker userMarker;
     private ViewGroup infoWindow;
     private Button infoButton;
@@ -76,7 +76,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private ArrayList<Marker> markers = new ArrayList<Marker>();
     private List<Polyline> polylines;
     private int[] colors;
-    private Float range;
+    private float range;
     private int colorSelected;
     private SharedPreferences sharedPref;
     // Key for Google directions API
@@ -97,7 +97,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     private double distance2;
     private double distance3;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,17 +108,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         route2 = (Button) findViewById(R.id.route2);
         route3 = (Button) findViewById(R.id.route3);
 
-
         route0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 String url = buildMapUrl(null);
-              /*  String url = "https://www.google.com/maps/dir/?api=1";
-                url += "&origin=" + String.valueOf(user_lat) + "," + String.valueOf(user_long);
-                url += "&destination=" + String.valueOf(destination.getPosition().latitude) + "," + String.valueOf(destination.getPosition().longitude);
-                url += "&travelmode=driving";
-                url += "&waypoints="; */
 
                 Uri gmmIntentUri = Uri.parse(url);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -130,6 +123,15 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             }
         });
 
+        Thread testingThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                assert getDistanceToDestination(53.62549, -7.466440000000034, 53.366299, -6.31205) == 95.7778253173828 : " FAILED: getDistanceToDestination()";
+                Log.i("Test 1", "PASSED: getDistanceToDestination()");
+            }
+        });
+
+        testingThread.run();
 
         route1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,7 +184,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         //get the soc from the user
         socMainEdittext = (EditText) (findViewById(R.id.socIntMain));
         try {
-            float range = sharedPref.getFloat("range", 100);
+            range = sharedPref.getFloat("range", 100);
 
         } catch(Exception e) {e.printStackTrace();}
 
@@ -231,6 +233,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             public void onClick(View view) {
                 socMain = Float.valueOf(socMainEdittext.getText().toString());
                 if (socMain >= 0 && socMain <= 100) {
+                    assert socMain >= 0 && socMain <= 100 : "FAILED: socMain ";
+                    Log.i("Test 5", "PASSED: SoC in range");
                     socMain *= (kwh / 100) * 6;
                     SharedPreferences.Editor e = sharedPref.edit();
                     Toast.makeText(getApplicationContext(), "You have set range to " + String.valueOf(socMain) + " Km", Toast.LENGTH_SHORT).show();
@@ -274,7 +278,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 route3.setVisibility(View.GONE);
                 SharedPreferences path = getApplicationContext().getSharedPreferences("path", MODE_PRIVATE);
                 SharedPreferences.Editor pathEdit = path.edit();
-                range = sharedPref.getFloat("range" , 0);;
+                //range = sharedPref.getFloat("range" , 0);;
                 pathEdit.clear();
                 pathEdit.commit();
 
@@ -302,14 +306,25 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     markers.add(mMap.addMarker(markerOptions)); // add the newly made marker to the map
                 }
 
+                Thread testingThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String url = buildMapUrl(null);
+                        assert url.contains("https://www.google.com/maps/dir/?api=1&origin=") && url.contains("&destination=") && url.contains("travelmode=driving") : "FAILED: buildMapUrl()";
+                        Log.i("Test 2", "PASSED: buildMapUrl()");
+                    }
+                });
+
+                testingThread.run();
+
                 //if the user can reach the destination without charging
 
-                float range = sharedPref.getFloat("range", 0);
+                //float range = sharedPref.getFloat("range", 0);
 
 
                 if (getDistance(place.getLatLng().latitude, place.getLatLng().longitude) < range) {
                     mMap.clear();
-         //           apply.performClick();
+                    //apply.performClick();
                     addMarker(destination);
                     addMarker(userMarker);
                     Toast.makeText(getApplicationContext(), "You should reach your destination without charging", Toast.LENGTH_SHORT).show();
@@ -320,7 +335,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 }
 
                 else { //else find a charger to stop at
-                    range = sharedPref.getFloat("range" , 0);;
+                    //range = sharedPref.getFloat("range" , 0);;
                     if (!(user_lat == 9999)) {
                         int count = 0;
                         mMap.clear();
@@ -336,7 +351,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     }
                     route0.setVisibility(View.GONE);
                     if (routes.size() >= 1) {
-                        route1.setVisibility(View.VISIBLE); 
+                        route1.setVisibility(View.VISIBLE);
                     }
                     if (routes.size() >= 2) {
                         route2.setVisibility(View.VISIBLE);
@@ -367,8 +382,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 url += String.valueOf(charger.getPosition().latitude) + "," + String.valueOf(charger.getPosition().longitude) + "|";
             }
             url = url.substring(0, url.length() - 1);
-            Log.i("URL", url);
         }
+        Log.i("URL", url);
         return url;
     }
 
@@ -435,6 +450,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
     }
 
     public void buildMap(LatLng startPos, double range, int index) {
+        final TreeMap oldMap = tm;
         for (Marker marker : markers) {
             double distance = getDistanceToDestination(startPos.latitude, startPos.longitude, marker.getPosition().latitude, marker.getPosition().longitude);
 
@@ -449,11 +465,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         }
     }
 
-
-
     public void addToMap(Marker marker) { //only pick the ones that are in the direction of the destination
         try {
-
             Location destLocation = new Location("destLocation");
             destLocation.setLatitude(destination.getPosition().latitude);
             destLocation.setLongitude(destination.getPosition().longitude);
@@ -533,7 +546,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         Toast.makeText(this, "Make is " + make + " and Model is " + model, Toast.LENGTH_SHORT).show();
         //add the charger pins of the chargers that are applicable to the car the user drives
         pinDrop();
-
+        Thread testingThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                assert make != null && model != null && userMarker != null : "FAILED: saving data";
+                Log.i("Test 4", "PASSED: saving data");
+            }
+        });
+        testingThread.run();
     }
 
     public String getDirectionsURL(LatLng userPosition, LatLng destPosition) {
@@ -635,7 +655,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 ArrayList<Double> journyInfo = new ArrayList<>();
                 journyInfo.add(totalDistance);
 
-                range = sharedPref.getFloat("range" , 0);
+                //range = sharedPref.getFloat("range" , 0);
               //  Log.d("range" ,range + "");
 
                 editor.putFloat(stringIndex + "chargerLat", ((float) mklat));
@@ -656,7 +676,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 route = new ArrayList<>();
                 route.add(currentCharger);
                 tm = new TreeMap();
+                TreeMap prevTm = tm;
                 buildMap(currentCharger.getPosition(), rangeAtEighty, index);
+                testBuildMap(prevTm, tm);
                 double currDistToDest = getDistanceToDestination(currentCharger.getPosition().longitude, currentCharger.getPosition().latitude, destination.getPosition().longitude, destination.getPosition().latitude);
                 if (currDistToDest < rangeAtEighty) {
                     startDirectionsSteps(currentCharger.getPosition(), destination.getPosition(), colors[limit]);
@@ -664,47 +686,34 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     limit++;
                 } else {
                     try {
-                        Marker prevM = userMarker;
                         Marker m = getNextCharger(route.get(route.size() - 1), rangeAtEighty, limit, (int) currentCharger.getTag());
-                        double totalDistance = getDistanceToDestination(userMarker.getPosition().latitude, userMarker.getPosition().longitude, m.getPosition().latitude, m.getPosition().longitude);
                         if (m != null) {
-                            totalDistance += getDistanceToDestination(m.getPosition().latitude, m.getPosition().longitude, prevM.getPosition().latitude, prevM.getPosition().longitude);
-                            prevM = m;
                             route.add(m);
                         }
 
                         buildMap(route.get(route.size() - 1).getPosition(), rangeAtEighty, limit);
                         m = getNextCharger(route.get(route.size() - 1), rangeAtEighty, limit, (int) currentCharger.getTag());
                         if (m != null) {
-                            totalDistance += getDistanceToDestination(m.getPosition().latitude, m.getPosition().longitude, prevM.getPosition().latitude, prevM.getPosition().longitude);
-                            prevM = m;
                             route.add(m);
                         }
 
                         buildMap(route.get(route.size() - 1).getPosition(), rangeAtEighty, limit);
                         m = getNextCharger(route.get(route.size() - 1), rangeAtEighty, limit, (int) currentCharger.getTag());
                         if (m != null) {
-                            totalDistance += getDistanceToDestination(m.getPosition().latitude, m.getPosition().longitude, prevM.getPosition().latitude, prevM.getPosition().longitude);
-                            prevM = m;
                             route.add(m);
                         }
 
                         buildMap(route.get(route.size() - 1).getPosition(), rangeAtEighty, limit);
                         m = getNextCharger(route.get(route.size() - 1), rangeAtEighty, limit, (int) currentCharger.getTag());
                         if (m != null) {
-                            totalDistance += getDistanceToDestination(m.getPosition().latitude, m.getPosition().longitude, prevM.getPosition().latitude, prevM.getPosition().longitude);
-                            prevM = m;
                             route.add(m);
                         }
 
                         buildMap(route.get(route.size() - 1).getPosition(), rangeAtEighty, limit);
                         m = getNextCharger(route.get(route.size() - 1), rangeAtEighty, limit, (int) currentCharger.getTag());
                         if (m != null) {
-                            totalDistance += getDistanceToDestination(m.getPosition().latitude, m.getPosition().longitude, prevM.getPosition().latitude, prevM.getPosition().longitude);
-                            prevM = m;
                             route.add(m);
                         }
-                        Log.i("totalDistance", String.valueOf(totalDistance));
                     } catch (Exception e) {e.printStackTrace();}
                 }
                 routes.add(route);
@@ -747,6 +756,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         }
     }
 
+    public void testBuildMap(TreeMap oldTm, TreeMap newTm) {
+        assert oldTm != newTm : "FAILED: buildMap()";
+        Log.i("Test 3", "PASSED: buildMap()");
+    }
+
+
     public double getDistance(double charger_lat, double charger_long) {
         Location chargerLoc = new Location("charger_Location");
         Location userLocation = new Location("user_Location");
@@ -786,7 +801,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             line = reader.readLine();
 
             //while there are still chargers to show
-            while (line != null && line.length() > 12) {
+            while (line != null && line.length() > 64) {
 
                 //parse the charger details into a more readable state
                 final String[] charger_Info = line.split("\\|"); //
