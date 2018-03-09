@@ -135,9 +135,11 @@ onCheckBoxClicked will pull the gps latitude and longitude using location manage
 #### 3 High-Level Design
 
 ![](http://student.computing.dcu.ie/~nugenc12/pref.PNG)
+
  This is the class digram explaing user preference are saved and axcessed within the program. The preferences are created in the first launch activity when the application first launches then it is axcessed and modified in mainMap and chargerInfo.
 
 ![](http://student.computing.dcu.ie/~nugenc12/downloadChargerInfo.png)
+
 This is a use case diagram here the program downloads the correct file from  the server via sftp and save to the device.
 
 ![](http://student.computing.dcu.ie/~nugenc12/setupusecase.PNG)
