@@ -344,6 +344,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                             double distance = getDistance(marker.getPosition().latitude, marker.getPosition().longitude);
                         }
                     }
+
                     try {
                         findOptimalChargers();
                     } catch (Exception e) {
@@ -351,7 +352,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                     }
                     route0.setVisibility(View.GONE);
                     if (routes.size() >= 1) {
-                        route1.setVisibility(View.VISIBLE);
+                        route1.setVisibility(View.VISIBLE); 
                     }
                     if (routes.size() >= 2) {
                         route2.setVisibility(View.VISIBLE);
@@ -531,6 +532,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         LatLng ireland = new LatLng(53.433333, -7.95); // position for the camera
         LatLng userLocation = new LatLng(user_lat, user_long); // LatLng of the users positions
         // Log.i("USER LOCATION", user_lat.toString() + " " + user_long.toString());
+        if(user_lat == 9999){
+            Toast.makeText(getApplicationContext() , "Unable to locate home" , Toast.LENGTH_LONG).show();
+        }
 
         //Adapter to handle the infoWindow
         customInfoWindow = new CustomInfoWindow(this);
