@@ -461,7 +461,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
                 //if the charger is reachable regardless of direction
                 if (range > distance && (marker.getSnippet().contains("Available") || marker.getSnippet().contains("Occupied"))) { //if you can get to the charger
-                    colorSelected = colors[index % 3];
+                    colorSelected = colors[index];
                     addToMap(marker);
                 }
             }
@@ -604,7 +604,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         firstChargers = new <Marker>ArrayList();
-        int index = 1;
+        int index = 0;
         //float range = sharedPref.getFloat("range", 0);
         double rangeAtEighty = 80 * (kwh / 100) * 6; //if the user stops at a charger use this range instead
         int count = 0;
