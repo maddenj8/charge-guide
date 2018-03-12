@@ -47,7 +47,7 @@ import java.util.Locale;
 
 public class first_launch extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private Spinner makes, model;
+    private Spinner makes, models;
     private Button currentLocAsHome;
     private Button fin;
     private Boolean home;
@@ -60,6 +60,7 @@ public class first_launch extends AppCompatActivity {
     TextView address;
     AppCompatEditText placeEditText;
     private LocationManager locationManager;
+    SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,11 +69,13 @@ public class first_launch extends AppCompatActivity {
 
         // CAR DETAILS
         makes = (Spinner) findViewById(R.id.make_dropdown);
-        model = (Spinner) findViewById(R.id.model_dropdown);
+        models = (Spinner) findViewById(R.id.model_dropdown);
 
         //HOME DETAILS
         currentLocAsHome = (Button) findViewById(R.id.currentLocAsHome);
         fin = (Button) findViewById(R.id.enterApp);
+
+        sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
 
         //PLACE SELECTED CHECKS
         oneSelected = false;
@@ -154,22 +157,22 @@ public class first_launch extends AppCompatActivity {
 
                 if (selected_make.equals("BMW")) {
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.BMW, android.R.layout.simple_spinner_dropdown_item);
-                    model.setAdapter(adapter);
+                    models.setAdapter(adapter);
 
                 } else if (selected_make.equals("Nissan")) {
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.Nissan, android.R.layout.simple_spinner_dropdown_item);
-                    model.setAdapter(adapter);
+                    models.setAdapter(adapter);
 
                 } else if (selected_make.equals("Volkswagen")) {
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.Volkswagen, android.R.layout.simple_spinner_dropdown_item);
-                    model.setAdapter(adapter);
+                    models.setAdapter(adapter);
 
                 } else if (selected_make.equals("Renault")) {
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.Renault, android.R.layout.simple_spinner_dropdown_item);
-                    model.setAdapter(adapter);
+                    models.setAdapter(adapter);
                 } else if (selected_make.equals("Hyundai")) {
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.Hyundai, android.R.layout.simple_spinner_dropdown_item);
-                    model.setAdapter(adapter);
+                    models.setAdapter(adapter);
                 }
             }
 
@@ -179,12 +182,10 @@ public class first_launch extends AppCompatActivity {
             }
         });
 
-        model.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        models.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                String selected_model = model.getSelectedItem().toString();
-
-                SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+                String selected_model = models.getSelectedItem().toString();
                 SharedPreferences.Editor editor = sharedPref.edit();
                 String selected_make = makes.getSelectedItem().toString();
                 editor.putString("selectedMake", selected_make);
@@ -238,17 +239,21 @@ public class first_launch extends AppCompatActivity {
                     }
                 } else {
                     // else home is already set as current location be this point so just go to the map activity
-                    Log.i("something", "something else ");
                     locationManager.removeUpdates(mLocationListener);
                     finishSetup();
                 }
             }
         });
+        String make = sharedPref.getString("rememberedMake", "");
+        makes.setSelection(getIndex(makes, make));
+        //String model = sharedPref.getString("rememberedModel", "");
+        //models.setSelection(getIndex(models, model));
     }
 
     public void finishSetup() {
         startActivity(new Intent(first_launch.this, MapMain.class));
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("userPref", MODE_PRIVATE);
+
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("Setup_complete", "true");
         editor.apply();
@@ -334,4 +339,14 @@ public class first_launch extends AppCompatActivity {
         e.commit();
     }
 
+
+    private int getIndex(Spinner spinner, String value) {
+        int index = 0;
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equals(value)) {
+                index = i;
+            }
+        }
+        return index;
+    }
 }

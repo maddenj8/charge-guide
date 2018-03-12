@@ -739,7 +739,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
         int id = item.getItemId();
 
         if (id == R.id.nav_manage) {
-
+            sharedPref = this.getSharedPreferences("userPref", MODE_PRIVATE);
+            SharedPreferences.Editor e = sharedPref.edit();
+            e.putString("rememberedMake", make);
+            e.putString("rememberedModel", model);
+            e.commit();
             Intent intent = new Intent(getApplicationContext(), first_launch.class);
             startActivity(intent);
 
