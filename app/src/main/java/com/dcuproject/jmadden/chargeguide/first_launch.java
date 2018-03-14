@@ -119,6 +119,7 @@ public class first_launch extends AppCompatActivity {
             @Override
             public void onPlaceSelected(Place place) { //when a place is selected
                 Log.d("PLACE SELECTED", place.toString());
+                locationManager.removeUpdates(mLocationListener);
                 placeSelected = place; //remember the place that the user selected
                 oneSelected = true;
                 saveCoordinates((float) place.getLatLng().latitude, (float) place.getLatLng().longitude);
@@ -300,6 +301,7 @@ public class first_launch extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else {
+            locationManager.removeUpdates(mLocationListener);
             searchBar.getView().setVisibility(View.VISIBLE);
             address.setVisibility(View.GONE);
         }
