@@ -419,7 +419,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
                 sftp.get("/users/case4/nugenc12/kml_parse/ac_output.txt" , pathStr);
             }
 
-            else{
+            else{   
                 Log.i("GET HERE", make);
                 sftp.get("/users/case4/nugenc12/kml_parse/ccs_output.txt" , pathStr);
             }
