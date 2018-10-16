@@ -412,16 +412,16 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
             //sftp.cd("/users/case3/nugenc12/kml_parse/");
 
             if( make.equals("Nissan")){
-                sftp.get("/users/case3/nugenc12/kml_parse/chademo_output.txt" , pathStr);
+                sftp.get("/users/case4/nugenc12/kml_parse/chademo_output.txt" , pathStr);
             }
 
             else if ( make.equals("Renault")){
-                sftp.get("/users/case3/nugenc12/kml_parse/ac_output.txt" , pathStr);
+                sftp.get("/users/case4/nugenc12/kml_parse/ac_output.txt" , pathStr);
             }
 
             else{
                 Log.i("GET HERE", make);
-                sftp.get("/users/case3/nugenc12/kml_parse/ccs_output.txt" , pathStr);
+                sftp.get("/users/case4/nugenc12/kml_parse/ccs_output.txt" , pathStr);
             }
 
             channel.disconnect();
