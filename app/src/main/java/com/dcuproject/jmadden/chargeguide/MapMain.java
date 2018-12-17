@@ -398,7 +398,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback, Nav
 
         try {
             JSch ssh = new JSch();
-            Session session = ssh.getSession("nugenc12", "student.computing.dcu.ie", 22);
+            Session session = ssh.getSession("put_user_name_here", "put_server_adress_here", 22);
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             session.setConfig(config);
